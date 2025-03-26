@@ -1,14 +1,18 @@
 # Cokenary
 
 ## Sobre
+<p>
 
+  
+</p>
 
 ## Tecnologias
 
 - Spring Boot
-- Postgres
+- MySql
 - React
 - Tailwind
+- JWT (Autenticação por token)
 - Postman
 
 ## Requisitos
