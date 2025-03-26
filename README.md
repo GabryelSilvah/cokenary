@@ -8,8 +8,8 @@ contendo uma vasta coleção de receitas criadas por diferentes chefes de cozinh
 O sistema conta com requisitos de autenticação, visto que o projeto é voltado para o gerenciamento interno dos restaurantes, 
 onde os chefes de cozinha são pagos para elaborar receitas diversificadas e de alta qualidade no sabor. 
 
-Além do chefe de cozinha, esse sistema contém outras duas roles,sendo, degustador e editor. Cada um desses roles tem funções e privilégios diferentes no sistema, 
-sendo liberado fazer somente aquilo que seu nível de permissão o atribui a fazer.
+Além do chefe de cozinha, esse sistema contém outros dois roles, sendo eles, degustador e editor. Cada um desses roles tem funções e privilégios diferentes no sistema, 
+sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
 
 <p>
 
