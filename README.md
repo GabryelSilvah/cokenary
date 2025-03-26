@@ -23,3 +23,5 @@
 - React 18.2.0
 
 ## Rotas da API
+
+## Autenticação
