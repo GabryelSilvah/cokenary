@@ -8,12 +8,12 @@
 
 ## Tecnologias
 
-- Spring Boot
-- MySql
-- React
-- Tailwind
+- Spring Boot (Framework Java, Back-end)
+- MySql (Base de dados)
+- React (Framework js/typescript, Front-end)
+- Tailwind (Estilos)
 - JWT (Autenticação por token)
-- Postman
+- Postman (Teste de APIs)
 
 ## Requisitos
 
