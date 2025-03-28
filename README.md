@@ -37,5 +37,8 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
 ## Autenticação
 
 ### Método de Autenticação
+<p>
+Autenticação através do token com JWT, onde a API recebe uma request para validar o email e senha do usuário, caso a validação seja bem sucedida um token JWT será gerado e enviado na response. Nesse token contém informações do usuário logado, nome da aplicação e tempo de validade do token.
+</p>
 
 ### Rotas de Autenticação
