@@ -42,3 +42,16 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 </p>
 
 ### Rotas de Autenticação
+
+<table>
+  <tr>
+    <th>Verbo Http</th>
+    <th>Rota</th>
+    <th>Descrição</th>
+  </tr>
+  <tr>
+    <td>Post</td>
+    <td>/auth</td>
+    <td>Autenticar usuário</td>
+  </tr>
+</table>
