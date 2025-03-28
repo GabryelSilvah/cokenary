@@ -50,7 +50,7 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
     <th>Descrição</th>
   </tr>
   <tr>
-    <td>Post</td>
+    <td>POST</td>
     <td>/auth</td>
     <td>Autenticar usuário</td>
   </tr>
