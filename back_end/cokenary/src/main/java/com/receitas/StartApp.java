@@ -19,15 +19,15 @@ public class StartApp {
 
 
 	//Configuração de cross origin
-	@Bean
-	public WebMvcConfigurer cors() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedMethods("GET","POST","PUT","DELETE")
-						.allowedOrigins("http://localhost:3000");
-			}
-		};
-	}
+//	@Bean
+//	public WebMvcConfigurer cors() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/**")
+//						.allowedMethods("GET","POST","PUT","DELETE")
+//						.allowedOrigins("http://localhost:3000");
+//			}
+//		};
+//	}
 }
