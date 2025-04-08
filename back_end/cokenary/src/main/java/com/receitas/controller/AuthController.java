@@ -1,5 +1,6 @@
 package com.receitas.controller;
 
+import com.receitas.config.ResponseToken;
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.model.Usuario_Model;
 import com.receitas.service.In_tokeJWT;
@@ -35,10 +36,10 @@ public class AuthController {
             Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
             var usuario = (Usuario_Model) autenticate.getPrincipal();
-
+            ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
             //Gerando Token
-            return ResponseEntity.status(HttpStatus.OK).body(tokenService.createToken(usuario));
-        } catch (UsernameNotFoundException erro) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseToken);
+        } catch (Exception erro) {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
         }
