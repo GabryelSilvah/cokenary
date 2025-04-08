@@ -43,6 +43,11 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 
 ### Rotas de Autenticação
 
+<p>
+  Para autenticar deverá ser informado o email e a senha do usuário no formato json, com o verbo HTTP POST.
+  Um usuário só pode ser autenticado se ele já estiver cadastrado no sistema. Para cadastrar siga o tópico (Rotas usuário).
+</p>
+
 <table>
   <tr>
     <th>Verbo Http</th>
@@ -59,6 +64,9 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 </table>
 
 ### Rotas Usuário
+<p>
+  Para autenticar deverá ser informado o email e a senha do usuário no formato json, com o verbo HTTP POST.
+</p>
 
 <table>
   <tr>
