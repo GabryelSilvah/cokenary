@@ -61,7 +61,7 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 
 
 <p>
-Com @Secured("ADMIN") ou @Secured("USER") em cada método da controller, você consegue definir qual usuário nível de acesso tem permissão de usar o recurso do método.
+Com @Secured("ADMIN") ou @Secured("USER") em cada método da controller, você consegue definir qual usuário com tal nível de acesso tem permissão de usar o recurso do método.
 </p>
 
 
