@@ -47,7 +47,7 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 <p>
   Para autenticar deverá ser informado o email e a senha do usuário no formato json, com o verbo HTTP POST.
   Um usuário só pode ser autenticado se ele já estiver cadastrado no sistema. Para cadastrar siga o tópico (Rotas usuário).
-  Ao ser autenticado, um token JWT será enviado como resposta. Com esse token você pode guardar no localstorege para ser enviado nas próximas 
+  Ao ser autenticado, um token JWT será enviado como resposta. Com esse token você poderá guardar no localstorege para ser enviado nas próximas 
   requisições. Vale ressaltar que o token tem um tempo de validade, 8 horas.
 </p>
 
