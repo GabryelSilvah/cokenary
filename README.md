@@ -59,6 +59,12 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
   Ao tentar realizar uma requisição para uma rota que precisa está autenticado você precisa informa o Token no Authorization, utilizando o type auth (Bearer Token).
 </p>
 
+
+<p>
+Com @Secured("ADMIN") ou @Secured("USER") em cada método da controller, você consegue definir qual usuário com tal nível de acesso tem permissão de usar o recurso do método.
+</p>
+
+
 <table>
   <tr>
     <th>Verbo Http</th>
