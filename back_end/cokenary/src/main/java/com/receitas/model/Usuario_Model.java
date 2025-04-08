@@ -2,13 +2,16 @@ package com.receitas.model;
 
 import com.receitas.dto.UsuarioDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.validation.constraints.NotNull;
+
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "usuarios")
@@ -18,11 +21,14 @@ public class Usuario_Model implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull(message = "Informe um email")
+    @NotEmpty
     private String email;
     @NotNull(message = "Informe uma senha")
+    @NotEmpty
     private String senha;
 
     @NotNull(message = "Informe uma Role")
+    @NotEmpty
     private String role;
 
     public Usuario_Model() {
@@ -39,6 +45,8 @@ public class Usuario_Model implements UserDetails {
         this.senha = usuario_dto.senha();
         this.role = usuario_dto.role();
     }
+
+
 
 
     public Long getId() {

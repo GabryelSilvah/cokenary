@@ -15,14 +15,15 @@ public class ErrorReponse {
 
     public String toJson() {
         return "{\n" +
-                "  \"status\": " + this.status + ",\n " +
-                "  \"message\": " + this.message + ",\n " +
-                "  \"timeStamp\": " + Instant.now() + "\n " +
+                "    \"status\": " + this.status + ",\n" +
+                "    \"message\": \"" + this.message + "\",\n" +
+                "    \"timeStamp\": \"" + Instant.now() + "\"\n" +
                 "}";
     }
     public ErrorReponse(int status, String message) {
         this.status = status;
         this.message = message;
+        this.timeStamp = Instant.now();
     }
 
     public ErrorReponse() {

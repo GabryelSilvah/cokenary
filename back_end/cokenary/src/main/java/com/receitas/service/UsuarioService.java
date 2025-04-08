@@ -2,6 +2,8 @@ package com.receitas.service;
 
 
 import com.receitas.dto.UsuarioDTO;
+import com.receitas.exception.UserExitsException;
+import com.receitas.exception.UserNotFoundExcetion;
 import com.receitas.model.Usuario_Model;
 import com.receitas.repository.In_UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,14 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder criptografar;
 
-    public Usuario_Model findById(Long idUser) {
+    public Optional<Usuario_Model> findById(Long idUser) {
         Optional<Usuario_Model> usuario = usuarioRepository.findById(idUser);
 
+     if(usuario.isPresent()){
+         return usuario;
+     }
 
-        return usuario.orElse(null);
+        throw new UserNotFoundExcetion();
     }
 
     public UsuarioDTO findByEmail(String emailUser) {
@@ -44,7 +49,7 @@ public class UsuarioService {
         //Validando se já existe esse usuário cadastrado
         Usuario_Model usuario = usuarioRepository.findByEmail(usuarioDTO.email());
         if (usuario != null) {
-            throw new RuntimeException("Usuário já existe");
+            throw new UserExitsException("Usuário já existe");
         }
 
         //Criando hash da senha

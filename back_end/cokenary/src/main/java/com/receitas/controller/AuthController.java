@@ -39,6 +39,7 @@ public class AuthController {
             //Gerando Token
             return ResponseEntity.status(HttpStatus.OK).body(tokenService.createToken(usuario));
         } catch (UsernameNotFoundException erro) {
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
         }
     }
