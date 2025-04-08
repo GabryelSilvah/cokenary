@@ -48,10 +48,47 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
     <th>Verbo Http</th>
     <th>Rota</th>
     <th>Descrição</th>
+    <th>Permição</th>
   </tr>
   <tr>
     <td>POST</td>
     <td>/auth</td>
     <td>Autenticar usuário</td>
+    <td>permitAll</td>
+  </tr>
+</table>
+
+### Rotas Usuário
+
+<table>
+  <tr>
+    <th>Verbo Http</th>
+    <th>Rota</th>
+    <th>Descrição</th>
+    <th>Permição</th>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/user/{id}</td>
+    <td>Buscar usuário pelo ID</td>
+    <td>authenticated</td>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>/user</td>
+    <td>Cadastrar usuário</td>
+    <td>permitAll (temporariamente para teste)</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>/user/{id}</td>
+    <td>Alterar dados do usuário</td>
+    <td>authenticated</td>
+  </tr>
+  <tr>
+    <td>DELETE</td>
+    <td>/user/{id}</td>
+    <td>Exclír usuário</td>
+    <td>authenticated</td>
   </tr>
 </table>
