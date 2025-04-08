@@ -55,6 +55,10 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
   Exemplo: {"email":"kevigo@gmail.com","senha":"123"}
 </p>
 
+<p>
+  Ao tentar realizar uma requisição para uma rota que precisa está autenticado você precisa informa o Token no Authorization, utilizando o type auth (Bearer Token).
+</p>
+
 <table>
   <tr>
     <th>Verbo Http</th>
