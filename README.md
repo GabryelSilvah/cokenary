@@ -46,6 +46,8 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 <p>
   Para autenticar deverá ser informado o email e a senha do usuário no formato json, com o verbo HTTP POST.
   Um usuário só pode ser autenticado se ele já estiver cadastrado no sistema. Para cadastrar siga o tópico (Rotas usuário).
+  Ao ser autenticado, um token JWT será enviado como resposta. Com esse token você pode guardar no localstorege para ser enviado nas próximas 
+  requisições. Vale ressaltar que o token tem um tempo de validade, 8 horas.
 </p>
 
 <p>
@@ -69,7 +71,11 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
 
 ### Rotas Usuário
 <p>
-  Para autenticar deverá ser informado o email e a senha do usuário no formato json, com o verbo HTTP POST.
+  Para cadastrar um usuário, informe email, senha e role.
+</p>
+
+<p>
+  Exemplo: {"email":"kevigo@gmail.com","senha":"123","role":"ADMIN"}
 </p>
 
 <table>
