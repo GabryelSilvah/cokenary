@@ -31,6 +31,7 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
 - Spring Boot 3.4.4
 - Java 21
 - React 18.2.0
+- MySql
 
 ## Rotas da API
 
