@@ -48,6 +48,10 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
   Um usuário só pode ser autenticado se ele já estiver cadastrado no sistema. Para cadastrar siga o tópico (Rotas usuário).
 </p>
 
+<p>
+  Exemplo: {"email":"kevigo@gmail.com","senha":"123"}
+</p>
+
 <table>
   <tr>
     <th>Verbo Http</th>
