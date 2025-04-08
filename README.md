@@ -106,7 +106,7 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
   <tr>
     <td>DELETE</td>
     <td>/user/{id}</td>
-    <td>Exclír usuário</td>
+    <td>Excluír usuário</td>
     <td>authenticated</td>
   </tr>
 </table>
