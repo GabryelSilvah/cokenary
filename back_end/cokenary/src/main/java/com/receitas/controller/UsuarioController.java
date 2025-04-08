@@ -2,6 +2,7 @@ package com.receitas.controller;
 
 
 import com.receitas.dto.UsuarioDTO;
+import com.receitas.exception.errorResponse.ErrorReponse;
 import com.receitas.model.Usuario_Model;
 import com.receitas.service.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
@@ -35,12 +36,18 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> register_user(@RequestBody UsuarioDTO usuarioDto) {
+    public ResponseEntity<?> register_user(@RequestBody UsuarioDTO usuarioDto) {
 
-        UsuarioDTO usuario = usuarioService.save(usuarioDto);
+        try {
+            UsuarioDTO usuario = usuarioService.save(usuarioDto);
 
-        return usuario != null ? ResponseEntity.status(HttpStatus.CREATED).body(usuario) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
+
+        } catch (RuntimeException erro) {
+            ErrorReponse responseError = new ErrorReponse(HttpStatus.BAD_REQUEST.value(), erro.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
+        }
+
     }
 
     @Secured("ADMIN")
