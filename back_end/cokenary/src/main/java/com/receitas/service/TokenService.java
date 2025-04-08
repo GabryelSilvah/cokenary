@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.receitas.model.Usuario_Model;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.ZoneOffset;
 
 
 @Service
+@CrossOrigin
 public class TokenService implements In_tokeJWT {
     @Value("${key.private.token}")
     private String key_private_jwt;

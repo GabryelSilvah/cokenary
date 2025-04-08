@@ -6,10 +6,12 @@ import com.receitas.exception.UserNotFoundExcetion;
 import com.receitas.exception.errorResponse.ErrorReponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@CrossOrigin
 public class ExceptionsController {
 
     @ExceptionHandler(UserNotFoundExcetion.class)
