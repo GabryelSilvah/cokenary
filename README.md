@@ -83,6 +83,10 @@ Autenticação através do token com JWT, onde a API recebe uma request para val
   Exemplo: {"email":"kevigo@gmail.com","senha":"123","role":"ADMIN"}
 </p>
 
+<p>
+Com @Secured("ADMIN") ou @Secured("USER") em cada método da controller, você consegue definir qual usuário nível de acesso tem permissão de usar o recurso do método.
+</p>
+
 <table>
   <tr>
     <th>Verbo Http</th>
