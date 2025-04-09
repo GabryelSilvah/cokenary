@@ -16,6 +16,14 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
   
 </p>
 
+## Autores
+
+- José Williams
+- Gabryel Silvah
+- Pedro Henrique
+- Vitória
+- Vinícius
+
 ## Tecnologias
 
 - Spring Boot (Framework Java, Back-end)
