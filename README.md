@@ -18,8 +18,8 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
 
 ## Autores
 
-- José Williams
 - Gabryel Silvah
+- José Williams
 - Pedro Henrique
 - Vitória
 - Vinícius
