@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,12 +25,12 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder criptografar;
 
-    public Optional<Usuario_Model> findById(Long idUser) {
+    public UsuarioDTO findById(Long idUser) {
         Optional<Usuario_Model> usuario = usuarioRepository.findById(idUser);
 
-     if(usuario.isPresent()){
-         return usuario;
-     }
+        if (usuario.isPresent()) {
+            return new UsuarioDTO(usuario.get().getEmail(),usuario.get().getSenha(),usuario.get().getRole());
+        }
 
         throw new UserNotFoundExcetion();
     }
@@ -63,21 +65,40 @@ public class UsuarioService {
         return new UsuarioDTO(modelResponse.getEmail(), modelResponse.getSenha(), modelResponse.getRole());
     }
 
-    public UsuarioDTO update(String email, UsuarioDTO usuarioDto) {
+    public Map<String, Object> update(Long id, UsuarioDTO usuarioDto) {
 
-        UsuarioDTO usuarioEncontrado = findByEmail(email);
+        Optional<Usuario_Model> usuarioEncontrado = usuarioRepository.findById(id);
 
-        if (usuarioEncontrado != null) {
-            Usuario_Model usuarioModel = new Usuario_Model(usuarioEncontrado);
-            Usuario_Model usuarioEdit = usuarioRepository.save(usuarioModel);
-            return new UsuarioDTO(usuarioEdit.getEmail(), usuarioEdit.getSenha(), usuarioEdit.getRole());
+        Map<String, Object> list = new HashMap<>();
+
+
+        if (usuarioEncontrado.isPresent()) {
+            list.put("old", new UsuarioDTO(usuarioEncontrado.get().getEmail(), usuarioEncontrado.get().getSenha(), usuarioEncontrado.get().getRole()));
+
+            String senhaSegura = criptografar.encode(usuarioDto.senha());
+            usuarioEncontrado.get().setEmail(usuarioDto.email());
+            usuarioEncontrado.get().setSenha(senhaSegura);
+            usuarioEncontrado.get().setRole(usuarioDto.role());
+
+            Usuario_Model usuarioEditado = usuarioRepository.save(usuarioEncontrado.get());
+
+
+            list.put("new", new UsuarioDTO(usuarioEditado.getEmail(), usuarioEditado.getSenha(), usuarioEditado.getRole()));
+            return list;
         }
-        return usuarioEncontrado;
+
+        throw new UserNotFoundExcetion();
     }
 
     public String delete(Long id_user) {
+        Optional<Usuario_Model> usuarioModel = usuarioRepository.findById(id_user);
 
-        usuarioRepository.deleteById(id_user);
-        return "Usuário deletado com sucesso";
+        if (usuarioModel.isPresent()) {
+            usuarioRepository.deleteById(id_user);
+            return usuarioModel.get().getEmail();
+        }
+
+        throw new UserNotFoundExcetion();
+
     }
 }

@@ -1,6 +1,7 @@
 package com.receitas.service;
 
 
+import com.receitas.exception.UserNotFoundExcetion;
 import com.receitas.model.Usuario_Model;
 import com.receitas.repository.In_UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ public class Auth_service  implements UserDetailsService {
         if (usuario != null) {
             return usuario;
         }
-        throw new UsernameNotFoundException("Usuário não encontrado: " + usuario);
+
+        throw new UserNotFoundExcetion("Usuário não encontrado: " + email);
     }
 
     //Buscando o Token já criando do usuário

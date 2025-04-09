@@ -3,6 +3,7 @@ package com.receitas.controller;
 import com.receitas.config.ResponseToken;
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.model.Usuario_Model;
+import com.receitas.response.ResponseJson;
 import com.receitas.service.In_tokeJWT;
 import com.receitas.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +31,21 @@ public class AuthController {
 
     @PostMapping("/auth")
     private ResponseEntity<?> autenticar(@RequestBody UsuarioDTO usuarioDto) {
-        try {
-            //Validadando email e senha do usuário inserido
-            var userNamePass = new UsernamePasswordAuthenticationToken(usuarioDto.email(), usuarioDto.senha());
-            Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
-            var usuario = (Usuario_Model) autenticate.getPrincipal();
-            ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
-            //Gerando Token
-            return ResponseEntity.status(HttpStatus.OK).body(responseToken);
-        } catch (Exception erro) {
+        //Validadando email e senha do usuário inserido
+        var userNamePass = new UsernamePasswordAuthenticationToken(usuarioDto.email(), usuarioDto.senha());
+        Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
-        }
+        //Pegando dados do usuário autenticado
+        var usuario = (Usuario_Model) autenticate.getPrincipal();
+        ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
+        //Gerando Token
+        return ResponseJson.build(
+                "Usuário autenticado com sucesso!!",
+                HttpStatus.OK,
+                responseToken
+        );
+
     }
 
 
