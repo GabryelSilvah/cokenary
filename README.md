@@ -24,6 +24,7 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
 - Vitória
 - Vinícius
 
+
 ## Tecnologias
 
 - Spring Boot (Framework Java, Back-end)
