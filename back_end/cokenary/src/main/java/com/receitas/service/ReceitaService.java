@@ -6,11 +6,13 @@ import com.receitas.model.Receita;
 import com.receitas.repository.ReceitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @Service
-public class ReceitaService {
+@CrossOrigin
+public abstract class ReceitaService {
 
     @Autowired
     private ReceitaRepository receitaRepository;
@@ -72,6 +74,8 @@ public class ReceitaService {
         // Salva a receita atualizada no banco de dados
         return receitaRepository.save(receitaExistente);
     }
+
+    public abstract boolean existePorId(Long id);
 
     public void deletar(Long id) {
         Receita receita = buscarPorId(id);

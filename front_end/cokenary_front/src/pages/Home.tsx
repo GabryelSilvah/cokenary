@@ -83,7 +83,7 @@ const Home = () => {
             {user ? (
               <>
                 <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
-                  Bem-vindo, {user.name}!
+                  Bem-vindo {user.name}!
                 </h1>
                 <p className="text-lg md:text-xl text-white/90 mb-8">
                   Descubra novas receitas, restaurantes e oportunidades culinárias. O que você deseja explorar hoje?

@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 
 import { Layout } from "./components/layout/Layout";
 import { AuthProvider, RequireAuth } from "./hooks/useAuth";
+
 import Home from "./pages/Home";
 import Recipes from "./pages/Recipes";
 import Restaurants from "./pages/Restaurants";
@@ -39,41 +40,51 @@ const App = () => (
             <Layout>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/recipes" element={<Recipes />} />
-                <Route path="/restaurants" element={<Restaurants />} />
-                <Route 
-                  path="/employees" 
+
+                <Route
+                  path="/recipes"
                   element={
-                    <RequireAuth requiredRole="manager">
-                      <Employees />
+                    <RequireAuth>
+                      <Recipes />
                     </RequireAuth>
-                  } 
+                  }
                 />
-                <Route 
-                  path="/jobs" 
+
+
+                {/* Rotas protegidas apenas para usuários autenticados */}
+                <Route
+                  path="/restaurants"
                   element={
-                    <RequireAuth requiredRole="employee">
-                      <Jobs />
+                    <RequireAuth>
+                      <Restaurants />
                     </RequireAuth>
-                  } 
+                  }
                 />
-                <Route 
-                  path="/profile" 
+
+                <Route
+                  path="/books"
+                  element={
+                    <RequireAuth>
+                      <Books />
+                    </RequireAuth>
+                  }
+                />
+
+                <Route
+                  path="/profile"
                   element={
                     <RequireAuth>
                       <Profile />
                     </RequireAuth>
-                  } 
+                  }
                 />
-                <Route 
-                  path="/admin" 
-                  element={
-                    <RequireAuth requiredRole="admin">
-                      <AdminPanel />
-                    </RequireAuth>
-                  } 
-                />
-                <Route path="/books" element={<Books />} />
+
+                {/* 🔓 Estas páginas estão liberadas sem autenticação */}
+                <Route path="/employees" element={<Employees />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/admin" element={<AdminPanel />} />
+
+                {/* Rotas públicas */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="*" element={<NotFound />} />
@@ -87,4 +98,3 @@ const App = () => (
 );
 
 export default App;
-

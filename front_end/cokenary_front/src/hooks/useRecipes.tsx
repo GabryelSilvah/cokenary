@@ -1,142 +1,162 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "./useAuth";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 
-// Define the Recipe type
-export type Recipe = {
+export interface Recipe {
   id: string;
-  title?: string;
-  nome?: string;
-  description?: string;
-  ingredients?: string[] | string;
-  ingredientes?: string[] | string;
-  instructions?: string[] | string;
-  modoPreparo?: string[] | string;
+  title: string;
+  description: string; // <- obrigatória
+  ingredients: string | string[] | undefined;
+  instructions: string | string[] | undefined;
   chef?: string;
   category?: string;
-  difficulty?: string;
-  time?: string;
   rating?: number;
-  image?: string;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
+  createdAt: string;
+  updatedAt: string;
+  difficulty: string;
+  time: string;
+  image: string;
+}
+
+type RecipeUpdatePayload = Recipe & {
+  ingredientsWithQuantities?: {
+    id: string;
+    nome: string;
+    quantity: string;
+    measure: string;
+  }[];
 };
 
-// URL base da API
-const API_BASE_URL = "http://localhost:8080"; // Use o link da sua API
-
-// Função para buscar todas as receitas
-const fetchRecipes = async (): Promise<Recipe[]> => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/receitas`);
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar receitas:", error);
-    if (axios.isAxiosError(error)) {
-      console.error("Detalhes do erro:", {
-        data: error.response?.data,
-        status: error.response?.status,
-        headers: error.response?.headers,
-      });
-    }
-    throw new Error("Erro ao carregar receitas. Tente novamente mais tarde.");
-  }
-};
-
-// Função para criar uma nova receita
-const createRecipe = async (recipe: Omit<Recipe, "id">): Promise<Recipe> => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/receitas`, recipe);
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao criar receita:", error);
-    if (axios.isAxiosError(error)) {
-      console.error("Detalhes do erro:", error.response?.data);
-    }
-    throw new Error("Erro ao criar receita. Verifique os dados e tente novamente.");
-  }
-};
-
-// Função para atualizar uma receita existente
-const updateRecipe = async (updatedRecipe: Recipe): Promise<Recipe> => {
-  try {
-    const response = await axios.put(`${API_BASE_URL}/receitas/${updatedRecipe.id}`, updatedRecipe, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    console.log("Resposta do backend:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao atualizar receita:", error);
-    if (axios.isAxiosError(error)) {
-      console.error("Detalhes do erro:", error.response?.data); // Log detalhado do erro
-      console.error("Status do erro:", error.response?.status); // Log do status HTTP
-    } else {
-      console.error("Erro desconhecido:", error);
-    }
-    throw new Error("Erro ao atualizar receita. Tente novamente mais tarde.");
-  }
-};
-// Hook useRecipes
 export const useRecipes = () => {
+  const { token } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  // Busca todas as receitas
-  const { data, isLoading, error } = useQuery<Recipe[], Error>({
-    queryKey: ["recipes"],
-    queryFn: fetchRecipes,
-  });
+  const handleApiError = (error: any) => {
+    console.error("API Error:", error);
+    let errorMessage = "Erro interno no servidor. Por favor, tente novamente mais tarde.";
 
-  // Mutação para criar uma nova receita
-  const createRecipeMutation = useMutation<Recipe, Error, Omit<Recipe, "id">>({
-    mutationFn: createRecipe,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-
-  // Mutação para atualizar uma receita existente
-  const updateRecipeMutation = useMutation<Recipe, Error, Recipe>({
-    mutationFn: updateRecipe,
-    onSuccess: (data) => {
-      // Atualiza o cache com a receita atualizada
-      queryClient.setQueryData<Recipe[]>(["recipes"], (oldData) => {
-        return oldData?.map(recipe => recipe.id === data.id ? data : recipe) || [];
-      });
-    },
-  });
-
-  // Função para deletar uma receita
-  const deleteRecipe = async (id: string): Promise<void> => {
-    try {
-      await axios.delete(`${API_BASE_URL}/receitas/${id}`);
-    } catch (error) {
-      console.error("Erro ao deletar receita:", error);
-      if (axios.isAxiosError(error)) {
-        console.error("Detalhes do erro:", error.response?.data);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 403) {
+        errorMessage = "Acesso negado. Verifique se você está autenticado.";
+      } else {
+        errorMessage = error.response?.data?.message || error.message;
       }
-      throw new Error("Erro ao deletar receita. Tente novamente mais tarde.");
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
     }
+
+    toast({
+      title: "Erro",
+      description: errorMessage,
+      variant: "destructive",
+    });
+
+    throw new Error(errorMessage);
   };
 
-  // Mutação para deletar uma receita
-  const deleteRecipeMutation = useMutation<void, Error, string>({
-    mutationFn: deleteRecipe,
+  const authHeaders = () => ({
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  });
+
+  const { data: recipes, isLoading: isLoadingRecipes, error: recipesError } = useQuery<Recipe[], Error>({
+    queryKey: ["recipes"],
+    queryFn: async () => {
+      if (!token) throw new Error("Token não encontrado. Usuário não autenticado.");
+
+      try {
+        const response = await axios.get("http://localhost:8081/receitas", {
+          headers: authHeaders(),
+        });
+        return response.data;
+      } catch (error) {
+        return handleApiError(error);
+      }
+    },
+    enabled: !!token,
+  });
+
+  const createRecipeMutation = useMutation({
+    mutationFn: async (recipeData: any) => {
+      if (!token) throw new Error("Token não encontrado. Usuário não autenticado.");
+
+      try {
+        const response = await axios.post("http://localhost:8081/receitas", recipeData, {
+          headers: authHeaders(),
+        });
+        return response.data;
+      } catch (error) {
+        return handleApiError(error);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      toast({
+        title: "Sucesso",
+        description: "Receita criada com sucesso!",
+        variant: "default",
+      });
+    },
+  });
+
+  const updateRecipeMutation = useMutation({
+    mutationFn: async (updatedRecipe: RecipeUpdatePayload) => {
+      if (!token) throw new Error("Token não encontrado. Usuário não autenticado.");
+
+      try {
+        const response = await axios.put(
+          `http://localhost:8081/receitas/${updatedRecipe.id}`,
+          updatedRecipe,
+          {
+            headers: authHeaders(),
+          }
+        );
+        return response.data;
+      } catch (error) {
+        return handleApiError(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      toast({
+        title: "Sucesso",
+        description: "Receita atualizada com sucesso!",
+        variant: "default",
+      });
+    },
+  });
+
+  const deleteRecipeMutation = useMutation({
+    mutationFn: async (recipeId: string) => {
+      if (!token) throw new Error("Token não encontrado. Usuário não autenticado.");
+
+      try {
+        const response = await axios.delete(`http://localhost:8081/receitas/${recipeId}`, {
+          headers: authHeaders(),
+        });
+        return response.data;
+      } catch (error) {
+        return handleApiError(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      toast({
+        title: "Sucesso",
+        description: "Receita excluída com sucesso!",
+        variant: "default",
+      });
     },
   });
 
   return {
-    data,
-    isLoading,
-    error,
+    recipes,
+    isLoadingRecipes,
+    recipesError,
     createRecipeMutation,
     updateRecipeMutation,
     deleteRecipeMutation,
   };
 };
-
-function deleteRecipe(variables: string): Promise<void> {
-  throw new Error("Function not implemented.");
-}

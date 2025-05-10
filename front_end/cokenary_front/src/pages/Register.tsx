@@ -1,11 +1,9 @@
-
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -16,29 +14,83 @@ import {
 } from "@/components/ui/card";
 import { SectionContainer } from "@/components/ui/section-container";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/use-toast";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    role: "USER",
+  });
   const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user, loading, register, error } = useAuth();
+  const navigate = useNavigate();
 
-  // If user is already logged in, redirect to home
   if (user && !loading) {
     return <Navigate to="/" replace />;
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormError("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      alert("As senhas não coincidem");
+    setIsSubmitting(true);
+    setFormError("");
+
+    // Validação do email
+    if (!formData.email.trim()) {
+      setFormError("O email é obrigatório");
+      setIsSubmitting(false);
       return;
     }
-    
-    await register(name, email, password);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setFormError("Por favor, insira um email válido");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validação da senha
+    if (!formData.password.trim()) {
+      setFormError("A senha é obrigatória");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setFormError("A senha deve ter pelo menos 6 caracteres");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      await register(formData.email, formData.password, formData.role);
+      
+      toast({
+        title: "Cadastro realizado!",
+        description: "Sua conta foi criada com sucesso.",
+      });
+
+      // Redireciona para a página inicial após cadastro
+      navigate("/");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      setFormError(error.message || "Erro durante o cadastro");
+      toast({
+        title: "Erro no cadastro",
+        description: error.message || "Ocorreu um erro ao criar sua conta",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -51,49 +103,43 @@ const Register = () => {
               Junte-se à nossa comunidade culinária
             </CardDescription>
           </CardHeader>
-          <form onSubmit={handleSubmit}>
+          
+          <form onSubmit={handleSubmit} noValidate>
             <CardContent className="space-y-4">
+              {/* Campo Email */}
               <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="João Silva"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email*</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="nome@exemplo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   required
+                  autoComplete="email"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Dica: Use emails com "admin", "manager" ou "employee" para testar diferentes níveis de acesso quando fizer login depois
-                </p>
               </div>
+
+              {/* Campo Senha */}
               <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password">Senha*</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     required
                     className="pr-10"
+                    autoComplete="new-password"
+                    minLength={6}
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -102,45 +148,58 @@ const Register = () => {
                     )}
                   </button>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  A senha deve ter pelo menos 6 caracteres
+                </p>
               </div>
+
+              {/* Campo Role */}
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirmar Senha</Label>
-                <Input
-                  id="confirm-password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                <Label htmlFor="role">Tipo de Conta*</Label>
+                <select
+                  id="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" required />
-                <Label
-                  htmlFor="terms"
-                  className="text-sm font-normal cursor-pointer"
                 >
-                  Eu concordo com os{" "}
-                  <Link to="/terms" className="text-primary hover:underline">
-                    termos de serviço
-                  </Link>{" "}
-                  e{" "}
-                  <Link to="/privacy" className="text-primary hover:underline">
-                    política de privacidade
-                  </Link>
-                </Label>
+                  <option value="USER">Usuário</option>
+                  <option value="ADMIN">Administrador</option>
+                </select>
               </div>
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
+
+              {/* Mensagens de erro */}
+              {(formError || error) && (
+                <p className="text-sm text-destructive">
+                  {formError || error}
+                </p>
               )}
             </CardContent>
+
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Criando Conta..." : "Criar Conta"}
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || loading}
+                aria-disabled={isSubmitting || loading}
+              >
+                {isSubmitting || loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Criando conta...
+                  </>
+                ) : "Criar Conta"}
               </Button>
+              
               <div className="text-center text-sm">
                 Já tem uma conta?{" "}
-                <Link to="/login" className="font-medium text-primary hover:underline">
+                <Link 
+                  to="/login" 
+                  className="font-medium text-primary hover:underline"
+                >
                   Entrar
                 </Link>
               </div>

@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 
-// Types that will match our Spring Boot API responses
+
 export interface Job {
   id: string;
   title: string;

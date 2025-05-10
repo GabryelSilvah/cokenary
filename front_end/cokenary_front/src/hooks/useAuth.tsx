@@ -1,282 +1,296 @@
-
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 
-// Types for user data
+// Tipo do usuário
 export interface User {
-  id: string;
-  name: string;
+  id: number;
   email: string;
-  role: "admin" | "manager" | "employee" | "viewer";
+  role: string;
+  token: string;
+  name?: string;
   avatar?: string;
+  status?: number;
+  message?: string;
 }
 
-// Types for auth context
+// Tipo do contexto
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  token?: string;
+  role?: string;
+  isAdmin?: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, role?: string) => Promise<void>;
   logout: () => void;
-  hasPermission: (requiredRole: "admin" | "manager" | "employee" | "viewer") => boolean;
+  updateUser: (updatedUser: User) => void; // Add this line
 }
 
-// Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Auth provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Check for existing session on mount
+  const API_URL = "http://localhost:8081";
+  const REGISTER_URL = `${API_URL}/user`;
+  const LOGIN_URL = `${API_URL}/auth`;
+
+  // Carrega usuário do localStorage ao iniciar
   useEffect(() => {
-    const checkAuth = async () => {
+    const loadUser = async () => {
       try {
-        // When connected to Spring Boot, this would be an API call to check session
-        // const response = await fetch("/api/auth/me");
-        // if (response.ok) {
-        //   const userData = await response.json();
-        //   setUser(userData);
-        // }
-        
-        // For now, check localStorage for a saved user
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          
+          // Verifica se o token ainda é válido (opcional)
+          if (parsedUser.token) {
+            setUser(parsedUser);
+          } else {
+            localStorage.removeItem("user");
+          }
         }
-      } catch (error) {
-        console.error("Auth check error:", error);
-        setError("Falha ao verificar autenticação");
+      } catch (err) {
+        console.error("Erro ao carregar usuário:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
+    loadUser();
   }, []);
-  
-  // Login function
-  const login = async (email: string, password: string) => {
+
+  const login = async (email: string, senha: string) => {
     setLoading(true);
     setError(null);
-    
+  
     try {
-      // When connected to Spring Boot:
-      // const response = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email, password }),
-      //   credentials: "include" // Important for cookies
-      // });
-      // 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || "Falha ao fazer login");
-      // }
-      // 
-      // const userData = await response.json();
-      // setUser(userData);
-      
-      // Mock implementation
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      
-      // For demo, accept any email/password with specific patterns for different roles
-      let role: "admin" | "manager" | "employee" | "viewer" = "viewer";
-      
-      if (email.includes("admin")) {
-        role = "admin";
-      } else if (email.includes("manager")) {
-        role = "manager";
-      } else if (email.includes("employee")) {
-        role = "employee";
+      let response;
+      try {
+        response = await fetch(LOGIN_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, senha }),
+        });
+      } catch (fetchError) {
+        // Handle network errors (like Failed to fetch)
+        throw new Error("Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente mais tarde.");
       }
-      
-      const mockUser: User = {
-        id: Math.random().toString(36).substring(2, 9),
-        name: email.split("@")[0],
-        email,
-        role,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
+  
+      // Handle cases where response.json() fails
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (jsonError) {
+        throw new Error("Resposta inválida do servidor");
+      }
+  
+      if (!response.ok) {
+        throw new Error(responseData.message || "Credenciais inválidas");
+      }
+  
+      // Rest of your success handling...
+      const token = responseData.data?.token;
+      if (!token) {
+        throw new Error("Token não encontrado na resposta.");
+      }
+  
+      const userData: User = {
+        id: responseData.data?.id || 0,
+        email: responseData.data?.email || email,
+        role: responseData.data?.role || "USER",
+        token,
+        name: responseData.data?.name,
+        avatar: responseData.data?.avatar,
+        status: responseData.status,
+        message: responseData.message,
       };
-      
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
-      
-      toast({
-        title: "Login bem-sucedido",
-        description: `Bem-vindo, ${mockUser.name}!`
-      });
-      
+  
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
       navigate("/");
-    } catch (error: any) {
-      console.error("Login error:", error);
-      setError(error.message || "Falha ao fazer login");
-      
+  
       toast({
-        title: "Erro de login",
-        description: error.message || "Credenciais inválidas. Tente novamente.",
-        variant: "destructive"
+        title: "Login realizado",
+        description: "Você entrou com sucesso!",
+      });
+    } catch (error: any) {
+      console.error("Erro no login:", error);
+      const message = error.message || "Erro inesperado";
+      setError(message);
+      toast({
+        title: "Erro no login",
+        description: message,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
-  
-  // Register function
-  const register = async (name: string, email: string, password: string) => {
+
+  const register = async (email: string, password: string, role = "USER") => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      // When connected to Spring Boot:
-      // const response = await fetch("/api/auth/register", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ name, email, password }),
-      // });
-      // 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || "Falha ao registrar");
-      // }
-      // 
-      // const userData = await response.json();
-      // setUser(userData);
-      
-      // Mock implementation
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      
-      const mockUser: User = {
-        id: Math.random().toString(36).substring(2, 9),
-        name,
-        email,
-        role: "viewer", // Default role for new registrations
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
-      
-      toast({
-        title: "Registro bem-sucedido",
-        description: "Sua conta foi criada com sucesso!"
+      const response = await fetch(REGISTER_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, senha: password, role }),
       });
-      
-      navigate("/");
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erro no cadastro");
+      }
+
+      // Faz login automaticamente após o cadastro
+      await login(email, password);
+
+      toast({
+        title: "Cadastro realizado",
+        description: "Conta criada com sucesso!",
+      });
+
+      return data;
     } catch (error: any) {
-      console.error("Registration error:", error);
-      setError(error.message || "Falha ao registrar");
-      
+      console.error("Erro no cadastro:", error);
+      const message = error.message || "Erro inesperado";
+      setError(message);
       toast({
-        title: "Erro de registro",
-        description: error.message || "Não foi possível criar sua conta. Tente novamente.",
-        variant: "destructive"
+        title: "Erro no cadastro",
+        description: message,
+        variant: "destructive",
       });
+      throw error;
     } finally {
       setLoading(false);
     }
   };
-  
-  // Logout function
+
   const logout = () => {
-    // When connected to Spring Boot:
-    // fetch("/api/auth/logout", {
-    //   method: "POST",
-    //   credentials: "include"
-    // });
-    
-    // Clear user from state and storage
-    setUser(null);
     localStorage.removeItem("user");
-    
+    setUser(null);
     toast({
-      title: "Logout realizado",
-      description: "Você foi desconectado com sucesso."
+      title: "Logout",
+      description: "Você saiu da conta.",
     });
-    
     navigate("/login");
   };
-  
-  // Permission check function based on role hierarchy
-  const hasPermission = (requiredRole: "admin" | "manager" | "employee" | "viewer") => {
-    if (!user) return false;
-    
-    const roleHierarchy = {
-      admin: 4,
-      manager: 3,
-      employee: 2,
-      viewer: 1
-    };
-    
-    return roleHierarchy[user.role] >= roleHierarchy[requiredRole];
-  };
-  
+
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      error, 
-      login, 
-      register, 
-      logout,
-      hasPermission
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token: user?.token,
+        role: user?.role,
+        isAdmin: user?.role === "ADMIN",
+        loading,
+        error,
+        login,
+        register,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use auth context
+// Hook para consumir contexto de auth
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useAuth deve ser usado dentro de AuthProvider");
   }
-  
   return context;
 };
 
-// Auth guard component to protect routes
-export const RequireAuth = ({ 
-  children, 
-  requiredRole = "viewer" 
-}: { 
-  children: ReactNode; 
-  requiredRole?: "admin" | "manager" | "employee" | "viewer";
+// Proteção de rotas por role
+export const RequireAuth = ({
+  children,
+  requiredRole,
+}: {
+  children: ReactNode;
+  requiredRole?: string;
 }) => {
-  const { user, loading, hasPermission } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login", { replace: true });
-    } else if (!loading && user && !hasPermission(requiredRole)) {
-      toast({
-        title: "Acesso Negado",
-        description: "Você não tem permissão para acessar esta página.",
-        variant: "destructive"
-      });
-      navigate("/", { replace: true });
+    } else if (!loading && requiredRole && user?.role !== requiredRole) {
+      navigate("/unauthorized", { replace: true });
     }
-  }, [user, loading, navigate, hasPermission, requiredRole]);
-  
+  }, [user, loading, navigate, requiredRole]);
+
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Carregando...</div>;
   }
-  
-  if (!user) {
-    return null; // Will redirect in useEffect
-  }
-  
-  if (!hasPermission(requiredRole)) {
-    return null; // Will redirect in useEffect
-  }
-  
+
   return <>{children}</>;
+};
+
+// Header de autenticação para requisições
+export const getAuthHeader = (additionalHeaders: Record<string, string> = {}) => {
+  try {
+    const userString = localStorage.getItem("user");
+    if (!userString) return {
+      "Content-Type": "application/json",
+      ...additionalHeaders
+    };
+    
+    const user = JSON.parse(userString);
+    
+    return { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+      ...additionalHeaders
+    };
+  } catch (err) {
+    console.error("Erro ao obter token:", err);
+    return {
+      "Content-Type": "application/json",
+      ...additionalHeaders
+    };
+  }
+};
+
+// Função para fazer requisições autenticadas
+export const authFetch = async (url: string, options: RequestInit = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    headers: getAuthHeader(options.headers as Record<string, string>),
+  });
+
+  if (response.status === 401) {
+    // Token inválido ou expirado
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+    throw new Error("Sessão expirada. Por favor, faça login novamente.");
+  }
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Erro na requisição");
+  }
+
+  return response.json();
 };

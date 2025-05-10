@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Image, Save, UserCog } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,25 +18,81 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
+// Tipo para os dados do perfil
+type ProfileData = {
+  name: string;
+  email: string;
+  bio: string;
+  avatar: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 const Profile = () => {
-  const { user } = useAuth();
+  const { user: authUser, updateUser } = useAuth();
   const navigate = useNavigate();
-  
-  // Redirect if no user is logged in
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
-  
-  const [profileData, setProfileData] = useState({
-    name: user.name,
-    email: user.email,
-    bio: "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Extrai o primeiro nome do email (parte antes do @)
+  const getFirstNameFromEmail = (email: string) => {
+    return email.split('@')[0];
+  };
+
+  // Estado inicial
+  const [profileData, setProfileData] = useState<ProfileData>(() => {
+    // Tenta carregar do localStorage
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      return JSON.parse(savedProfile);
+    }
+    
+    // Se não, usa os dados do authUser com nome padrão do email
+    return {
+      name: authUser?.name || getFirstNameFromEmail(authUser?.email || ""),
+      email: authUser?.email || "",
+      bio: "",
+      avatar: authUser?.avatar || "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    };
   });
-  
+
+  // Redireciona se não estiver logado
+  useEffect(() => {
+    if (!authUser) {
+      navigate("/login");
+    }
+  }, [authUser, navigate]);
+
+  // Salva no localStorage quando o perfil é atualizado
+  useEffect(() => {
+    localStorage.setItem('userProfile', JSON.stringify(profileData));
+  }, [profileData]);
+
+  // Manipula seleção de nova imagem
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const newAvatar = event.target?.result as string;
+        setProfileData(prev => ({
+          ...prev,
+          avatar: newAvatar
+        }));
+        // Atualiza também no contexto de autenticação
+        updateUser({ ...authUser, avatar: newAvatar });
+        toast({
+          title: "Imagem atualizada",
+          description: "Sua foto de perfil foi alterada com sucesso!",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfileData(prev => ({ ...prev, [name]: value }));
@@ -45,7 +100,15 @@ const Profile = () => {
   
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    // This would be replaced with an API call to update the user's profile
+    
+    // Atualiza no contexto de autenticação
+    updateUser({ 
+      ...authUser, 
+      name: profileData.name,
+      email: profileData.email,
+      avatar: profileData.avatar
+    });
+    
     toast({
       title: "Perfil atualizado",
       description: "Suas informações foram atualizadas com sucesso!",
@@ -64,13 +127,13 @@ const Profile = () => {
       return;
     }
     
-    // This would be replaced with an API call to change the password
+    // Aqui você implementaria a lógica real de alteração de senha
     toast({
       title: "Senha alterada",
       description: "Sua senha foi alterada com sucesso!",
     });
     
-    // Reset password fields
+    // Reset dos campos de senha
     setProfileData(prev => ({
       ...prev,
       currentPassword: "",
@@ -79,35 +142,49 @@ const Profile = () => {
     }));
   };
   
+  // Aciona o input file quando o botão é clicado
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <SectionContainer className="pt-12 pb-16">
+      {/* Input file escondido */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageChange}
+        accept="image/*"
+        className="hidden"
+      />
+      
       <PageHeader 
         title="Meu Perfil" 
         description="Gerencie suas informações pessoais e configurações de conta"
       />
       
       <div className="mt-8 grid gap-8 md:grid-cols-[300px_1fr]">
-        {/* Profile Card */}
+        {/* Card de Perfil */}
         <Card className="h-fit">
           <CardHeader className="pb-4">
             <CardTitle className="text-xl">Informações</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center text-center">
             <Avatar className="h-32 w-32 mb-4">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={profileData.avatar} alt={profileData.name} />
               <AvatarFallback className="text-2xl">
-                {user.name.substring(0, 2).toUpperCase()}
+                {profileData.name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <h3 className="font-medium text-lg">{user.name}</h3>
-            <p className="text-muted-foreground text-sm mt-1">{user.email}</p>
+            <h3 className="font-medium text-lg">{profileData.name}</h3>
+            <p className="text-muted-foreground text-sm mt-1">{profileData.email}</p>
             <p className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs mt-2 capitalize">
-              {user.role}
+              {authUser.role}
             </p>
           </CardContent>
         </Card>
         
-        {/* Profile Settings */}
+        {/* Configurações */}
         <Tabs defaultValue="informacoes" className="w-full">
           <TabsList>
             <TabsTrigger value="informacoes">Informações</TabsTrigger>
@@ -167,13 +244,19 @@ const Profile = () => {
                       <Label htmlFor="avatar">Foto de Perfil</Label>
                       <div className="flex items-center gap-4">
                         <Avatar className="h-16 w-16">
-                          <AvatarImage src={user.avatar} alt={user.name} />
+                          <AvatarImage src={profileData.avatar} alt={profileData.name} />
                           <AvatarFallback className="text-lg">
-                            {user.name.substring(0, 2).toUpperCase()}
+                            {profileData.name.substring(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <Button variant="outline" size="sm" className="mb-2">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="mb-2"
+                            onClick={triggerFileInput}
+                          >
                             <Image className="mr-2 h-4 w-4" />
                             Alterar Imagem
                           </Button>
@@ -256,7 +339,7 @@ const Profile = () => {
               </CardContent>
             </Card>
             
-            {user.role === "admin" && (
+            {authUser.role === "admin" && (
               <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>Configurações Avançadas</CardTitle>

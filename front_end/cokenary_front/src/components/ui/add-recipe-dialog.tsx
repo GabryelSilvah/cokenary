@@ -5,25 +5,43 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-// Recipes.tsx
-import { useRecipes, Recipe } from "@/hooks/useRecipes";
+
+import { Recipe } from "@/hooks/useRecipes";
+
+
+type OriginalRecipe = {
+  title: string;
+  description: string;
+  ingredients: string | string[];
+  instructions: string | string[];
+  chef?: string;
+  category?: string;
+  difficulty?: string;
+  time?: string;
+  rating?: string;
+};
+
+type SafeRecipe = Omit<OriginalRecipe, "description"> & {
+  description?: string;
+};
 
 interface RecipeDetailsDialogProps {
-  recipe: Recipe;
+  recipe: Partial<Recipe> & { ingredients?: string[] | string };
   isOpen: boolean;
   onClose: () => void;
+  
 }
-
 export const RecipeDetailsDialog = ({
   recipe,
   isOpen,
   onClose,
 }: RecipeDetailsDialogProps) => {
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>{recipe.title || recipe.nome || "Sem título"}</DialogTitle>
+          <DialogTitle>{recipe.title || "Sem título"}</DialogTitle>
           <DialogDescription>{recipe.description || ""}</DialogDescription>
         </DialogHeader>
 

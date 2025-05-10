@@ -1,3 +1,4 @@
+
 package com.receitas.model;
 
 import jakarta.persistence.*;
