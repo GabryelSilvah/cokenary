@@ -12,7 +12,11 @@ import java.util.List;
 
 @Service
 @CrossOrigin
+<<<<<<< HEAD
 public abstract class ReceitaService {
+=======
+public class ReceitaService {
+>>>>>>> eb4a1a3f139953775bb779a85dd1629c8f97a62f
 
     @Autowired
     private ReceitaRepository receitaRepository;

@@ -60,4 +60,8 @@ public class TokenService implements In_tokeJWT {
                 .plusHours(10)
                 .toInstant(ZoneOffset.of("-03:00"));
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> eb4a1a3f139953775bb779a85dd1629c8f97a62f

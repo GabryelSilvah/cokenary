@@ -26,11 +26,15 @@ public class StartApp {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedMethods("GET","POST","PUT","DELETE")
+<<<<<<< HEAD
 						.allowedOrigins("http://localhost:8082");
 
 
 
 
+=======
+						.allowedOrigins("*");
+>>>>>>> eb4a1a3f139953775bb779a85dd1629c8f97a62f
 			}
 		};
 	}

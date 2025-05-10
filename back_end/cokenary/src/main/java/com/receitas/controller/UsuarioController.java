@@ -54,6 +54,27 @@ public class UsuarioController {
     @Secured("ADMIN")
     @PutMapping("{id}")
     public ResponseEntity<?> update(@Valid @RequestBody UsuarioDTO usuarioDto, @PathVariable Long id) {
+<<<<<<< HEAD
+=======
+
+        return ResponseJson.build(
+                "Usuário alterado com sucesso!!",
+                HttpStatus.CREATED,
+                usuarioService.update(id, usuarioDto)
+        );
+    }
+
+    @Secured("ADMIN")
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+
+        return ResponseJson.build(
+                "Usuário apagado com sucesso!!",
+                HttpStatus.OK,
+                usuarioService.delete(id)
+        );
+    }
+>>>>>>> eb4a1a3f139953775bb779a85dd1629c8f97a62f
 
         return ResponseJson.build(
                 "Usuário alterado com sucesso!!",

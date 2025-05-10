@@ -32,4 +32,8 @@ public class Auth_service  implements UserDetailsService {
     //Buscando o Token já criando do usuário
 
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> eb4a1a3f139953775bb779a85dd1629c8f97a62f
