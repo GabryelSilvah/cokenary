@@ -1,6 +1,7 @@
 package com.receitas.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -18,6 +19,15 @@ public class Cargo {
 
     @Column(length = 20)
     private String nivel;
+
+    @Column(name = "data_inicio")
+    private LocalDate dataInicio;
+
+    @Column(name = "data_fim")
+    private LocalDate dataFim;
+
+    @Column(name = "ind_ativo")
+    private Boolean indAtivo = true; // Changed to Boolean wrapper class
 
     @OneToMany(mappedBy = "cargo")
     private List<Funcionario> funcionarios;
@@ -63,6 +73,30 @@ public class Cargo {
         this.nivel = nivel;
     }
 
+    public LocalDate getDataInicio() {
+        return dataInicio;
+    }
+
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
+    }
+
+    public LocalDate getDataFim() {
+        return dataFim;
+    }
+
+    public void setDataFim(LocalDate dataFim) {
+        this.dataFim = dataFim;
+    }
+
+    public Boolean getIndAtivo() {  // Changed from isIndAtivo() to getIndAtivo()
+        return indAtivo;
+    }
+
+    public void setIndAtivo(Boolean indAtivo) {  // Parameter type changed to Boolean
+        this.indAtivo = indAtivo;
+    }
+
     public List<Funcionario> getFuncionarios() {
         return funcionarios;
     }
@@ -82,25 +116,38 @@ public class Cargo {
      * @param descricao Nova descrição (opcional)
      * @param departamento Novo departamento (opcional)
      * @param nivel Novo nível (opcional)
+     * @param dataInicio Nova data de início (opcional)
+     * @param dataFim Nova data de fim (opcional)
+     * @param indAtivo Novo indicador de status (opcional)
      */
-    public void atualizarDados(String nome, String descricao, String departamento, String nivel) {
+    public void atualizarDados(String nome, String descricao, String departamento, String nivel,
+                               LocalDate dataInicio, LocalDate dataFim, Boolean indAtivo) {
         if (nome != null && !nome.isBlank()) {
             this.nome = nome;
         }
 
-        // Atualiza descrição mesmo se for string vazia (permite limpar o campo)
         if (descricao != null) {
             this.descricao = descricao.isBlank() ? null : descricao;
         }
 
-        // Atualiza departamento mesmo se for string vazia (permite limpar o campo)
         if (departamento != null) {
             this.departamento = departamento.isBlank() ? null : departamento;
         }
 
-        // Atualiza nível mesmo se for string vazia (permite limpar o campo)
         if (nivel != null) {
             this.nivel = nivel.isBlank() ? null : nivel;
+        }
+
+        if (dataInicio != null) {
+            this.dataInicio = dataInicio;
+        }
+
+        if (dataFim != null) {
+            this.dataFim = dataFim;
+        }
+
+        if (indAtivo != null) {
+            this.indAtivo = indAtivo;
         }
     }
 }

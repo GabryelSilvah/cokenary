@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,14 @@ public class CargoController {
             return ResponseEntity.badRequest().build();
         }
 
+        // Set default values if not provided
+        if (cargo.getDataInicio() == null) {
+            cargo.setDataInicio(LocalDate.now());
+        }
+        if (cargo.getIndAtivo() == null) {  // Changed from isIndAtivo() to getIndAtivo()
+            cargo.setIndAtivo(true);
+        }
+
         Cargo cargoSalvo = cargoRepository.save(cargo);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -70,7 +79,10 @@ public class CargoController {
                             cargoAtualizado.getNome(),
                             cargoAtualizado.getDescricao(),
                             cargoAtualizado.getDepartamento(),
-                            cargoAtualizado.getNivel()
+                            cargoAtualizado.getNivel(),
+                            cargoAtualizado.getDataInicio(),
+                            cargoAtualizado.getDataFim(),
+                            cargoAtualizado.getIndAtivo()  // Changed from isIndAtivo() to getIndAtivo()
                     );
 
                     return ResponseEntity.ok(cargoRepository.save(cargo));
@@ -86,5 +98,17 @@ public class CargoController {
 
         cargoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/ativos")
+    public ResponseEntity<List<Cargo>> listarAtivos() {
+        List<Cargo> cargosAtivos = cargoRepository.findByIndAtivoTrue();
+        return ResponseEntity.ok(cargosAtivos);
+    }
+
+    @GetMapping("/inativos")
+    public ResponseEntity<List<Cargo>> listarInativos() {
+        List<Cargo> cargosInativos = cargoRepository.findByIndAtivoFalse();
+        return ResponseEntity.ok(cargosInativos);
     }
 }
