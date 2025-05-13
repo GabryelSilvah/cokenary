@@ -1,24 +1,17 @@
 package com.receitas.controller;
 
-
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.exception.ArgumentsException;
-import com.receitas.exception.errorResponse.ErrorReponse;
-import com.receitas.model.Usuario_Model;
 import com.receitas.response.ResponseJson;
 import com.receitas.service.UsuarioService;
-import jakarta.annotation.security.RolesAllowed;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-
-import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -31,12 +24,11 @@ public class UsuarioController {
     @Secured("ADMIN")
     @GetMapping("{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-
-
         return ResponseJson.build(
                 "Usuário encontrado com sucesso!!",
                 HttpStatus.OK,
-                usuarioService.findById(id));
+                usuarioService.findById(id)
+        );
     }
 
     @PostMapping
@@ -47,16 +39,11 @@ public class UsuarioController {
         } catch (ArgumentsException erro) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro.getMessage());
         }
-
-
     }
 
     @Secured("ADMIN")
     @PutMapping("{id}")
     public ResponseEntity<?> update(@Valid @RequestBody UsuarioDTO usuarioDto, @PathVariable Long id) {
-<<<<<<< HEAD
-=======
-
         return ResponseJson.build(
                 "Usuário alterado com sucesso!!",
                 HttpStatus.CREATED,
@@ -67,31 +54,10 @@ public class UsuarioController {
     @Secured("ADMIN")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-
         return ResponseJson.build(
                 "Usuário apagado com sucesso!!",
                 HttpStatus.OK,
                 usuarioService.delete(id)
         );
     }
->>>>>>> eb4a1a3f139953775bb779a85dd1629c8f97a62f
-
-        return ResponseJson.build(
-                "Usuário alterado com sucesso!!",
-                HttpStatus.CREATED,
-                usuarioService.update(id, usuarioDto)
-        );
-    }
-
-    @Secured("ADMIN")
-    @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-
-        return ResponseJson.build(
-                "Usuário apagado com sucesso!!",
-                HttpStatus.OK,
-                usuarioService.delete(id)
-        );
-    }
-
 }

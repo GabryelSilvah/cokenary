@@ -5,47 +5,53 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useCargos } from '@/hooks/use-cargos';
 
-// Tipos para melhor organização
-type Position = {
-  id: number;
-  title: string;
-  department: string;
-  level: string;
-  employeesCount?: number; // Adicionado para verificar vinculação com funcionários
+type Cargo = {
+  id: string;
+  nome: string;
+  descricao?: string; // Optional property for description
+  departamento?: string; // Make this optional to match the imported type
+  nivel?: string;
+  funcionariosCount?: number;
 };
 
-const Positions = () => {
+const CargosPage = () => {
   const { toast } = useToast();
-  const [positions, setPositions] = useState<Position[]>([
-    { id: 1, title: 'Chef Principal', department: 'Cozinha', level: 'Sênior', employeesCount: 2 },
-    { id: 2, title: 'Sous Chef', department: 'Cozinha', level: 'Pleno', employeesCount: 3 },
-    { id: 3, title: 'Confeiteiro', department: 'Confeitaria', level: 'Pleno', employeesCount: 1 },
-    { id: 4, title: 'Garçom', department: 'Atendimento', level: 'Júnior', employeesCount: 0 },
-    { id: 5, title: 'Bartender', department: 'Bar', level: 'Pleno', employeesCount: 2 },
-    { id: 6, title: 'Auxiliar de Cozinha', department: 'Cozinha', level: 'Júnior', employeesCount: 4 }
-  ]);
+  const { 
+    cargos, 
+    isLoadingCargos: isLoading, 
+    cargosError: error,
+    createCargoMutation,
+    updateCargoMutation,
+    deleteCargoMutation
+  } = useCargos();
+
+  const { mutateAsync: createCargo, isPending: isCreating } = createCargoMutation;
+  const { mutateAsync: updateCargo, isPending: isUpdating } = updateCargoMutation;
+  const { mutateAsync: deleteCargo, isPending: isDeleting } = deleteCargoMutation;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [positionToDelete, setPositionToDelete] = useState<Position | null>(null);
-  const [editingPosition, setEditingPosition] = useState<Position | null>(null);
-  const [formData, setFormData] = useState<Omit<Position, 'id' | 'employeesCount'>>({
-    title: '',
-    department: '',
-    level: ''
+  const [cargoToDelete, setCargoToDelete] = useState<Cargo | null>(null);
+  const [editingCargo, setEditingCargo] = useState<Cargo | null>(null);
+  const [formData, setFormData] = useState<Omit<Cargo, 'id' | 'funcionariosCount'>>({
+    nome: '',
+    descricao: '',
+    departamento: '',
+    nivel: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filtra os cargos conforme o termo de pesquisa
-  const filteredPositions = positions.filter((position) => {
+  const filteredCargos = cargos?.filter((cargo) => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      position.title.toLowerCase().includes(searchLower) ||
-      position.department.toLowerCase().includes(searchLower) ||
-      position.level.toLowerCase().includes(searchLower)
+      cargo.nome.toLowerCase().includes(searchLower) ||
+      (cargo.departamento && cargo.departamento.toLowerCase().includes(searchLower)) ||
+      (cargo.nivel && cargo.nivel.toLowerCase().includes(searchLower))
     );
-  });
+  }) || [];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,79 +62,69 @@ const Positions = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (editingPosition) {
-        // Atualiza o cargo existente
-        setPositions(positions.map(pos =>
-          pos.id === editingPosition.id ? { ...formData, id: pos.id, employeesCount: pos.employeesCount } : pos
-        ));
-        toast({
-          description: "Cargo atualizado com sucesso!"
+      if (editingCargo) {
+        await updateCargo({ 
+          ...formData, 
+          id: editingCargo.id,
+          descricao: formData.descricao || '' // Garante que descricao não seja undefined
         });
       } else {
-        // Adiciona novo cargo
-        setPositions([...positions, { ...formData, id: Date.now(), employeesCount: 0 }]);
-        toast({
-          description: "Cargo adicionado com sucesso!"
-        });
+        await createCargo(formData);
       }
       handleCloseModal();
     } catch (error) {
-      toast({
-        variant: "destructive",
-        description: "Ocorreu um erro ao salvar o cargo."
-      });
+      // O erro já é tratado no useCargos
     }
   };
 
-  const handleEdit = (position: Position) => {
-    setEditingPosition(position);
+  const handleEdit = (cargo: Cargo) => {
+    setEditingCargo(cargo);
     setFormData({
-      title: position.title,
-      department: position.department,
-      level: position.level
+      nome: cargo.nome,
+      descricao: cargo.descricao || '',
+      departamento: cargo.departamento || '',
+      nivel: cargo.nivel || ''
     });
     setIsModalOpen(true);
   };
 
-  const handleDeleteClick = (position: Position) => {
-    setPositionToDelete(position);
+  const handleDeleteClick = (cargo: Cargo) => {
+    setCargoToDelete(cargo);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (!positionToDelete) return;
+  const handleConfirmDelete = async () => {
+    if (!cargoToDelete) return;
     
-    // Verifica se há funcionários vinculados
-    if (positionToDelete.employeesCount && positionToDelete.employeesCount > 0) {
-      toast({
-        variant: "destructive",
-        description: "Não é possível excluir um cargo vinculado a funcionários!"
-      });
+    try {
+      await deleteCargo(cargoToDelete.id);
       setIsDeleteModalOpen(false);
-      return;
+    } catch (error) {
+      // O erro já é tratado no useCargos
     }
-
-    // Remove o cargo
-    setPositions(positions.filter(pos => pos.id !== positionToDelete.id));
-    setIsDeleteModalOpen(false);
-    toast({
-      description: "Cargo excluído com sucesso!"
-    });
   };
 
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
-    setPositionToDelete(null);
+    setCargoToDelete(null);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setEditingPosition(null);
-    setFormData({ title: '', department: '', level: '' });
+    setEditingCargo(null);
+    setFormData({ 
+      nome: '', 
+      descricao: '', 
+      departamento: '', 
+      nivel: '' 
+    });
   };
+
+  if (isLoading) return <div className="container py-8">Carregando...</div>;
+  if (error) return <div className="container py-8">Erro ao carregar cargos</div>;
 
   return (
     <div className="container py-8 animate-fadeIn">
@@ -144,7 +140,7 @@ const Positions = () => {
         <div className="relative">
           <Input
             type="text"
-            placeholder="Pesquisar cargos por título, departamento ou nível..."
+            placeholder="Pesquisar cargos por nome, departamento ou nível..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -155,23 +151,24 @@ const Positions = () => {
 
       {/* Lista de Cargos Filtrados */}
       <div className="grid gap-4">
-        {filteredPositions.length > 0 ? (
-          filteredPositions.map((position) => (
-            <Card key={position.id} className="p-4 hover:shadow-md transition-shadow">
+        {filteredCargos.length > 0 ? (
+          filteredCargos.map((cargo) => (
+            <Card key={cargo.id} className="p-4 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-xl font-semibold">{position.title}</h3>
+                  <h3 className="text-xl font-semibold">{cargo.nome}</h3>
                   <div className="flex gap-4 mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    <span>Departamento: {position.department}</span>
-                    <span>Nível: {position.level}</span>
-                    <span>Funcionários: {position.employeesCount}</span>
+                    {cargo.descricao && <span>Descrição: {cargo.descricao}</span>}
+                    {cargo.departamento && <span>Departamento: {cargo.departamento}</span>}
+                    {cargo.nivel && <span>Nível: {cargo.nivel}</span>}
+                   
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button 
                     variant="outline" 
                     size="icon" 
-                    onClick={() => handleEdit(position)}
+                    onClick={() => handleEdit(cargo)}
                     aria-label="Editar cargo"
                   >
                     <Edit className="h-4 w-4" />
@@ -179,7 +176,7 @@ const Positions = () => {
                   <Button 
                     variant="destructive" 
                     size="icon" 
-                    onClick={() => handleDeleteClick(position)}
+                    onClick={() => handleDeleteClick(cargo)}
                     aria-label="Excluir cargo"
                   >
                     <Trash className="h-4 w-4" />
@@ -201,7 +198,7 @@ const Positions = () => {
           <div className="bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg p-6 max-w-md w-full animate-scaleIn">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">
-                {editingPosition ? 'Editar Cargo' : 'Novo Cargo'}
+                {editingCargo ? 'Editar Cargo' : 'Novo Cargo'}
               </h2>
               <Button variant="ghost" size="icon" onClick={handleCloseModal}>
                 <X className="h-4 w-4" />
@@ -209,31 +206,38 @@ const Positions = () => {
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Título do Cargo*</label>
+                <label className="block text-sm font-medium mb-1">Nome do Cargo*</label>
                 <Input
-                  name="title"
-                  value={formData.title}
+                  name="nome"
+                  value={formData.nome}
                   onChange={handleInputChange}
                   required
                   placeholder="Ex: Chef de Cozinha"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Departamento*</label>
+                <label className="block text-sm font-medium mb-1">Descrição</label>
                 <Input
-                  name="department"
-                  value={formData.department}
+                  name="descricao"
+                  value={formData.descricao}
                   onChange={handleInputChange}
-                  required
+                  placeholder="Descrição do cargo"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Departamento</label>
+                <Input
+                  name="departamento"
+                  value={formData.departamento}
+                  onChange={handleInputChange}
                   placeholder="Ex: Cozinha"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Nível*</label>
+                <label className="block text-sm font-medium mb-1">Nível</label>
                 <Select
-                  value={formData.level}
-                  onValueChange={(value) => handleSelectChange('level', value)}
-                  required
+                  value={formData.nivel}
+                  onValueChange={(value) => handleSelectChange('nivel', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o nível" />
@@ -249,8 +253,10 @@ const Positions = () => {
                 <Button variant="outline" type="button" onClick={handleCloseModal}>
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  {editingPosition ? 'Salvar Alterações' : 'Adicionar Cargo'}
+                <Button type="submit" disabled={isCreating || isUpdating}>
+                  {editingCargo ? 
+                    (isUpdating ? 'Salvando...' : 'Salvar Alterações') : 
+                    (isCreating ? 'Adicionando...' : 'Adicionar Cargo')}
                 </Button>
               </div>
             </form>
@@ -259,7 +265,7 @@ const Positions = () => {
       )}
 
       {/* Modal de Exclusão */}
-      {isDeleteModalOpen && positionToDelete && (
+      {isDeleteModalOpen && cargoToDelete && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg p-6 max-w-md w-full animate-scaleIn">
             <div className="flex justify-between items-center mb-4">
@@ -269,10 +275,10 @@ const Positions = () => {
               </Button>
             </div>
             
-            {positionToDelete.employeesCount && positionToDelete.employeesCount > 0 ? (
+            {cargoToDelete.funcionariosCount && cargoToDelete.funcionariosCount > 0 ? (
               <div className="space-y-4">
                 <p className="text-red-500 font-medium">
-                  Não é possível excluir este cargo pois ele está vinculado a {positionToDelete.employeesCount} funcionário(s).
+                  Não é possível excluir este cargo pois ele está vinculado a {cargoToDelete.funcionariosCount} funcionário(s).
                 </p>
                 <p>Para excluir, primeiro remova ou altere os funcionários vinculados a este cargo.</p>
                 <div className="flex justify-end">
@@ -281,10 +287,16 @@ const Positions = () => {
               </div>
             ) : (
               <>
-                <p className="mb-4">Tem certeza que deseja excluir o cargo <strong>{positionToDelete.title}</strong>?</p>
+                <p className="mb-4">Tem certeza que deseja excluir o cargo <strong>{cargoToDelete.nome}</strong>?</p>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={handleCancelDelete}>Cancelar</Button>
-                  <Button variant="destructive" onClick={handleConfirmDelete}>Confirmar Exclusão</Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleConfirmDelete}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? 'Excluindo...' : 'Confirmar Exclusão'}
+                  </Button>
                 </div>
               </>
             )}
@@ -295,4 +307,4 @@ const Positions = () => {
   );
 };
 
-export default Positions;
+export default CargosPage;
