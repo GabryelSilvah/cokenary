@@ -46,7 +46,7 @@ public class FilterSecurity {
                         .requestMatchers(HttpMethod.GET, "/receitas/**").permitAll()
 
                         // Todas as outras rotas exigem autenticação
-                        .anyRequest().authenticated() // Única chamada anyRequest()
+                        .anyRequest().permitAll() // Única chamada anyRequest()
                 )
                 .addFilterBefore(filterToken, UsernamePasswordAuthenticationFilter.class)
                 .build();

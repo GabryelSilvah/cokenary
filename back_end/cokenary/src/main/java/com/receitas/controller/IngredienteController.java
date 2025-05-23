@@ -14,12 +14,9 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:8082")
 public class IngredienteController {
 
-    private final IngredienteService ingredienteService;
-
     @Autowired
-    public IngredienteController(IngredienteService ingredienteService) {
-        this.ingredienteService = ingredienteService;
-    }
+    private IngredienteService ingredienteService;
+
 
     @GetMapping
     public ResponseEntity<List<Ingrediente>> listarTodos() {

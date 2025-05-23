@@ -4,8 +4,8 @@ package com.receitas.service;
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.exception.UserExitsException;
 import com.receitas.exception.UserNotFoundExcetion;
-import com.receitas.model.Usuario_Model;
-import com.receitas.repository.In_UsuarioRepository;
+import com.receitas.model.Usuario;
+import com.receitas.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,13 +20,13 @@ import java.util.Optional;
 public class UsuarioService {
 
     @Autowired
-    private In_UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private PasswordEncoder criptografar;
 
     public UsuarioDTO findById(Long idUser) {
-        Optional<Usuario_Model> usuario = usuarioRepository.findById(idUser);
+        Optional<Usuario> usuario = usuarioRepository.findById(idUser);
 
         if (usuario.isPresent()) {
             return new UsuarioDTO(usuario.get().getEmail(),usuario.get().getSenha(),usuario.get().getRole());
@@ -36,7 +36,7 @@ public class UsuarioService {
     }
 
     public UsuarioDTO findByEmail(String emailUser) {
-        Usuario_Model usuario = usuarioRepository.findByEmail(emailUser);
+        Usuario usuario = usuarioRepository.findByEmail(emailUser);
 
         if (usuario != null) {
             return new UsuarioDTO(usuario.getEmail(), usuario.getSenha(), usuario.getRole());
@@ -49,7 +49,7 @@ public class UsuarioService {
     public UsuarioDTO save(UsuarioDTO usuarioDTO) {
 
         //Validando se já existe esse usuário cadastrado
-        Usuario_Model usuario = usuarioRepository.findByEmail(usuarioDTO.email());
+        Usuario usuario = usuarioRepository.findByEmail(usuarioDTO.email());
         if (usuario != null) {
             throw new UserExitsException("Usuário já existe");
         }
@@ -58,8 +58,8 @@ public class UsuarioService {
         var senhaCripto = criptografar.encode(usuarioDTO.senha());
 
         //Convertendo class dto em class model, depois savalndo usuário na base de dados
-        Usuario_Model model = new Usuario_Model(usuarioDTO.email(), senhaCripto, usuarioDTO.role());
-        Usuario_Model modelResponse = usuarioRepository.save(model);
+        Usuario model = new Usuario(usuarioDTO.email(), senhaCripto, usuarioDTO.role());
+        Usuario modelResponse = usuarioRepository.save(model);
 
         //Retornando informações do usuário salvo na base de dados
         return new UsuarioDTO(modelResponse.getEmail(), modelResponse.getSenha(), modelResponse.getRole());
@@ -67,7 +67,7 @@ public class UsuarioService {
 
     public Map<String, Object> update(Long id, UsuarioDTO usuarioDto) {
 
-        Optional<Usuario_Model> usuarioEncontrado = usuarioRepository.findById(id);
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findById(id);
 
         Map<String, Object> list = new HashMap<>();
 
@@ -80,7 +80,7 @@ public class UsuarioService {
             usuarioEncontrado.get().setSenha(senhaSegura);
             usuarioEncontrado.get().setRole(usuarioDto.role());
 
-            Usuario_Model usuarioEditado = usuarioRepository.save(usuarioEncontrado.get());
+            Usuario usuarioEditado = usuarioRepository.save(usuarioEncontrado.get());
 
 
             list.put("new", new UsuarioDTO(usuarioEditado.getEmail(), usuarioEditado.getSenha(), usuarioEditado.getRole()));
@@ -91,7 +91,7 @@ public class UsuarioService {
     }
 
     public String delete(Long id_user) {
-        Optional<Usuario_Model> usuarioModel = usuarioRepository.findById(id_user);
+        Optional<Usuario> usuarioModel = usuarioRepository.findById(id_user);
 
         if (usuarioModel.isPresent()) {
             usuarioRepository.deleteById(id_user);

@@ -1,10 +1,14 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "cargos")
 public class Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,12 +17,8 @@ public class Cargo {
     @Column(nullable = false, unique = true)
     private String nome;
 
+    @Column(name = "descricao")
     private String descricao;
-
-    private String departamento;
-
-    @Column(length = 20)
-    private String nivel;
 
     @Column(name = "data_inicio")
     private LocalDate dataInicio;
@@ -27,10 +27,13 @@ public class Cargo {
     private LocalDate dataFim;
 
     @Column(name = "ind_ativo")
-    private Boolean indAtivo = true; // Changed to Boolean wrapper class
+    private Boolean indAtivo = true;
 
-    @OneToMany(mappedBy = "cargo")
+    @OneToMany(mappedBy = "cargo_id", fetch = FetchType.LAZY)
     private List<Funcionario> funcionarios;
+
+    public Cargo() {
+    }
 
     // Getters e Setters
     public Long getId() {
@@ -57,22 +60,6 @@ public class Cargo {
         this.descricao = descricao;
     }
 
-    public String getDepartamento() {
-        return departamento;
-    }
-
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
-    }
-
-    public String getNivel() {
-        return nivel;
-    }
-
-    public void setNivel(String nivel) {
-        this.nivel = nivel;
-    }
-
     public LocalDate getDataInicio() {
         return dataInicio;
     }
@@ -89,11 +76,11 @@ public class Cargo {
         this.dataFim = dataFim;
     }
 
-    public Boolean getIndAtivo() {  // Changed from isIndAtivo() to getIndAtivo()
+    public Boolean getIndAtivo() {
         return indAtivo;
     }
 
-    public void setIndAtivo(Boolean indAtivo) {  // Parameter type changed to Boolean
+    public void setIndAtivo(Boolean indAtivo) {
         this.indAtivo = indAtivo;
     }
 
@@ -112,15 +99,8 @@ public class Cargo {
 
     /**
      * Atualiza os dados do cargo mantendo os valores existentes quando os novos são nulos
-     * @param nome Novo nome (opcional)
-     * @param descricao Nova descrição (opcional)
-     * @param departamento Novo departamento (opcional)
-     * @param nivel Novo nível (opcional)
-     * @param dataInicio Nova data de início (opcional)
-     * @param dataFim Nova data de fim (opcional)
-     * @param indAtivo Novo indicador de status (opcional)
      */
-    public void atualizarDados(String nome, String descricao, String departamento, String nivel,
+    public void atualizarDados(String nome, String descricao,
                                LocalDate dataInicio, LocalDate dataFim, Boolean indAtivo) {
         if (nome != null && !nome.isBlank()) {
             this.nome = nome;
@@ -128,14 +108,6 @@ public class Cargo {
 
         if (descricao != null) {
             this.descricao = descricao.isBlank() ? null : descricao;
-        }
-
-        if (departamento != null) {
-            this.departamento = departamento.isBlank() ? null : departamento;
-        }
-
-        if (nivel != null) {
-            this.nivel = nivel.isBlank() ? null : nivel;
         }
 
         if (dataInicio != null) {

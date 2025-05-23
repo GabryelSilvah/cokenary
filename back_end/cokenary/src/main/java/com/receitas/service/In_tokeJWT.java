@@ -1,6 +1,6 @@
 package com.receitas.service;
 
-import com.receitas.model.Usuario_Model;
+import com.receitas.model.Usuario;
 
 import java.time.Instant;
 
@@ -8,7 +8,7 @@ import java.time.Instant;
 public interface In_tokeJWT {
 
 
-    String createToken(Usuario_Model usuarioModel);
+    String createToken(Usuario usuarioModel);
 
     String validateToken(String token);
 

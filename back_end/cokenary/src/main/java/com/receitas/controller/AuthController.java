@@ -2,7 +2,7 @@ package com.receitas.controller;
 
 import com.receitas.config.ResponseToken;
 import com.receitas.dto.UsuarioDTO;
-import com.receitas.model.Usuario_Model;
+import com.receitas.model.Usuario;
 import com.receitas.response.ResponseJson;
 import com.receitas.service.In_tokeJWT;
 import com.receitas.service.TokenService;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -37,7 +36,7 @@ public class AuthController {
         Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
         //Pegando dados do usuário autenticado
-        var usuario = (Usuario_Model) autenticate.getPrincipal();
+        var usuario = (Usuario) autenticate.getPrincipal();
         ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
         //Gerando Token
         return ResponseJson.build(
