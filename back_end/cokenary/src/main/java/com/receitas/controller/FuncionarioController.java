@@ -1,5 +1,6 @@
 package com.receitas.controller;
 
+import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
 import com.receitas.model.Funcionario;
 import com.receitas.service.FuncionarioService;
@@ -25,30 +26,30 @@ public class FuncionarioController {
     }
 
     @GetMapping("/byId/{id}")
-    public ResponseEntity<FuncionarioDTO> show_by_id(@PathVariable Long id) {
-        FuncionarioDTO listaFuncionarios = service.listById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(listaFuncionarios);
+    public ResponseEntity<ResponseJson> show_by_id(@PathVariable Long id) {
+        FuncionarioDTO funcionario = service.listById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(200, "OK", funcionario));
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<FuncionarioDTO> create(@RequestBody Funcionario funcionario) {
+    public ResponseEntity<ResponseJson> create(@RequestBody Funcionario funcionario) {
         FuncionarioDTO funcionarioSalvo = service.saveFuncionario(funcionario);
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioSalvo);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(200, "Funcionário cadastrado com sucesso", funcionarioSalvo));
     }
 
     @PutMapping("/alterar/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody Funcionario funcionario) {
 
         Optional<Funcionario> funcionarioAtualizado = this.service.update(id, funcionario);
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioAtualizado.get());
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(201, "Funcionário alterado com sucesso", funcionarioAtualizado.get()));
 
     }
 
     @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<String> deletar(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseJson> deletar(@PathVariable("id") Long id) {
 
         service.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Deletado com sucesso");
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(200, "Funcionário deletado com suceso"));
 
     }
 }
