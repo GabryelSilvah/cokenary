@@ -47,6 +47,35 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
 
 ## Rotas da API
 
+<table>
+  <tr>
+    <th>Verbo</th>
+    <th>Rota</th>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/funcionarios/listar</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/funcionarios/listar</byId/{id}IDtd>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>/funcionarios/cadastrar</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>/funcionarios/alterar/{id}</td>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>/funcionarios/excluir/{id}</td>
+  </tr>/
+  
+</table>
+
+
 ## Autenticação
 
 ### Método de Autenticação
