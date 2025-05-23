@@ -77,7 +77,7 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
     <td>DELETE</td>
     <td>/funcionarios/excluir/{id}</td>
     <td>false</td>
-  </tr>/
+  </tr>
   
 </table>
 
