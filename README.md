@@ -60,7 +60,7 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
   </tr>
   <tr>
     <td>GET</td>
-    <td>/funcionarios/listar</byId/{id}IDtd>
+    <td>/funcionarios/listar</byId/{id}</td>
     <td>false</td>
   </tr>
   <tr>
