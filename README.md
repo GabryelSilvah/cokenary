@@ -51,26 +51,32 @@ sendo liberado fazer somente aquilo que seu nível de acesso o atribui a fazer.
   <tr>
     <th>Verbo</th>
     <th>Rota</th>
+    <th>Objeto na request</th>
   </tr>
   <tr>
     <td>GET</td>
     <td>/funcionarios/listar</td>
+    <td>false</td>
   </tr>
   <tr>
     <td>GET</td>
     <td>/funcionarios/listar</byId/{id}IDtd>
+    <td>false</td>
   </tr>
   <tr>
     <td>POST</td>
     <td>/funcionarios/cadastrar</td>
+    <td>true</td>
   </tr>
   <tr>
     <td>PUT</td>
     <td>/funcionarios/alterar/{id}</td>
+    <td>true</td>
   </tr>
   <tr>
-    <td>POST</td>
+    <td>DELETE</td>
     <td>/funcionarios/excluir/{id}</td>
+    <td>false</td>
   </tr>/
   
 </table>
