@@ -10,9 +10,15 @@ import com.receitas.repository.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,6 +28,8 @@ public class FuncionarioService {
 
     @Autowired
     private CargoRepository cargoRepository;
+
+    private static final String CAMINHO_FOTO_PERFIl = "C:\\Users\\Gabryel Silvah\\Desktop\\ambiente_teste";
 
     public ResponseJson listAll() {
 
@@ -37,7 +45,8 @@ public class FuncionarioService {
                     funcionariosEncontrados.get(i).getRg(),
                     funcionariosEncontrados.get(i).getDt_adm(),
                     funcionariosEncontrados.get(i).getSalario(),
-                    funcionariosEncontrados.get(i).getCargo().getNome()
+                    funcionariosEncontrados.get(i).getCargo().getNome(),
+                    funcionariosEncontrados.get(i).getImagem_perfil()
             );
             funcionariosDTO.add(funcionario);//Adiciona na lista DTO
         }
@@ -61,7 +70,8 @@ public class FuncionarioService {
                         funcionarioEncontrado.get().getRg(),
                         funcionarioEncontrado.get().getDt_adm(),
                         funcionarioEncontrado.get().getSalario(),
-                        funcionarioEncontrado.get().getCargo().getNome()
+                        funcionarioEncontrado.get().getCargo().getNome(),
+                        funcionarioEncontrado.get().getImagem_perfil()
                 ));
     }
 
@@ -99,7 +109,8 @@ public class FuncionarioService {
                 funcionarioSalvo.getRg(),
                 funcionarioSalvo.getDt_adm(),
                 funcionarioSalvo.getSalario(),
-                cargo.get().getNome()
+                cargo.get().getNome(),
+                funcionarioSalvo.getImagem_perfil()
         ));
     }
 
@@ -146,4 +157,29 @@ public class FuncionarioService {
         funcioRepository.delete(funcionarioEncontrado.get());
         return new ResponseJson(HttpStatus.OK, "Funcionário excluido com sucesso!");
     }
+
+    public ResponseJson salvarFotoFuncionario(MultipartFile arquivo, Long id) throws IOException {
+        if (arquivo == null) {
+            throw new NullPointerException("Nenhuma foto de perfil enviada");
+        }
+
+        File destinoArquivo = new File(CAMINHO_FOTO_PERFIl + File.separator + arquivo.getOriginalFilename());
+
+        if (!Objects.equals(destinoArquivo.getParent(), CAMINHO_FOTO_PERFIl)) {
+            throw new SecurityException("Arquivo não suportado");
+        }
+
+        Files.copy(arquivo.getInputStream(), destinoArquivo.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+
+        //Salvar caminho da imagem de perfil no banco de dados do funcionário
+        Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
+        Funcionario funcionarioInsert = funcionarioEncontrado.get();
+        funcionarioInsert.setImagem_perfil(arquivo.getOriginalFilename());
+        funcioRepository.save(funcionarioInsert);
+
+
+        return new ResponseJson(HttpStatus.OK, "Salvo com sucesso!");
+    }
+
 }

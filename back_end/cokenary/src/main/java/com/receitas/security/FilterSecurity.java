@@ -36,14 +36,11 @@ public class FilterSecurity {
                 .csrf(AbstractHttpConfigurer::disable) // Desabilitando CSRF para APIs stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Rotas públicas
+                        // Rotas públicas de autenticação
+                        .requestMatchers(HttpMethod.GET, "/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Rotas GET públicas
-                        .requestMatchers(HttpMethod.GET, "/auth").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/receitas/**").permitAll()
 
                         // Todas as outras rotas exigem autenticação
                         .anyRequest().permitAll() // Única chamada anyRequest()

@@ -28,14 +28,16 @@ public class Funcionario {
     @Column(name = "salario")
     private float salario;
 
-    //@JsonBackReference // <-- evita recursão na serialização
+    @Column(name = "imagem_perfil")
+    private String imagem_perfil;
 
     @ManyToOne
     //@NotNull(message = "ID do cargo deve ser informado")
     @JoinColumn(name = "cargo_id")
     private Cargo cargo_id;
 
-    public Funcionario(){}
+    public Funcionario() {
+    }
 
 
     public Funcionario(int rg, String nome, Date dt_adm, float salario, Cargo cargo_id) {
@@ -54,17 +56,59 @@ public class Funcionario {
     }
 
     // Getters e setters
-    public Long getId() { return id; }
-    public int getRg() { return rg; }
-    public String getNome() { return nome; }
-    public Date getDt_adm() { return dt_adm; }
-    public float getSalario() { return salario; }
-    public Cargo getCargo() { return cargo_id; }
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) { this.id = id; }
-    public void setRg(int rg) { this.rg = rg; }
-    public void setNome(String nome) { this.nome = nome; }
-    public void setDt_adm(Date dt_adm) { this.dt_adm = dt_adm; }
-    public void setSalario(float salario) { this.salario = salario; }
-    public void setCargo(Cargo cargo) { this.cargo_id = cargo; }
+    public int getRg() {
+        return rg;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Date getDt_adm() {
+        return dt_adm;
+    }
+
+    public float getSalario() {
+        return salario;
+    }
+
+    public Cargo getCargo() {
+        return cargo_id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setRg(int rg) {
+        this.rg = rg;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setDt_adm(Date dt_adm) {
+        this.dt_adm = dt_adm;
+    }
+
+    public void setSalario(float salario) {
+        this.salario = salario;
+    }
+
+    public String getImagem_perfil() {
+        return imagem_perfil;
+    }
+
+    public void setImagem_perfil(String imagem_perfil) {
+        this.imagem_perfil = imagem_perfil;
+    }
+
+    public void setCargo(Cargo cargo) {
+        this.cargo_id = cargo;
+    }
 }

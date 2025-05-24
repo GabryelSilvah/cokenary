@@ -13,7 +13,7 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
 
     Funcionario findByNome(String nome);
 
-    @NativeQuery(value = "SELECT funcionarios.id, funcionarios.nome, funcionarios.rg, funcionarios.dt_adm, funcionarios.salario, funcionarios.cargo_id, cargos.nome as nomeCargo  " +
+    @NativeQuery(value = "SELECT funcionarios.id, funcionarios.nome, funcionarios.rg, funcionarios.dt_adm, funcionarios.salario, funcionarios.imagem_perfil, funcionarios.cargo_id, cargos.nome as nomeCargo  " +
             "FROM funcionarios " +
             "LEFT JOIN cargos " +
             "ON cargos.id = funcionarios.cargo_id"

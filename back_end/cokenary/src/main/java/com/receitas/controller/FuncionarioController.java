@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,16 @@ public class FuncionarioController {
     public ResponseEntity<ResponseJson> create(@RequestBody Funcionario funcionario) {
         ResponseJson serviceResponse = service.saveFuncionario(funcionario);
         return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    }
+
+    @PostMapping("/add_foto/{id}")
+    public ResponseEntity<ResponseJson> add_foto_perfil(@RequestPart("file") MultipartFile arquivo, @PathVariable("id") Long id) {
+        try {
+            ResponseJson serviceResponse = service.salvarFotoFuncionario(arquivo, id);
+            return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+        } catch (Exception erro) {
+            return null;
+        }
     }
 
     @PutMapping("/alterar/{id}")
