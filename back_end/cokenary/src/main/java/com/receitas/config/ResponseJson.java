@@ -1,26 +1,28 @@
 package com.receitas.config;
 
+import org.springframework.http.HttpStatus;
+
 public class ResponseJson {
-    private int status;
+    private HttpStatus status;
     private String message;
     private Object data;
 
-    public ResponseJson(int status, String message, Object data) {
+    public ResponseJson(HttpStatus status, String message, Object data) {
         this.status = status;
         this.message = message;
         this.data = data;
     }
 
-    public ResponseJson(int status, String message) {
+    public ResponseJson(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
     }
 
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(HttpStatus status) {
         this.status = status;
     }
 
@@ -39,4 +41,5 @@ public class ResponseJson {
     public void setData(Object data) {
         this.data = data;
     }
+
 }

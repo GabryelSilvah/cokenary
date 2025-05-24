@@ -20,36 +20,32 @@ public class FuncionarioController {
     private FuncionarioService service;
 
     @GetMapping("/listar")
-    public ResponseEntity<List<FuncionarioDTO>> show() {
-        List<FuncionarioDTO> listaFuncionarios = service.listAll();
-        return ResponseEntity.status(HttpStatus.OK).body(listaFuncionarios);
+    public ResponseEntity<ResponseJson> show() {
+        ResponseJson serviceResponse = service.listAll();
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
     @GetMapping("/byId/{id}")
     public ResponseEntity<ResponseJson> show_by_id(@PathVariable Long id) {
-        FuncionarioDTO funcionario = service.listById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(200, "OK", funcionario));
+        ResponseJson serviceResponse = service.listById(id);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> create(@RequestBody Funcionario funcionario) {
-        FuncionarioDTO funcionarioSalvo = service.saveFuncionario(funcionario);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(200, "Funcionário cadastrado com sucesso", funcionarioSalvo));
+        ResponseJson serviceResponse = service.saveFuncionario(funcionario);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody Funcionario funcionario) {
-
-        Optional<Funcionario> funcionarioAtualizado = this.service.update(id, funcionario);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(201, "Funcionário alterado com sucesso", funcionarioAtualizado.get()));
-
+    public ResponseEntity<ResponseJson> update(@PathVariable("id") Long id, @RequestBody Funcionario funcionario) {
+        ResponseJson serviceResponse = this.service.update(id, funcionario);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
     @DeleteMapping("/excluir/{id}")
     public ResponseEntity<ResponseJson> deletar(@PathVariable("id") Long id) {
-
-        service.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(200, "Funcionário deletado com suceso"));
-
+        ResponseJson serviceResponse = service.delete(id);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 }
