@@ -1,9 +1,10 @@
 package com.receitas.controller;
 
+import com.receitas.config.ResponseJson;
 import com.receitas.config.ResponseToken;
+import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.model.Usuario;
-import com.receitas.response.ResponseJson;
 import com.receitas.service.In_tokeJWT;
 import com.receitas.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,19 +30,20 @@ public class AuthController {
     private In_tokeJWT authService;
 
     @PostMapping("/auth")
-    private ResponseEntity<?> autenticar(@RequestBody UsuarioDTO usuarioDto) {
+    private ResponseEntity<?> autenticar(@RequestBody AuthDTO authDTO) {
 
         //Validadando email e senha do usuário inserido
-        var userNamePass = new UsernamePasswordAuthenticationToken(usuarioDto.email(), usuarioDto.senha());
+        var userNamePass = new UsernamePasswordAuthenticationToken(authDTO.email(), authDTO.senha());
         Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
         //Pegando dados do usuário autenticado
         var usuario = (Usuario) autenticate.getPrincipal();
         ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
+
         //Gerando Token
         return ResponseJson.build(
-                "Usuário autenticado com sucesso!!",
                 HttpStatus.OK,
+                "Usuário autenticado com sucesso!!",
                 responseToken
         );
 

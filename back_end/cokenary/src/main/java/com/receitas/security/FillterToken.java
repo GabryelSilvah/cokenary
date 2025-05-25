@@ -21,6 +21,7 @@ public class FillterToken extends OncePerRequestFilter {
     @Autowired
     private In_tokeJWT authService;
 
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Override
@@ -35,6 +36,7 @@ public class FillterToken extends OncePerRequestFilter {
             //Pegando usuário guardado dentro do Token
             String subject = authService.validateToken(tokenHeader);
             //Buscando usuário na base de dados
+
             Usuario usuario = usuarioRepository.findByEmail(subject);
 
             var autenticacao = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());

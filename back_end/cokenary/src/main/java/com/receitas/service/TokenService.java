@@ -39,14 +39,12 @@ public class TokenService implements In_tokeJWT {
     @Override
     public String validateToken(String token) {
         try {
-
             Algorithm codeJWT = Algorithm.HMAC256(key_private_jwt);
             return JWT.require(codeJWT)
                     .withIssuer("api-cookenary")
                     .build()
                     .verify(token)
                     .getSubject();
-
         } catch (JWTVerificationException erro) {
             return erro.getMessage();
         }
