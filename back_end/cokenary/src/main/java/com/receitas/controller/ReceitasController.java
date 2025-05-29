@@ -26,4 +26,10 @@ public class ReceitasController {
         return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<ResponseJson> deletar(@PathVariable("id") Long id) {
+        ResponseJson serviceResponse = receitaService.delete(id);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    }
+
 }

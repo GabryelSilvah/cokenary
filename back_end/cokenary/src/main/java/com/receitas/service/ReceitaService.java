@@ -66,4 +66,17 @@ public class ReceitaService {
 
         return new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso!", receitaDTO);
     }
+
+    public ResponseJson delete(Long id){
+        //Verificando se funcionário existe
+        Optional<Receita> receitaEncontrada = receitaRepository.findById(id);
+        if (receitaEncontrada.isEmpty()) {
+            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum receita encontrado com esse ID (" + id + ")");
+        }
+
+        //Excluindo fuuncionário
+        receitaRepository.delete(receitaEncontrada.get());
+        return new ResponseJson(HttpStatus.OK, "Receita excluida com sucesso!");
+    }
+
 }
