@@ -1,3 +1,0 @@
-INSERT INTO receita (title, description, ingredients, instructions, category, chef, difficulty, time, rating, image) VALUES
-('Bolo de Chocolate', 'Um delicioso bolo de chocolate fofinho e saboroso.', 'Farinha, açúcar, ovos, chocolate, leite, fermento', 'Misture tudo, asse por 30 minutos a 180°C.', 'Sobremesa', 'Chef João', 'Fácil', '50 minutos', 4.8, 'https://www.exemplo.com/bolo.jpg'),
-('Pão de Queijo', 'Tradicional pão de queijo mineiro, crocante por fora e macio por dentro.', 'Polvilho, queijo, ovos, leite, óleo, fermento', 'Misture os ingredientes, modele bolinhas e leve ao forno.', 'Lanche', 'Chef Maria', 'Médio', '40 minutos', 4.5, 'https://www.exemplo.com/paodequeijo.jpg');

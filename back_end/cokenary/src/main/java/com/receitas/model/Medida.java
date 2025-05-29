@@ -1,85 +1,33 @@
 package com.receitas.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "medida", schema = "AcervoRct") // nome da tabela em minúsculo como no banco
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "medidas")
 public class Medida {
 
+    //ID
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // corresponde à coluna "id"
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "nome", nullable = false, length = 100)
+
+    //Nome da medida
+    @NotNull(message = "Informe o nome da medida")
+    @Column(name = "nome", nullable = false, length = 45)
     private String nome;
 
-    @Column(name = "descricao", length = 1000)
-    private String descricao;
-
-    @Column(name = "abreviacao", length = 10)
-    private String abreviacao;
-
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm;
-
-    @Column(name = "atualizado_em")
-    private LocalDateTime atualizadoEm;
+    @OneToMany(mappedBy = "medida_id", fetch = FetchType.LAZY)
+    private List<Receitas_and_ingredientes> receitas_and_ingredientes;
 
 
-    public Integer getId() {
-        return id;
-    }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getAbreviacao() {
-        return abreviacao;
-    }
-
-    public void setAbreviacao(String abreviacao) {
-        this.abreviacao = abreviacao;
-    }
-
-    public LocalDateTime getCriadoEm() {
-        return criadoEm;
-    }
-
-    public void setCriadoEm(LocalDateTime criadoEm) {
-        this.criadoEm = criadoEm;
-    }
-
-    public LocalDateTime getAtualizadoEm() {
-        return atualizadoEm;
-    }
-
-    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
-        this.atualizadoEm = atualizadoEm;
-    }
 }

@@ -44,8 +44,8 @@ public class CargoController {
         }
 
         // Set default values if not provided
-        if (cargo.getDataInicio() == null) {
-            cargo.setDataInicio(LocalDate.now());
+        if (cargo.getData_inicio() == null) {
+            cargo.setData_inicio(LocalDate.now());
         }
         if (cargo.getIndAtivo() == null) {  // Changed from isIndAtivo() to getIndAtivo()
             cargo.setIndAtivo(true);
@@ -78,8 +78,8 @@ public class CargoController {
                     cargo.atualizarDados(
                             cargoAtualizado.getNome(),
                             cargoAtualizado.getDescricao(),
-                            cargoAtualizado.getDataInicio(),
-                            cargoAtualizado.getDataFim(),
+                            cargoAtualizado.getData_inicio(),
+                            cargoAtualizado.getData_fim(),
                             cargoAtualizado.getIndAtivo()  // Changed from isIndAtivo() to getIndAtivo()
                     );
 

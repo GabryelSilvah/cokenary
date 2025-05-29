@@ -1,11 +1,10 @@
 package com.receitas.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "funcionarios")
@@ -13,7 +12,7 @@ public class Funcionario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_func;
     @NotNull(message = "RG do funcionário não foi informado")
     @Column(name = "rg")
     private int rg;
@@ -32,9 +31,11 @@ public class Funcionario {
     private String imagem_perfil;
 
     @ManyToOne
-    //@NotNull(message = "ID do cargo deve ser informado")
     @JoinColumn(name = "cargo_id")
     private Cargo cargo_id;
+
+    @OneToMany(mappedBy = "cozinheiro_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Receita> receitas;
 
     public Funcionario() {
     }
@@ -56,8 +57,8 @@ public class Funcionario {
     }
 
     // Getters e setters
-    public Long getId() {
-        return id;
+    public Long getId_func() {
+        return id_func;
     }
 
     public int getRg() {
@@ -80,8 +81,8 @@ public class Funcionario {
         return cargo_id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId_func(Long id_func) {
+        this.id_func = id_func;
     }
 
     public void setRg(int rg) {
@@ -110,5 +111,13 @@ public class Funcionario {
 
     public void setCargo(Cargo cargo) {
         this.cargo_id = cargo;
+    }
+
+    public List<Receita> getReceitas() {
+        return receitas;
+    }
+
+    public void setReceitas(List<Receita> receitas) {
+        this.receitas = receitas;
     }
 }

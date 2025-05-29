@@ -1,7 +1,5 @@
 package com.receitas.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -14,17 +12,18 @@ public class Cargo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "nome", nullable = false, unique = true)
     private String nome;
 
     @Column(name = "descricao")
     private String descricao;
 
     @Column(name = "data_inicio")
-    private LocalDate dataInicio;
+    //@Temporal(TemporalType.DATE)
+    private LocalDate data_inicio;
 
     @Column(name = "data_fim")
-    private LocalDate dataFim;
+    private LocalDate data_fim;
 
     @Column(name = "ind_ativo")
     private Boolean indAtivo = true;
@@ -60,20 +59,20 @@ public class Cargo {
         this.descricao = descricao;
     }
 
-    public LocalDate getDataInicio() {
-        return dataInicio;
+    public LocalDate getData_inicio() {
+        return data_inicio;
     }
 
-    public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
+    public void setData_inicio(LocalDate data_inicio) {
+        this.data_inicio = data_inicio;
     }
 
-    public LocalDate getDataFim() {
-        return dataFim;
+    public LocalDate getData_fim() {
+        return data_fim;
     }
 
-    public void setDataFim(LocalDate dataFim) {
-        this.dataFim = dataFim;
+    public void setData_fim(LocalDate data_fim) {
+        this.data_fim = data_fim;
     }
 
     public Boolean getIndAtivo() {
@@ -111,11 +110,11 @@ public class Cargo {
         }
 
         if (dataInicio != null) {
-            this.dataInicio = dataInicio;
+            this.data_inicio = dataInicio;
         }
 
         if (dataFim != null) {
-            this.dataFim = dataFim;
+            this.data_fim = dataFim;
         }
 
         if (indAtivo != null) {

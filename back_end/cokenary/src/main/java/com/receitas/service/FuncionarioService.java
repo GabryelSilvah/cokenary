@@ -2,7 +2,6 @@ package com.receitas.service;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
-import com.receitas.exception.CadastroFuncionarioException;
 import com.receitas.model.Cargo;
 import com.receitas.model.Funcionario;
 import com.receitas.repository.CargoRepository;
@@ -40,7 +39,7 @@ public class FuncionarioService {
         //Pecorrendo lista de funcionário, transformando em DTOs e adicionando na lista funcionariosDTO
         for (int i = 0; i < funcionariosEncontrados.size(); i++) {
             FuncionarioDTO funcionario = new FuncionarioDTO(
-                    funcionariosEncontrados.get(i).getId(),
+                    funcionariosEncontrados.get(i).getId_func(),
                     funcionariosEncontrados.get(i).getNome(),
                     funcionariosEncontrados.get(i).getRg(),
                     funcionariosEncontrados.get(i).getDt_adm(),
@@ -65,7 +64,7 @@ public class FuncionarioService {
 
         return new ResponseJson(HttpStatus.OK, "Funcionário encontrado com sucesso!",
                 new FuncionarioDTO(
-                        funcionarioEncontrado.get().getId(),
+                        funcionarioEncontrado.get().getId_func(),
                         funcionarioEncontrado.get().getNome(),
                         funcionarioEncontrado.get().getRg(),
                         funcionarioEncontrado.get().getDt_adm(),
@@ -104,7 +103,7 @@ public class FuncionarioService {
 
         //Transformando em DTO
         return new ResponseJson(HttpStatus.CREATED, "Funcionário cadastrado com sucesso", new FuncionarioDTO(
-                funcionarioSalvo.getId(),
+                funcionarioSalvo.getId_func(),
                 funcionarioSalvo.getNome(),
                 funcionarioSalvo.getRg(),
                 funcionarioSalvo.getDt_adm(),
@@ -121,6 +120,13 @@ public class FuncionarioService {
         if (funcionarioEncontrado.isEmpty()) {
             return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nunhum funcinário encontrado com esse ID (" + id + ")");
         }
+
+        //Pegando cargo pelo ID e validando se existe cargo com esse ID
+        Optional<Cargo> cargo = cargoRepository.findById(funcionario.getCargo().getId());
+        if (cargo.isEmpty()) {
+            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum cargo encontrado com o ID informado");
+        }
+
 
         //Validando se cargo informado existe
         Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
@@ -141,8 +147,17 @@ public class FuncionarioService {
         funcionarioInsert.setCargo(funcionario.getCargo());
         Funcionario funcionarioAlterado = funcioRepository.save(funcionarioInsert);
 
+        FuncionarioDTO funcionarioDTOAlterado = new FuncionarioDTO(
+                funcionarioAlterado.getId_func(),
+                funcionarioAlterado.getNome(),
+                funcionarioAlterado.getRg(),
+                funcionarioAlterado.getDt_adm(),
+                funcionarioAlterado.getSalario(),
+                cargo.get().getNome(),
+                funcionarioAlterado.getImagem_perfil()
+        );
 
-        return new ResponseJson(HttpStatus.CREATED, "Funcionário atualizado com sucesso!", funcionarioAlterado);
+        return new ResponseJson(HttpStatus.CREATED, "Funcionário atualizado com sucesso!", funcionarioDTOAlterado);
     }
 
     public ResponseJson delete(Long id) {
