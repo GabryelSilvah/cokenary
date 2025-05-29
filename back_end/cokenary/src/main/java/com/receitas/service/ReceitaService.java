@@ -2,7 +2,11 @@ package com.receitas.service;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.ReceitaDTO;
+import com.receitas.model.Categoria;
+import com.receitas.model.Funcionario;
 import com.receitas.model.Receita;
+import com.receitas.repository.CategoriaRepository;
+import com.receitas.repository.FuncionarioRepository;
 import com.receitas.repository.ReceitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,12 +14,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReceitaService {
 
     @Autowired
     private ReceitaRepository receitaRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
 
     public ResponseJson listAll() {
 
@@ -34,5 +45,25 @@ public class ReceitaService {
             receitasDTOList.add(receitaDTO);//Adiciona na lista DTO
         }
         return new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso!", receitasDTOList);
+    }
+
+    public ResponseJson save(Receita receitaRecebida) {
+
+        Receita receitaSalva = receitaRepository.save(receitaRecebida);
+
+        Optional<Categoria> categoria = categoriaRepository.findById(receitaRecebida.getCategoria_id().getId_cat());
+
+        Optional<Funcionario> funcionario = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
+
+       ReceitaDTO  receitaDTO =  new ReceitaDTO(
+                receitaSalva.getId_receita(),
+                receitaSalva.getNome_receita(),
+                categoria.get().getNome_categoria(),
+                funcionario.get().getNome(),
+                receitaSalva.getModo_preparo()
+        );
+
+
+        return new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso!", receitaDTO);
     }
 }

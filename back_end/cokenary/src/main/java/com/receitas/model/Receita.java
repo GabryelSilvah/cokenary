@@ -1,6 +1,7 @@
 
 package com.receitas.model;
 
+import com.receitas.dto.ReceitaDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -51,6 +52,10 @@ public class Receita {
 
     //Contrutores
     public Receita() {
+    }
+
+    public Receita(ReceitaDTO receitaDTO) {
+
     }
 
     public Receita(
