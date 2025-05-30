@@ -17,7 +17,7 @@ public class Categoria {
     @Column(name = "nome_categoria", nullable = false)
     private String nome_categoria;
 
-    @OneToMany(mappedBy = "categoria_id", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "categoria_id")
     private List<Receita> receitas;
 
     //Construtores

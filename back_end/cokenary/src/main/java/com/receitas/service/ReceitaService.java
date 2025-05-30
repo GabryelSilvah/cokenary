@@ -61,12 +61,13 @@ public class ReceitaService {
 
         Optional<Funcionario> funcionario = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
 
+
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
                 receitaSalva.getId_receita(),
                 receitaSalva.getNomeReceita(),
-                receitaSalva.getCategoria_id().getNome_categoria(),
-                receitaSalva.getCozinheiro_id().getNome(),
+                categoria.get().getNome_categoria(),
+                funcionario.get().getNome(),
                 receitaSalva.getModo_preparo()
         );
 
@@ -104,18 +105,6 @@ public class ReceitaService {
 
 
         Receita receitaInsert = receitaEncontrada.get();
-        System.out.println("Receita do banco: " + receitaInsert.getNomeReceita());
-        System.out.println("Receita do banco: " + receitaInsert.getCozinheiro_id());
-        System.out.println("Receita do banco: " + receitaInsert.getCategoria_id());
-        System.out.println("Receita do banco: " + receitaInsert.getModo_preparo());
-        System.out.println("Receita do banco: " + receitaInsert.getData_criacao());
-
-        System.out.println("Receita do request: " + receitaRecebida.getNomeReceita());
-        System.out.println("Receita do request: " + receitaRecebida.getCozinheiro_id());
-        System.out.println("Receita do request: " + receitaRecebida.getCategoria_id());
-        System.out.println("Receita do request: " + receitaRecebida.getModo_preparo());
-        System.out.println("Receita do request: " + receitaRecebida.getData_criacao());
-
         //Setando  na receita encontrado informações recebebidas para alteração
         receitaInsert.setNomeReceita(receitaRecebida.getNomeReceita());
         receitaInsert.setData_criacao(receitaRecebida.getData_criacao());
@@ -130,8 +119,8 @@ public class ReceitaService {
         ReceitaDTO receitaDTOAlterado = new ReceitaDTO(
                 receitaALterada.getId_receita(),
                 receitaALterada.getNomeReceita(),
-                receitaALterada.getCategoria_id().getNome_categoria(),
-                receitaALterada.getCozinheiro_id().getNome(),
+                categoria.get().getNome_categoria(),
+                funcionarioEncontrado.get().getNome(),
                 receitaALterada.getModo_preparo()
         );
 
