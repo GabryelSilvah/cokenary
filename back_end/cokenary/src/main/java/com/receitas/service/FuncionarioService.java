@@ -114,12 +114,14 @@ public class FuncionarioService {
     }
 
     public ResponseJson update(Long id, Funcionario funcionario) {
+        //Buscando funcionário
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
 
         //Validando se foi encontrado algum funcionário com o ID informado
         if (funcionarioEncontrado.isEmpty()) {
             return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nunhum funcinário encontrado com esse ID (" + id + ")");
         }
+
 
         //Pegando cargo pelo ID e validando se existe cargo com esse ID
         Optional<Cargo> cargo = cargoRepository.findById(funcionario.getCargo().getId());
@@ -131,10 +133,7 @@ public class FuncionarioService {
         //Validando se cargo informado existe
         Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
         if (cargoEncontrado.isEmpty()) {
-            return new ResponseJson(
-                    HttpStatus.NOT_FOUND,
-                    "Falha, não foi encontrado nenhum cargo com ID (" + funcionario.getCargo().getId() + ") informado"
-            );
+            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, não foi encontrado nenhum cargo com ID (" + funcionario.getCargo().getId() + ") informado");
         }
 
 
@@ -147,6 +146,7 @@ public class FuncionarioService {
         funcionarioInsert.setCargo(funcionario.getCargo());
         Funcionario funcionarioAlterado = funcioRepository.save(funcionarioInsert);
 
+        //Convertendo em DTO para enviar na request
         FuncionarioDTO funcionarioDTOAlterado = new FuncionarioDTO(
                 funcionarioAlterado.getId_func(),
                 funcionarioAlterado.getNome(),

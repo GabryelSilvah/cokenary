@@ -1,9 +1,11 @@
 package com.receitas.service;
 
 import com.receitas.config.ResponseJson;
-import com.receitas.dto.FuncionarioDTO;
 import com.receitas.dto.ReceitaDTO;
-import com.receitas.model.Cargo;
+import com.receitas.exception.CategoriaNotFoundException;
+import com.receitas.exception.FuncionarioNotFoundException;
+import com.receitas.exception.ReceitaNameExistsException;
+import com.receitas.exception.ReceitaNotFoundException;
 import com.receitas.model.Categoria;
 import com.receitas.model.Funcionario;
 import com.receitas.model.Receita;
@@ -39,11 +41,13 @@ public class ReceitaService {
         for (int i = 0; i < receitas.size(); i++) {
             ReceitaDTO receitaDTO = new ReceitaDTO(
                     receitas.get(i).getId_receita(),
-                    receitas.get(i).getNome_receita(),
+                    receitas.get(i).getNomeReceita(),
                     receitas.get(i).getCategoria_id().getNome_categoria(),
                     receitas.get(i).getCozinheiro_id().getNome(),
                     receitas.get(i).getModo_preparo()
             );
+
+
             receitasDTOList.add(receitaDTO);//Adiciona na lista DTO
         }
         return new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso!", receitasDTOList);
@@ -57,11 +61,12 @@ public class ReceitaService {
 
         Optional<Funcionario> funcionario = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
 
+        //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
                 receitaSalva.getId_receita(),
-                receitaSalva.getNome_receita(),
-                categoria.get().getNome_categoria(),
-                funcionario.get().getNome(),
+                receitaSalva.getNomeReceita(),
+                receitaSalva.getCategoria_id().getNome_categoria(),
+                receitaSalva.getCozinheiro_id().getNome(),
                 receitaSalva.getModo_preparo()
         );
 
@@ -70,49 +75,67 @@ public class ReceitaService {
     }
 
     public ResponseJson update(Long id, Receita receitaRecebida) {
-        Optional<Receita> receitaEncontrada = receitaRepository.findById(id);
 
-        //Validando se foi encontrado algum funcionário com o ID informado
+        //Pesquisando receita pelo ID e validando se foi encontrada
+        Optional<Receita> receitaEncontrada = receitaRepository.findByIdJoin(id);
         if (receitaEncontrada.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nunhum funcinário encontrado com esse ID (" + id + ")");
+            throw new ReceitaNotFoundException("Falha, nunhuma receita encontrada com esse ID (" + id + ")");
         }
 
-        //Pegando categoria pelo ID e validando se existe categoria com esse ID
+        //Validando se o nome da receita já existe na tabela
+        Receita receitaNomeExiste = receitaRepository.findByNomeReceita(receitaRecebida.getNomeReceita());
+        if (!receitaNomeExiste.getId_receita().equals(id)) {
+            throw new ReceitaNameExistsException("Falha, o nome da receita inserido já existe (" + receitaRecebida.getNomeReceita() + ")");
+        }
+
+
+        //Pesquisando categoria pelo ID e validando se foi encontrada
         Optional<Categoria> categoria = categoriaRepository.findById(receitaRecebida.getCategoria_id().getId_cat());
         if (categoria.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum cargo encontrado com o ID informado");
+            throw new CategoriaNotFoundException("Falha, nenhuma categoria encontrada com o ID informado");
         }
 
 
-        //Validando se funcionario informado existe
-        Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(receitaRecebida.getId_receita());
+        //Pesquisando cozinheiro/funcionario pelo ID e validando se foi encontrado
+        Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
         if (funcionarioEncontrado.isEmpty()) {
-            return new ResponseJson(
-                    HttpStatus.NOT_FOUND,
-                    "Falha, não foi encontrado nenhum cargo com ID (" + receitaRecebida.getCozinheiro_id().getId_func() + ") informado"
-            );
+            throw new FuncionarioNotFoundException("Falha, não foi encontrado nenhum funcionário(cozinheiro) com ID (" + receitaRecebida.getCozinheiro_id().getId_func() + ") informado");
         }
 
 
-        //Setando informações no funcionário encontrado
         Receita receitaInsert = receitaEncontrada.get();
-        receitaInsert.setNome_receita(receitaRecebida.getNome_receita());
+        System.out.println("Receita do banco: " + receitaInsert.getNomeReceita());
+        System.out.println("Receita do banco: " + receitaInsert.getCozinheiro_id());
+        System.out.println("Receita do banco: " + receitaInsert.getCategoria_id());
+        System.out.println("Receita do banco: " + receitaInsert.getModo_preparo());
+        System.out.println("Receita do banco: " + receitaInsert.getData_criacao());
+
+        System.out.println("Receita do request: " + receitaRecebida.getNomeReceita());
+        System.out.println("Receita do request: " + receitaRecebida.getCozinheiro_id());
+        System.out.println("Receita do request: " + receitaRecebida.getCategoria_id());
+        System.out.println("Receita do request: " + receitaRecebida.getModo_preparo());
+        System.out.println("Receita do request: " + receitaRecebida.getData_criacao());
+
+        //Setando  na receita encontrado informações recebebidas para alteração
+        receitaInsert.setNomeReceita(receitaRecebida.getNomeReceita());
         receitaInsert.setData_criacao(receitaRecebida.getData_criacao());
         receitaInsert.setCategoria_id(receitaRecebida.getCategoria_id());
         receitaInsert.setCozinheiro_id(receitaRecebida.getCozinheiro_id());
         receitaInsert.setModo_preparo(receitaRecebida.getModo_preparo());
 
+        //Salvando alteração
         Receita receitaALterada = receitaRepository.save(receitaInsert);
 
+        //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTOAlterado = new ReceitaDTO(
                 receitaALterada.getId_receita(),
-                receitaALterada.getNome_receita(),
+                receitaALterada.getNomeReceita(),
                 receitaALterada.getCategoria_id().getNome_categoria(),
                 receitaALterada.getCozinheiro_id().getNome(),
                 receitaALterada.getModo_preparo()
         );
 
-        return new ResponseJson(HttpStatus.CREATED, "Funcionário atualizado com sucesso!", receitaDTOAlterado);
+        return new ResponseJson(HttpStatus.CREATED, "Receita atualizado com sucesso!", receitaDTOAlterado);
     }
 
     public ResponseJson delete(Long id) {

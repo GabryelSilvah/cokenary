@@ -20,7 +20,7 @@ public class Receita {
 
     @Column(name = "nome_receita", nullable = false, unique = true)
     @NotNull(message = "Informe o nome da receita")
-    private String nome_receita;
+    private String nomeReceita;
 
     //Data de criação
     @Column(name = "data_criacao", nullable = false)
@@ -66,7 +66,7 @@ public class Receita {
             String modo_preparo,
             List<Receitas_and_ingredientes> receitas_and_ingredientes
     ) {
-        this.nome_receita = nome;
+        this.nomeReceita = nome;
         this.data_criacao = data_criacao;
         this.cozinheiro_id = cozinheiro_id;
         this.categoria_id = categoria_id;
@@ -83,12 +83,12 @@ public class Receita {
         this.id_receita = id_receita;
     }
 
-    public String getNome_receita() {
-        return nome_receita;
+    public String getNomeReceita() {
+        return nomeReceita;
     }
 
-    public void setNome_receita(String nome_receita) {
-        this.nome_receita = nome_receita;
+    public void setNomeReceita(String nomeReceita) {
+        this.nomeReceita = nomeReceita;
     }
 
     public String getData_criacao() {
