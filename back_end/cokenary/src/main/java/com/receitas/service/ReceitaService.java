@@ -44,7 +44,8 @@ public class ReceitaService {
                     receitas.get(i).getNomeReceita(),
                     receitas.get(i).getCategoria_id().getNome_categoria(),
                     receitas.get(i).getCozinheiro_id().getNome(),
-                    receitas.get(i).getModo_preparo()
+                    receitas.get(i).getModo_preparo(),
+                    receitas.get(i).getData_criacao()
             );
 
 
@@ -68,7 +69,8 @@ public class ReceitaService {
                 receitaSalva.getNomeReceita(),
                 categoria.get().getNome_categoria(),
                 funcionario.get().getNome(),
-                receitaSalva.getModo_preparo()
+                receitaSalva.getModo_preparo(),
+                receitaSalva.getData_criacao()
         );
 
 
@@ -121,7 +123,8 @@ public class ReceitaService {
                 receitaALterada.getNomeReceita(),
                 categoria.get().getNome_categoria(),
                 funcionarioEncontrado.get().getNome(),
-                receitaALterada.getModo_preparo()
+                receitaALterada.getModo_preparo(),
+                receitaALterada.getData_criacao()
         );
 
         return new ResponseJson(HttpStatus.CREATED, "Receita atualizado com sucesso!", receitaDTOAlterado);

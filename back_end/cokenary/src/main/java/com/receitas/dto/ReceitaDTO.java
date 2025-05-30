@@ -5,6 +5,7 @@ public record ReceitaDTO(
         String nome_receita,
         String categoria,
         String cozinheiro,
-        String modo_preparo
+        String modo_preparo,
+        String data_criacao
 ) {
 }
