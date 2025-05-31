@@ -72,6 +72,13 @@ public class ExceptionsController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorReponse);
     }
 
+    //Recurso/registro (generalista) não encontrado na base de dados
+    @ExceptionHandler(RegistroNotFoundException.class)
+    public ResponseEntity<?> RegistroNotFound(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorReponse);
+    }
+
 }
 
 
