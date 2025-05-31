@@ -39,6 +39,11 @@ public class IngredienteController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Ingrdiente cadastrado com sucesso!", ingredienteDTO));
     }
 
+    @PutMapping("/alterar/{id}")
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Ingrediente ingrediente) {
+        IngredienteDTO ingredienteDTO = ingredienteService.update(id, ingrediente);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categorias alterada com sucesso!", ingredienteDTO));
+    }
 
 
 }

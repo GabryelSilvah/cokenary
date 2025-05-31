@@ -72,4 +72,24 @@ public class IngredienteService {
         );
     }
 
+    public IngredienteDTO update(Long id, Ingrediente ingrediente) {
+
+        //Buscando ingrediente
+        Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(id);
+
+        //Validando se ingrediente existe
+        if (ingredienteEncontrado.isEmpty()) {
+            throw new CategoriaExistsException("O ingrediente de ID (" + id + ") não foi encontrado");
+        }
+
+        //Alterando ingrediente encontrada
+        ingredienteEncontrado.get().setNome(ingrediente.getNome());
+
+        //Salvando ingrediente modificada
+        Ingrediente ingredienteSalvo = ingredienteRepository.save(ingredienteEncontrado.get());
+
+        //Retornando no formato DTO
+        return new IngredienteDTO(ingredienteSalvo.getId(), ingredienteSalvo.getNome());
+    }
+
 }
