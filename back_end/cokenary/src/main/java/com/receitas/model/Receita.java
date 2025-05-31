@@ -1,174 +1,133 @@
 
 package com.receitas.model;
 
+import com.receitas.dto.ReceitaDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
-import java.util.Date;
 
 @Entity
+@Table(name = "receitas")
 public class Receita {
+
+    //Id
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id_receita;
 
-    @Column(nullable = false) // Título é obrigatório
-    private String title;
+    //Nome
 
-    @Column(nullable = false) // Descrição é obrigatória
-    private String description;
+    @Column(name = "nome_receita", nullable = false, unique = true)
+    @NotNull(message = "Informe o nome da receita")
+    private String nomeReceita;
 
-    @ElementCollection // Mapeia uma lista de strings
-    private List<String> ingredients;
+    //Data de criação
+    @Column(name = "data_criacao", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private String data_criacao;
 
-    @Column(nullable = false) // Instruções são obrigatórias
-    private String instructions;
+    //Nome do cozinheiro
+    @ManyToOne
+    @JoinColumn(name = "cozinheiro_id")
+    @NotNull(message = "Informe o nome do cozinheiro")
+    private Funcionario cozinheiro_id;
 
-    @Column(nullable = false) // Categoria é obrigatória
-    private String category;
+    //Categoria da receita
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    @NotNull(message = "Informe o nome da categoria")
+    private Categoria categoria_id;
 
-    @Column(nullable = false) // Chef é obrigatório
-    private String chef;
+    //Quantidade de porção
+    @NotNull(message = "Informe o modo de preparo")
+    @Column(name = "modo_preparo", nullable = false)
+    private String modo_preparo;
 
-    @Column(nullable = false) // Dificuldade é obrigatória
-    private String difficulty;
 
-    @Column(nullable = false) // Tempo é obrigatório
-    private String time;
+    //Relacionamento com a tabela receitas_and_ingredientes
+    @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
+    private List<Receitas_and_ingredientes> receitas_and_ingredientes;
 
-    @Column(nullable = false) // Rating é obrigatório
-    private Double rating; // Alterado para Double para permitir valores decimais e null
 
-    @Column(nullable = true) // Imagem é opcional
-    private String image;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP) // Armazena data e hora
-    private Date createdAt; // Data de criação
-
-    @Column(name = "updated_at", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP) // Armazena data e hora
-    private Date updatedAt; // Data de atualização
-
-    // Construtor padrão (obrigatório para JPA)
+    //Contrutores
     public Receita() {
     }
 
-    // Método pré-persist: Define a data de criação e atualização antes de salvar no banco
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
+    public Receita(ReceitaDTO receitaDTO) {
+
     }
 
-    // Método pré-update: Atualiza a data de atualização antes de atualizar no banco
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = new Date();
+    public Receita(
+            String nome,
+            String data_criacao,
+            Funcionario cozinheiro_id,
+            Categoria categoria_id,
+            String modo_preparo,
+            List<Receitas_and_ingredientes> receitas_and_ingredientes
+    ) {
+        this.nomeReceita = nome;
+        this.data_criacao = data_criacao;
+        this.cozinheiro_id = cozinheiro_id;
+        this.categoria_id = categoria_id;
+        this.modo_preparo = modo_preparo;
+        this.receitas_and_ingredientes = receitas_and_ingredientes;
     }
 
-    // Getters e Setters
-
-    public Long getId() {
-        return id;
+    //Gets e Sets
+    public Long getId_receita() {
+        return id_receita;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId_receita(Long id_receita) {
+        this.id_receita = id_receita;
     }
 
-    public String getTitle() {
-        return title;
+    public String getNomeReceita() {
+        return nomeReceita;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setNomeReceita(String nomeReceita) {
+        this.nomeReceita = nomeReceita;
     }
 
-    public String getDescription() {
-        return description;
+    public String getData_criacao() {
+        return data_criacao;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setData_criacao(String data_criacao) {
+        this.data_criacao = data_criacao;
     }
 
-    public List<String> getIngredients() {
-        return ingredients;
+    public Funcionario getCozinheiro_id() {
+        return cozinheiro_id;
     }
 
-    public void setIngredients(List<String> ingredients) {
-        this.ingredients = ingredients;
+    public void setCozinheiro_id(Funcionario cozinheiro_id) {
+        this.cozinheiro_id = cozinheiro_id;
     }
 
-    public String getInstructions() {
-        return instructions;
+    public Categoria getCategoria_id() {
+        return categoria_id;
     }
 
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
+    public void setCategoria_id(Categoria categoria_id) {
+        this.categoria_id = categoria_id;
     }
 
-    public String getCategory() {
-        return category;
+    public String getModo_preparo() {
+        return modo_preparo;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setModo_preparo(String modo_preparo) {
+        this.modo_preparo = modo_preparo;
     }
 
-    public String getChef() {
-        return chef;
+    public List<Receitas_and_ingredientes> getReceitas_and_ingredientes() {
+        return receitas_and_ingredientes;
     }
 
-    public void setChef(String chef) {
-        this.chef = chef;
-    }
-
-    public String getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public Double getRating() {
-        return rating;
-    }
-
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setReceitas_and_ingredientes(List<Receitas_and_ingredientes> receitas_and_ingredientes) {
+        this.receitas_and_ingredientes = receitas_and_ingredientes;
     }
 }

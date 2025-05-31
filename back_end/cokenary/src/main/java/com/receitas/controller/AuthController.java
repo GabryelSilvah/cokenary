@@ -1,9 +1,10 @@
 package com.receitas.controller;
 
+import com.receitas.config.ResponseJson;
 import com.receitas.config.ResponseToken;
+import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
-import com.receitas.model.Usuario_Model;
-import com.receitas.response.ResponseJson;
+import com.receitas.model.Usuario;
 import com.receitas.service.In_tokeJWT;
 import com.receitas.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -30,19 +30,20 @@ public class AuthController {
     private In_tokeJWT authService;
 
     @PostMapping("/auth")
-    private ResponseEntity<?> autenticar(@RequestBody UsuarioDTO usuarioDto) {
+    private ResponseEntity<?> autenticar(@RequestBody AuthDTO authDTO) {
 
         //Validadando email e senha do usuário inserido
-        var userNamePass = new UsernamePasswordAuthenticationToken(usuarioDto.email(), usuarioDto.senha());
+        var userNamePass = new UsernamePasswordAuthenticationToken(authDTO.email(), authDTO.senha());
         Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
         //Pegando dados do usuário autenticado
-        var usuario = (Usuario_Model) autenticate.getPrincipal();
+        var usuario = (Usuario) autenticate.getPrincipal();
         ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
+
         //Gerando Token
         return ResponseJson.build(
-                "Usuário autenticado com sucesso!!",
                 HttpStatus.OK,
+                "Usuário autenticado com sucesso!!",
                 responseToken
         );
 

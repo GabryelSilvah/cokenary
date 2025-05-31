@@ -1,36 +1,38 @@
 package com.receitas.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "cargos")
 public class Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "nome", nullable = false, unique = true)
     private String nome;
 
+    @Column(name = "descricao")
     private String descricao;
 
-    private String departamento;
-
-    @Column(length = 20)
-    private String nivel;
-
     @Column(name = "data_inicio")
-    private LocalDate dataInicio;
+    //@Temporal(TemporalType.DATE)
+    private LocalDate data_inicio;
 
     @Column(name = "data_fim")
-    private LocalDate dataFim;
+    private LocalDate data_fim;
 
     @Column(name = "ind_ativo")
-    private Boolean indAtivo = true; // Changed to Boolean wrapper class
+    private Boolean indAtivo = true;
 
-    @OneToMany(mappedBy = "cargo")
+    @OneToMany(mappedBy = "cargo_id", fetch = FetchType.LAZY)
     private List<Funcionario> funcionarios;
+
+    public Cargo() {
+    }
 
     // Getters e Setters
     public Long getId() {
@@ -57,43 +59,27 @@ public class Cargo {
         this.descricao = descricao;
     }
 
-    public String getDepartamento() {
-        return departamento;
+    public LocalDate getData_inicio() {
+        return data_inicio;
     }
 
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
+    public void setData_inicio(LocalDate data_inicio) {
+        this.data_inicio = data_inicio;
     }
 
-    public String getNivel() {
-        return nivel;
+    public LocalDate getData_fim() {
+        return data_fim;
     }
 
-    public void setNivel(String nivel) {
-        this.nivel = nivel;
+    public void setData_fim(LocalDate data_fim) {
+        this.data_fim = data_fim;
     }
 
-    public LocalDate getDataInicio() {
-        return dataInicio;
-    }
-
-    public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
-    }
-
-    public LocalDate getDataFim() {
-        return dataFim;
-    }
-
-    public void setDataFim(LocalDate dataFim) {
-        this.dataFim = dataFim;
-    }
-
-    public Boolean getIndAtivo() {  // Changed from isIndAtivo() to getIndAtivo()
+    public Boolean getIndAtivo() {
         return indAtivo;
     }
 
-    public void setIndAtivo(Boolean indAtivo) {  // Parameter type changed to Boolean
+    public void setIndAtivo(Boolean indAtivo) {
         this.indAtivo = indAtivo;
     }
 
@@ -112,15 +98,8 @@ public class Cargo {
 
     /**
      * Atualiza os dados do cargo mantendo os valores existentes quando os novos são nulos
-     * @param nome Novo nome (opcional)
-     * @param descricao Nova descrição (opcional)
-     * @param departamento Novo departamento (opcional)
-     * @param nivel Novo nível (opcional)
-     * @param dataInicio Nova data de início (opcional)
-     * @param dataFim Nova data de fim (opcional)
-     * @param indAtivo Novo indicador de status (opcional)
      */
-    public void atualizarDados(String nome, String descricao, String departamento, String nivel,
+    public void atualizarDados(String nome, String descricao,
                                LocalDate dataInicio, LocalDate dataFim, Boolean indAtivo) {
         if (nome != null && !nome.isBlank()) {
             this.nome = nome;
@@ -130,20 +109,12 @@ public class Cargo {
             this.descricao = descricao.isBlank() ? null : descricao;
         }
 
-        if (departamento != null) {
-            this.departamento = departamento.isBlank() ? null : departamento;
-        }
-
-        if (nivel != null) {
-            this.nivel = nivel.isBlank() ? null : nivel;
-        }
-
         if (dataInicio != null) {
-            this.dataInicio = dataInicio;
+            this.data_inicio = dataInicio;
         }
 
         if (dataFim != null) {
-            this.dataFim = dataFim;
+            this.data_fim = dataFim;
         }
 
         if (indAtivo != null) {

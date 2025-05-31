@@ -1,7 +1,7 @@
 package com.receitas.security;
 
-import com.receitas.model.Usuario_Model;
-import com.receitas.repository.In_UsuarioRepository;
+import com.receitas.model.Usuario;
+import com.receitas.repository.UsuarioRepository;
 import com.receitas.service.In_tokeJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,9 +20,9 @@ public class FillterToken extends OncePerRequestFilter {
 
     @Autowired
     private In_tokeJWT authService;
-    @Autowired
-    private In_UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -36,7 +36,8 @@ public class FillterToken extends OncePerRequestFilter {
             //Pegando usuário guardado dentro do Token
             String subject = authService.validateToken(tokenHeader);
             //Buscando usuário na base de dados
-            Usuario_Model usuario = usuarioRepository.findByEmail(subject);
+
+            Usuario usuario = usuarioRepository.findByEmail(subject);
 
             var autenticacao = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(autenticacao);

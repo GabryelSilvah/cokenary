@@ -1,11 +1,12 @@
 package com.receitas.service;
 
 
+import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.exception.UserExitsException;
 import com.receitas.exception.UserNotFoundExcetion;
-import com.receitas.model.Usuario_Model;
-import com.receitas.repository.In_UsuarioRepository;
+import com.receitas.model.Usuario;
+import com.receitas.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,85 +22,100 @@ import java.util.Optional;
 public class UsuarioService {
 
     @Autowired
-    private In_UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private PasswordEncoder criptografar;
 
-    public UsuarioDTO findById(Long idUser) {
-        Optional<Usuario_Model> usuario = usuarioRepository.findById(idUser);
+    public UsuarioDTO listById(Long id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
 
-        if (usuario.isPresent()) {
-            return new UsuarioDTO(usuario.get().getEmail(),usuario.get().getSenha(),usuario.get().getRole());
+        //Validando se usuário foi encontrado
+        if (usuario.isEmpty()) {
+            throw new UserNotFoundExcetion("Usuário não encontrado");
         }
 
-        throw new UserNotFoundExcetion();
+        return new UsuarioDTO(
+                usuario.get().getEmail(),
+                usuario.get().getRole()
+        );
+
     }
 
-    public UsuarioDTO findByEmail(String emailUser) {
-        Usuario_Model usuario = usuarioRepository.findByEmail(emailUser);
+    public UsuarioDTO listByEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
 
-        if (usuario != null) {
-            return new UsuarioDTO(usuario.getEmail(), usuario.getSenha(), usuario.getRole());
+        if (usuario == null) {
+            throw new UserNotFoundExcetion("Usuário não encontrado");
         }
-        return null;
+
+        return new UsuarioDTO(usuario.getEmail(), usuario.getRole());
     }
 
 
     //Salvando usuário na base de dados
-    public UsuarioDTO save(UsuarioDTO usuarioDTO) {
+    public UsuarioDTO save(AuthDTO authDTO) {
 
         //Validando se já existe esse usuário cadastrado
-        Usuario_Model usuario = usuarioRepository.findByEmail(usuarioDTO.email());
+        Usuario usuario = usuarioRepository.findByEmail(authDTO.email());
         if (usuario != null) {
             throw new UserExitsException("Usuário já existe");
         }
 
         //Criando hash da senha
-        var senhaCripto = criptografar.encode(usuarioDTO.senha());
+        var senhaCripto = criptografar.encode(authDTO.senha());
 
         //Convertendo class dto em class model, depois savalndo usuário na base de dados
-        Usuario_Model model = new Usuario_Model(usuarioDTO.email(), senhaCripto, usuarioDTO.role());
-        Usuario_Model modelResponse = usuarioRepository.save(model);
+        Usuario model = new Usuario(authDTO.email(), senhaCripto, authDTO.role());
+        Usuario modelResponse = usuarioRepository.save(model);
 
         //Retornando informações do usuário salvo na base de dados
-        return new UsuarioDTO(modelResponse.getEmail(), modelResponse.getSenha(), modelResponse.getRole());
+        return new UsuarioDTO(modelResponse.getEmail(), modelResponse.getRole());
     }
 
     public Map<String, Object> update(Long id, UsuarioDTO usuarioDto) {
 
-        Optional<Usuario_Model> usuarioEncontrado = usuarioRepository.findById(id);
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findById(id);
 
-        Map<String, Object> list = new HashMap<>();
-
-
-        if (usuarioEncontrado.isPresent()) {
-            list.put("old", new UsuarioDTO(usuarioEncontrado.get().getEmail(), usuarioEncontrado.get().getSenha(), usuarioEncontrado.get().getRole()));
-
-            String senhaSegura = criptografar.encode(usuarioDto.senha());
-            usuarioEncontrado.get().setEmail(usuarioDto.email());
-            usuarioEncontrado.get().setSenha(senhaSegura);
-            usuarioEncontrado.get().setRole(usuarioDto.role());
-
-            Usuario_Model usuarioEditado = usuarioRepository.save(usuarioEncontrado.get());
-
-
-            list.put("new", new UsuarioDTO(usuarioEditado.getEmail(), usuarioEditado.getSenha(), usuarioEditado.getRole()));
-            return list;
+        //Validando se usuário foi encontrado
+        if (usuarioEncontrado.isEmpty()) {
+            throw new UserNotFoundExcetion();
         }
 
-        throw new UserNotFoundExcetion();
+        //Dados do usuário antes da alteração
+        Map<String, Object> list = new HashMap<>();
+        list.put("old", new UsuarioDTO(
+                usuarioEncontrado.get().getEmail(),
+                usuarioEncontrado.get().getRole())
+        );
+
+        //Alterando informações do usuário
+        usuarioEncontrado.get().setEmail(usuarioDto.email());
+        usuarioEncontrado.get().setRole(usuarioDto.role());
+
+        //Pesistiindo alterações no banco de dados
+        Usuario usuarioEditado = usuarioRepository.save(usuarioEncontrado.get());
+
+        //Buscando os dados alterados do usuário para exibir
+        list.put("new", new UsuarioDTO(
+                usuarioEditado.getEmail(),
+                usuarioEditado.getRole())
+        );
+
+        return list;
     }
 
-    public String delete(Long id_user) {
-        Optional<Usuario_Model> usuarioModel = usuarioRepository.findById(id_user);
+    public Boolean delete(Long id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
 
-        if (usuarioModel.isPresent()) {
-            usuarioRepository.deleteById(id_user);
-            return usuarioModel.get().getEmail();
+        //Validando se usuário existe
+        if (usuario.isEmpty()) {
+            throw new UserNotFoundExcetion("Usuário não encontrado");
         }
 
-        throw new UserNotFoundExcetion();
+        //Excluir do banco de dados
+        usuarioRepository.delete(usuario.get());
+        return true;
 
     }
 

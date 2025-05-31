@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MedidaRepository extends JpaRepository<Medida, Integer> {
-    // Método para buscar por descrição (opcional)
-    List<Medida> findByDescricaoContainingIgnoreCase(String descricao);
+
 }
