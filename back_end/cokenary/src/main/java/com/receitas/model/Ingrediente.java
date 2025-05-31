@@ -21,4 +21,42 @@ public class Ingrediente {
 
     @OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)
     private List<Receitas_and_ingredientes> receitas_and_ingredientes;
+
+
+    //Construtores
+
+    public Ingrediente() {
+    }
+
+    public Ingrediente(Long id, String nome, List<Receitas_and_ingredientes> receitas_and_ingredientes) {
+        this.id = id;
+        this.nome = nome;
+        this.receitas_and_ingredientes = receitas_and_ingredientes;
+    }
+
+    //Gets e Sets
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public List<Receitas_and_ingredientes> getReceitas_and_ingredientes() {
+        return receitas_and_ingredientes;
+    }
+
+    public void setReceitas_and_ingredientes(List<Receitas_and_ingredientes> receitas_and_ingredientes) {
+        this.receitas_and_ingredientes = receitas_and_ingredientes;
+    }
 }
+

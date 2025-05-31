@@ -1,0 +1,54 @@
+package com.receitas.service;
+
+import com.receitas.dto.CategoriaDTO;
+import com.receitas.dto.IngredienteDTO;
+import com.receitas.exception.CategoriaExistsException;
+import com.receitas.model.Categoria;
+import com.receitas.model.Ingrediente;
+import com.receitas.repository.IngredienteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class IngredienteService {
+
+    @Autowired
+    private IngredienteRepository ingredienteRepository;
+
+
+    public List<CategoriaDTO> listAll() {
+
+        //Buscando ingredientes
+        List<Ingrediente> listaIngredientes = ingredienteRepository.findAll();
+        List<CategoriaDTO> listaIngredientesDTO = new ArrayList<>();
+
+        //Convertendo lista de categorias para categoriasDTO
+        for (int i = 0; i < listaIngredientes.size(); i++) {
+            listaIngredientesDTO.add(
+                    new CategoriaDTO(listaIngredientes.get(i).getId(), listaIngredientes.get(i).getNome())
+            );
+
+        }
+
+        return listaIngredientesDTO;
+    }
+
+
+    public IngredienteDTO listById(Long id) {
+
+        //Buscando categoria com o nome passado
+        Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(id);
+
+        //Validando se nome da categoria já existe
+        if (ingredienteEncontrado.isEmpty()) {
+            throw new CategoriaExistsException("O ingredite de ID (" + id + ") não foi encontrado");
+        }
+
+        //Retornando categoria no formato DTO
+        return new IngredienteDTO(ingredienteEncontrado.get().getId(), ingredienteEncontrado.get().getNome());
+    }
+}
