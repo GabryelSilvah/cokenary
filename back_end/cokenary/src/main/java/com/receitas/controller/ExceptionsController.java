@@ -65,6 +65,13 @@ public class ExceptionsController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorReponse);
     }
 
+    //Categoria já existe
+    @ExceptionHandler(CategoriaExistsException.class)
+    public ResponseEntity<?> categoriaExists(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
+    }
+
     //Funcionário não existe
     @ExceptionHandler(FuncionarioNotFoundException.class)
     public ResponseEntity<?> funcionarioNotFound(Exception exception) {
