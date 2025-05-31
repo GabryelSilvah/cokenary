@@ -24,6 +24,12 @@ public class CategoriaController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias listadas com sucesso!", listaCategoriasDTO));
     }
 
+    @GetMapping("/byId/{id}")
+    public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
+        CategoriaDTO CategoriaDTO = categoriaService.listById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categoria encontrada com sucesso!", CategoriaDTO));
+    }
+
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> cadastrar(@RequestBody Categoria categoria) {
         CategoriaDTO categoriaDTO = categoriaService.save(categoria);

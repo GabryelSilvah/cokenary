@@ -34,6 +34,20 @@ public class CategoriaService {
         return listaCategoriasDTO;
     }
 
+    public CategoriaDTO listById(Long id) {
+
+        //Buscando categoria com o nome passado
+        Optional<Categoria> categoriaEncontrada = categoriaRepository.findById(id);
+
+        //Validando se nome da categoria já existe
+        if (categoriaEncontrada.isEmpty()) {
+            throw new CategoriaExistsException("A categoria de ID (" + id + ") não foi encontrada");
+        }
+
+        //Retornando categoria no formato DTO
+        return new CategoriaDTO(categoriaEncontrada.get().getId_cat(), categoriaEncontrada.get().getNome_categoria());
+    }
+
     public CategoriaDTO save(Categoria categoria) {
         //Buscando categoria com o nome passado
         Optional<Categoria> categoriaEncontrada = categoriaRepository.findByName(categoria.getNome_categoria());
