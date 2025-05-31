@@ -1,11 +1,7 @@
 package com.receitas.service;
 
-import com.receitas.dto.CategoriaDTO;
-import com.receitas.dto.IngredienteDTO;
 import com.receitas.dto.MedidaDTO;
 import com.receitas.exception.CategoriaExistsException;
-import com.receitas.model.Categoria;
-import com.receitas.model.Ingrediente;
 import com.receitas.model.Medida;
 import com.receitas.repository.MedidaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,5 +66,26 @@ public class MedidaService {
                 medidaSalva.getNome_med()
         );
     }
+
+    public MedidaDTO update(Long id, Medida medida) {
+
+        //Buscando medida
+        Optional<Medida> medidaEncontrada = medidaRepository.findById(id);
+
+        //Validando se medida existe
+        if (medidaEncontrada.isEmpty()) {
+            throw new CategoriaExistsException("A medida de ID (" + id + ") não foi encontrada");
+        }
+
+        //Alterando medida encontrada
+        medidaEncontrada.get().setNome_med(medida.getNome_med());
+
+        //Salvando medida modificada
+        Medida medidaSalva = medidaRepository.save(medidaEncontrada.get());
+
+        //Retornando no formato DTO
+        return new MedidaDTO(medidaSalva.getId_med(), medidaSalva.getNome_med());
+    }
+
 
 }

@@ -39,4 +39,10 @@ public class MedidaController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Medida cadastrada com sucesso!", medidaDTO));
     }
 
+    @PutMapping("/alterar/{id}")
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Medida medida) {
+        MedidaDTO medidaDTO = medidaService.update(id, medida);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Medida alterada com sucesso!", medidaDTO));
+    }
+
 }
