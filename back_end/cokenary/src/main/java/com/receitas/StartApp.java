@@ -21,7 +21,7 @@ public class StartApp {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedMethods("GET", "POST", "PUT", "DELETE")
-						.allowedOrigins("http://localhost:8082"); // Aceita requisições de qualquer origem
+						.allowedOrigins("http://localhost:8081"); // Aceita requisições de qualquer origem
 			}
 		};
 	}

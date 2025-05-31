@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,12 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario_Model implements UserDetails {
-
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,24 +30,31 @@ public class Usuario_Model implements UserDetails {
     @NotEmpty
     private String role;
 
-    public Usuario_Model() {
-    }
 
-    public Usuario_Model(String email, String senha, String role) {
+    //Construtores
+    public Usuario(){
+
+    }
+    public Usuario(String email, String senha, String role) {
         this.email = email;
         this.senha = senha;
         this.role = role;
     }
 
-    public Usuario_Model(UsuarioDTO usuario_dto) {
-        this.email = usuario_dto.email();
-        this.senha = usuario_dto.senha();
-        this.role = usuario_dto.role();
+    public Usuario(AuthDTO authDTO) {
+        this.email = authDTO.email();
+        this.senha = authDTO.senha();
+        this.role = authDTO.role();
+    }
+
+    public Usuario(UsuarioDTO usuarioDTO) {
+        this.email = usuarioDTO.email();
+        this.role = usuarioDTO.role();
     }
 
 
 
-
+    //Gets e Sets
     public Long getId() {
         return id;
     }

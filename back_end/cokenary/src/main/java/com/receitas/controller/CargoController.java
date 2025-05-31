@@ -78,8 +78,6 @@ public class CargoController {
                     cargo.atualizarDados(
                             cargoAtualizado.getNome(),
                             cargoAtualizado.getDescricao(),
-                            cargoAtualizado.getDepartamento(),
-                            cargoAtualizado.getNivel(),
                             cargoAtualizado.getDataInicio(),
                             cargoAtualizado.getDataFim(),
                             cargoAtualizado.getIndAtivo()  // Changed from isIndAtivo() to getIndAtivo()

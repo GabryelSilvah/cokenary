@@ -1,0 +1,322 @@
+{
+	"info": {
+		"_postman_id": "7fcf0355-c79c-4288-bd85-c60f86de4e1d",
+		"name": "Cooknary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32073946",
+		"_collection_link": "https://dark-resonance-130872.postman.co/workspace/New-Team-Workspace~7603bcfc-351e-4113-a5ab-5830b2c65b74/collection/32073946-7fcf0355-c79c-4288-bd85-c60f86de4e1d?action=share&source=collection_link&creator=32073946"
+	},
+	"item": [
+		{
+			"name": "Funcionários",
+			"item": [
+				{
+					"name": "Listar",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/funcionarios/listar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"funcionarios",
+								"listar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rg\": 45454,\r\n    \"nome\": \"Gabriel s\",\r\n    \"dt_adm\": \"2025-05-21\",\r\n    \"salario\": 1423,\r\n    \"cargo\": {\r\n        \"id\":1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/funcionarios/cadastrar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"funcionarios",
+								"cadastrar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar pelo ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/funcionarios/byId/33",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"funcionarios",
+								"byId",
+								"33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/funcionarios/excluir/32",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"funcionarios",
+								"excluir",
+								"32"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rg\": 45454,\r\n    \"nome\": \"Gabriel Silva\",\r\n    \"dt_adm\": \"2025-05-21\",\r\n    \"salario\": 1423,\r\n    \"cargo\": {\r\n        \"id\":1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/funcionarios/alterar/32",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"funcionarios",
+								"alterar",
+								"32"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Auntenticar usuário",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"serven75\",\r\n    \"senha\":\"123ga\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar usuário",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"serven75\",\r\n    \"senha\":\"123ga\",\r\n    \"role\":\"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir usuário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoic2VydmVuIiwiZXhwIjoxNzQ0MTk2MTM1fQ.jdrzGKjMyCdkL6IDBfjNd6tLLQ-Su0xiv3quxrQMFAQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:8081/user/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"user",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar usuário pelo ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoic2VydmVuIiwiZXhwIjoxNzQ0MTk2MTM1fQ.jdrzGKjMyCdkL6IDBfjNd6tLLQ-Su0xiv3quxrQMFAQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/user/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"user",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar usuário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoic2VydmVuIiwiZXhwIjoxNzQ0MTk2MTM1fQ.jdrzGKjMyCdkL6IDBfjNd6tLLQ-Su0xiv3quxrQMFAQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"gabrielFiv9\",\r\n    \"senha\":\"1234\",\r\n    \"role\":\"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/user/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"user",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
