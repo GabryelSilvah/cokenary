@@ -9,7 +9,6 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import RecipeDetailsDialog from "@/components/ui/recipe-details-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { useAuth } from "@/hooks/useAuth";
 import {
   Card,
   CardHeader,
@@ -58,7 +57,7 @@ type Recipe = {
   image?: string;
   createdAt?: string | Date;
   updatedAt?: string | Date;
-  ingredientsWithQuantities?: IngredientWithQuantity[]; // Added this property
+  ingredientsWithQuantities?: IngredientWithQuantity[];
 };
 
 type Ingredient = {
@@ -79,7 +78,6 @@ type IngredientWithQuantity = {
 };
 
 const Recipes = () => {
-  const { token } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [recipeToDelete, setRecipeToDelete] = useState<string | null>(null);
@@ -88,7 +86,7 @@ const Recipes = () => {
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const { toast } = useToast();
   const {
-    recipes,                   // Alterado de data para recipes
+    recipes,
     isLoadingRecipes,
     recipesError,
     createRecipeMutation,
@@ -122,23 +120,11 @@ const Recipes = () => {
   const [ingredientsError, setIngredientsError] = useState<string | null>(null);
   const [measuresError, setMeasuresError] = useState<string | null>(null);
 
-
-
-
   const fetchIngredients = async () => {
-    if (!token) {
-      setIngredientsError("Autenticação necessária");
-      return;
-    }
-
     setIsLoadingIngredients(true);
     setIngredientsError(null);
     try {
-      const response = await fetch('http://localhost:8081/ingredientes', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await fetch('http://localhost:8081/ingredientes');
       if (!response.ok) {
         throw new Error(`Erro ao carregar ingredientes: ${response.status}`);
       }
@@ -158,19 +144,10 @@ const Recipes = () => {
   };
 
   const fetchMeasures = async () => {
-    if (!token) {
-      setMeasuresError("Autenticação necessária");
-      return;
-    }
-
     setIsLoadingMeasures(true);
     setMeasuresError(null);
     try {
-      const response = await fetch('http://localhost:8081/medidas', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await fetch('http://localhost:8081/medidas');
       if (!response.ok) {
         throw new Error(`Erro ao carregar medidas: ${response.status}`);
       }
@@ -190,11 +167,9 @@ const Recipes = () => {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchIngredients();
-      fetchMeasures();
-    }
-  }, [token]);
+    fetchIngredients();
+    fetchMeasures();
+  }, []);
 
   const handleIngredientSelect = (ingredient: Ingredient) => {
     setSelectedIngredients(prev => {
@@ -227,16 +202,11 @@ const Recipes = () => {
   const handleAddRecipe = async () => {
     setIsAdding(true);
     try {
-      if (!token) {
-        throw new Error("Usuário não autenticado. Por favor, faça login.");
-      }
-
       validateRecipe(newRecipe, selectedIngredients);
       const recipeData = formatRecipeData(newRecipe, selectedIngredients);
 
       await createRecipeMutation.mutateAsync(recipeData);
 
-      // Reset do formulário
       setNewRecipe({
         id: "",
         title: "",
@@ -265,7 +235,6 @@ const Recipes = () => {
       setIsAdding(false);
     }
   };
-
 
   const handleDeleteClick = (recipeId: string) => {
     setRecipeToDelete(recipeId);
@@ -381,8 +350,6 @@ const Recipes = () => {
     setEditDialogOpen(true);
   };
 
-
-  // Função auxiliar para tratamento de erros
   const handleApiError = (error: unknown, defaultMessage: string) => {
     console.error("Erro:", error);
 
@@ -393,7 +360,6 @@ const Recipes = () => {
     } else if (typeof error === 'string') {
       errorMessage = error;
     } else if (error && typeof error === 'object' && 'response' in error) {
-      // Tratamento para erros de API (Axios, Fetch, etc.)
       const apiError = error as { response?: { data?: { message?: string } } };
       errorMessage = apiError.response?.data?.message || defaultMessage;
     } else if (error && typeof error === 'object' && 'message' in error) {
@@ -406,7 +372,6 @@ const Recipes = () => {
       variant: "destructive"
     });
 
-    // Log detalhado em desenvolvimento
     if (process.env.NODE_ENV === 'development') {
       console.groupCollapsed("Detalhes do erro:");
       console.log("Tipo:", typeof error);
@@ -486,16 +451,14 @@ const Recipes = () => {
     };
   };
 
-
   const handleUpdateRecipe = async () => {
     if (!recipeToEdit) return;
 
-    setIsAdding(true); // Ou setIsUpdating, se preferir
+    setIsAdding(true);
     try {
       validateRecipe(recipeToEdit, selectedIngredients);
       const updatedRecipe = formatRecipeData(recipeToEdit, selectedIngredients);
 
-      // Mantém as datas originais
       const recipeWithDates = {
         ...updatedRecipe,
         id: recipeToEdit.id,
@@ -515,7 +478,7 @@ const Recipes = () => {
     } catch (error) {
       handleApiError(error, "Erro ao atualizar a receita");
     } finally {
-      setIsAdding(false); // Ou setIsUpdating(false)
+      setIsAdding(false);
     }
   };
 
@@ -735,9 +698,7 @@ const Recipes = () => {
 
                 <div className="space-y-2">
                   <Label>Ingredientes</Label>
-                  {!token ? (
-                    <div className="text-red-500 text-sm">Autenticação necessária para carregar ingredientes</div>
-                  ) : ingredientsError ? (
+                  {ingredientsError ? (
                     <div className="text-red-500 text-sm">{ingredientsError}</div>
                   ) : (
                     <DropdownMenu>
@@ -797,7 +758,7 @@ const Recipes = () => {
 
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" disabled={!token || isLoadingMeasures}>
+                            <Button variant="outline" size="sm" disabled={isLoadingMeasures}>
                               {ingredient.measure || "Medida"}
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
@@ -1109,9 +1070,7 @@ const Recipes = () => {
 
               <div className="space-y-2">
                 <Label>Ingredientes</Label>
-                {!token ? (
-                  <div className="text-red-500 text-sm">Autenticação necessária para carregar ingredientes</div>
-                ) : ingredientsError ? (
+                {ingredientsError ? (
                   <div className="text-red-500 text-sm">{ingredientsError}</div>
                 ) : (
                   <DropdownMenu>
@@ -1171,13 +1130,13 @@ const Recipes = () => {
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm" disabled={!token || isLoadingMeasures}>
+                          <Button variant="outline" size="sm" disabled={isLoadingMeasures}>
                             {ingredient.measure || "Medida"}
                             <ChevronDown className="ml-2 h-4 w-4 " />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <div className="max-h-60 overflow-y-auto"> {/* Adicione esta div com max-height e overflow */}
+                          <div className="max-h-60 overflow-y-auto">
                             {measuresList.map(measure => (
                               <DropdownMenuItem
                                 key={measure.id}
@@ -1335,7 +1294,7 @@ const Recipes = () => {
           recipe={{
             id: selectedRecipe.id || '',
             title: selectedRecipe.title || '',
-            description: selectedRecipe.description || '', // Fornece valor padrão
+            description: selectedRecipe.description || '',
             ingredients: selectedRecipe.ingredients || [],
             instructions: selectedRecipe.instructions || '',
             category: selectedRecipe.category || 'comida',

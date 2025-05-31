@@ -1,183 +1,283 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 
-// Types that will match our Spring Boot API responses
-export interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  jobTitle: string;
-  department: string;
-  image?: string;
-  hireDate: string;
-  salary?: number;
-  accessLevel: "admin" | "manager" | "employee" | "viewer";
+// Tipos
+export interface Funcionario {
+  data:{
+    id: number;
+    rg: number;
+    nome: string;
+    dt_adm: string;
+    salario: number;
+    cargo?: {
+      id: number;
+      nome: string;
+    };
+  };
 }
 
-// Function to fetch employees from Spring Boot API
-const fetchEmployees = async (): Promise<Employee[]> => {
-  // When connected to Spring Boot, replace with actual API call:
-  // const response = await fetch("/api/employees");
-  // if (!response.ok) throw new Error("Failed to fetch employees");
-  // return response.json();
-  
-  console.log("Fetching employees from API would happen here");
-  
-  // Mock data for now
-  return [
-    {
-      id: "1",
-      name: "Ana Silva",
-      email: "ana.silva@example.com",
-      phone: "(11) 98765-4321",
-      jobTitle: "Chef Executivo",
-      department: "Cozinha",
-      image: "https://randomuser.me/api/portraits/women/1.jpg",
-      hireDate: "2021-03-15",
-      salary: 9500,
-      accessLevel: "admin"
+export interface Cargo {
+  id: number;
+  nome: string;
+}
+
+interface ApiFuncionario {
+ data:{
+  id: number;
+  rg: number;
+  nome: string;
+  dt_adm: string;
+  salario: number;
+  cargo?: {
+    id: number;
+    nome: string;
+  };
+ }
+}
+
+interface ApiCargo {
+  id: number;
+  nome: string;
+}
+
+const API_URL = "http://localhost:8081";
+
+// Função para buscar funcionários
+const fetchFuncionarios = async (): Promise<Funcionario[]> => {
+  const response = await fetch(`${API_URL}/funcionarios/listar`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
     },
-    {
-      id: "2",
-      name: "Carlos Oliveira",
-      email: "carlos.oliveira@example.com",
-      phone: "(11) 91234-5678",
-      jobTitle: "Gerente de Restaurante",
-      department: "Operações",
-      image: "https://randomuser.me/api/portraits/men/2.jpg",
-      hireDate: "2020-08-10",
-      salary: 7800,
-      accessLevel: "manager"
-    },
-    // Additional mock employees could be added here
-  ];
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || `Erro ${response.status}: ${response.statusText}`);
+  }
+
+  const json = await response.json();
+
+  // Verifica se a resposta tem o campo "data" com um array de funcionários
+  const funcionariosRaw = Array.isArray(json.data) ? json.data : json;
+
+  // Garante que estamos lidando com um array
+  if (!Array.isArray(funcionariosRaw)) {
+    throw new Error("A resposta da API não contém um array de funcionários");
+  }
+
+  // Mapeia para o tipo Funcionario esperado no frontend
+  return funcionariosRaw.map((item) => ({
+    data: {
+      id: item.id,
+      rg: item.rg,
+      nome: item.nome,
+      dt_adm: item.dt_adm,
+      salario: item.salario,
+      cargo: {
+        id: item.cargo?.id || 0,
+        nome: item.cargo?.nome || ''
+      }
+    }
+  }));
 };
 
-// Function to fetch a single employee by ID
-const fetchEmployeeById = async (id: string): Promise<Employee> => {
-  console.log(`Fetching employee with ID ${id} would happen here`);
-  
-  // Mock implementation
-  const employees = await fetchEmployees();
-  const employee = employees.find(e => e.id === id);
-  if (!employee) throw new Error("Employee not found");
-  return employee;
-};
+// Função para criar funcionário
+const createFuncionario = async (funcionario: Omit<Funcionario, 'id'>): Promise<Funcionario> => {
+  const payload = {
+    rg: funcionario.data.rg,
+    nome: funcionario.data.nome,
+    dt_adm: funcionario.data.dt_adm,
+    salario: funcionario.data.salario,
+    cargo: {
+      id: funcionario.data.cargo.id
+    }
+  };
 
-// Function to create a new employee
-const createEmployee = async (employee: Omit<Employee, "id">): Promise<Employee> => {
-  console.log("Creating employee would happen here", employee);
-  
-  // Mock implementation
+  const response = await fetch(`${API_URL}/funcionarios/cadastrar`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || 'Erro ao criar funcionário');
+  }
+
+  const data: ApiFuncionario = await response.json();
   return {
-    ...employee,
-    id: Math.random().toString(36).substring(2, 9)
+  data: {
+    id: data.data.id,
+    rg: data.data.rg,
+    nome: data.data.nome,
+    dt_adm: data.data.dt_adm,
+    salario: data.data.salario,
+    cargo: {
+      id: data.data.cargo.id,
+      nome: data.data.cargo?.nome || ''
+    }}
   };
 };
 
-// Function to update an existing employee
-const updateEmployee = async (employee: Employee): Promise<Employee> => {
-  console.log("Updating employee would happen here", employee);
-  
-  // Mock implementation
-  return employee;
+// Função para atualizar funcionário
+const updateFuncionario = async (funcionario: Funcionario): Promise<Funcionario> => {
+  if (!funcionario.data.id) {
+    throw new Error('ID do funcionário é obrigatório para atualização');
+  }
+
+  const payload = {
+    rg: funcionario.data.rg,
+    nome: funcionario.data.nome,
+    dt_adm: funcionario.data.dt_adm,
+    salario: funcionario.data.salario,
+    cargo: {
+      id: funcionario.data.cargo.id
+    }
+  };
+
+  const response = await fetch(`${API_URL}/funcionarios/alterar/${funcionario.data.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || 'Erro ao atualizar funcionário');
+  }
+
+  const data: ApiFuncionario = await response.json();
+  return {
+   data: {
+    id: data.data.id,
+    rg: data.data.rg,   
+    nome: data.data.nome,
+    dt_adm: data.data.dt_adm,
+    salario: data.data.salario,
+    cargo: {
+      id: data.data.cargo.id,
+      nome: data.data.cargo?.nome || ''
+      
+    }}
+  };
 };
 
-// Function to delete an employee
-const deleteEmployee = async (id: string): Promise<void> => {
-  console.log(`Deleting employee with ID ${id} would happen here`);
-  
-  // Mock implementation - no return needed
+// Função para deletar funcionário
+const deleteFuncionario = async (id: number): Promise<void> => {
+  const response = await fetch(`${API_URL}/funcionarios/excluir/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || 'Erro ao deletar funcionário');
+  }
 };
 
-// Hook for fetching all employees
-export const useEmployees = () => {
-  return useQuery({
-    queryKey: ["employees"],
-    queryFn: fetchEmployees
+// Hook para buscar funcionários
+export const useFuncionarios = () => {
+  return useQuery<Funcionario[], Error>({
+    queryKey: ["funcionarios"],
+    queryFn: fetchFuncionarios,
+    retry: 2,
+    retryDelay: 1000,
   });
 };
 
-// Hook for fetching a single employee
-export const useEmployee = (id: string) => {
-  return useQuery({
-    queryKey: ["employees", id],
-    queryFn: () => fetchEmployeeById(id),
-    enabled: !!id
-  });
-};
-
-// Hook for creating an employee
-export const useCreateEmployee = () => {
+// Hook para criar funcionário
+export const useCreateFuncionario = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: createEmployee,
+    mutationFn: createFuncionario,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({ queryKey: ['funcionarios'] });
       toast({
-        title: "Funcionário Criado",
-        description: "O funcionário foi adicionado com sucesso."
+        title: "Sucesso",
+        description: "Funcionário criado com sucesso!",
       });
     },
-    onError: (error) => {
-      console.error("Error creating employee:", error);
+    onError: (error: Error) => {
       toast({
         title: "Erro",
-        description: "Não foi possível adicionar o funcionário.",
-        variant: "destructive"
+        description: error.message,
+        variant: "destructive",
       });
-    }
+    },
   });
 };
 
-// Hook for updating an employee
-export const useUpdateEmployee = () => {
+// Hook para atualizar funcionário
+export const useUpdateFuncionario = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: updateEmployee,
-    onSuccess: (updatedEmployee) => {
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
-      queryClient.invalidateQueries({ queryKey: ["employees", updatedEmployee.id] });
+    mutationFn: updateFuncionario,
+    onSuccess: (updatedFuncionario) => {
+      queryClient.setQueryData<Funcionario[]>(['funcionarios'], (old) =>
+        old?.map(f => f.data.id === updatedFuncionario.data.id ? updatedFuncionario : f)
+      );
       toast({
-        title: "Funcionário Atualizado",
-        description: "As informações do funcionário foram atualizadas com sucesso."
+        title: "Sucesso",
+        description: "Funcionário atualizado com sucesso!",
       });
     },
-    onError: (error) => {
-      console.error("Error updating employee:", error);
+    onError: (error: Error) => {
       toast({
         title: "Erro",
-        description: "Não foi possível atualizar o funcionário.",
-        variant: "destructive"
+        description: error.message,
+        variant: "destructive",
       });
-    }
+    },
   });
 };
 
-// Hook for deleting an employee
-export const useDeleteEmployee = () => {
+// Hook para deletar funcionário
+export const useDeleteFuncionario = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: deleteEmployee,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    mutationFn: deleteFuncionario,
+    onSuccess: (_, id) => {
+      queryClient.setQueryData<Funcionario[]>(['funcionarios'], (old) =>
+        old?.filter(f => f.data.id !== id)
+      );
       toast({
-        title: "Funcionário Removido",
-        description: "O funcionário foi removido com sucesso."
+        title: "Sucesso",
+        description: "Funcionário deletado com sucesso!",
       });
     },
-    onError: (error) => {
-      console.error("Error deleting employee:", error);
+    onError: (error: Error) => {
       toast({
         title: "Erro",
-        description: "Não foi possível remover o funcionário.",
-        variant: "destructive"
+        description: error.message,
+        variant: "destructive",
       });
-    }
+    },
+  });
+};
+
+// Hook auxiliar para tipos de cargos
+export const useCargos = () => {
+  return useQuery<Cargo[], Error>({
+    queryKey: ["cargos"],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/cargos`);
+      if (!response.ok) {
+        throw new Error('Erro ao carregar cargos');
+      }
+      const data: ApiCargo[] = await response.json();
+      return data.map(cargo => ({
+        id: cargo.id,
+        nome: cargo.nome
+      }));
+    },
   });
 };
