@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -25,15 +24,16 @@ import { format } from "date-fns";
 interface RecipeProps {
   recipe: {
     id: string;
-    title: string;
-    description: string;
-    image: string;
-    chef: string;
-    difficulty: string;
-    time: string;
-    ingredients?: string[];
-    instructions?: string[];
-    rating?: number;
+    nomeReceita: string;
+    descricao: string;
+    imagem: string;
+    cozinheiro_id: { id_funcionario: string; nome: string };
+    categoria_id: { id_categoria: string; nome: string };
+    dificuldade: string;
+    tempo: string;
+    ingredientes?: string[];
+    instrucoes?: string[];
+    avaliacao?: number;
     createdAt?: string | Date;
     updatedAt?: string | Date;
   };
@@ -42,29 +42,31 @@ interface RecipeProps {
 }
 
 export function EditRecipeDialog({ recipe, isOpen, onClose }: RecipeProps) {
-  const [title, setTitle] = useState(recipe.title);
-  const [description, setDescription] = useState(recipe.description);
-  const [image, setImage] = useState(recipe.image);
-  const [chef, setChef] = useState(recipe.chef);
-  const [difficulty, setDifficulty] = useState(recipe.difficulty);
-  const [time, setTime] = useState(recipe.time);
-  const [ingredients, setIngredients] = useState(recipe.ingredients?.join('\n') || '');
-  const [instructions, setInstructions] = useState(recipe.instructions?.join('\n') || '');
-  const [rating, setRating] = useState(recipe.rating?.toString() || '');
+  const [title, setTitle] = useState(recipe.nomeReceita);
+  const [description, setDescription] = useState(recipe.descricao);
+  const [image, setImage] = useState(recipe.imagem);
+  const [chef, setChef] = useState(recipe.cozinheiro_id.nome);
+  const [difficulty, setDifficulty] = useState(recipe.dificuldade);
+  const [time, setTime] = useState(recipe.tempo);
+  const [ingredients, setIngredients] = useState(recipe.ingredientes?.join('\n') || '');
+  const [instructions, setInstructions] = useState(recipe.instrucoes?.join('\n') || '');
+  const [rating, setRating] = useState(recipe.avaliacao?.toString() || '');
+  const [category, setCategory] = useState(recipe.categoria_id.nome);
 
   const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
-      setTitle(recipe.title);
-      setDescription(recipe.description);
-      setImage(recipe.image);
-      setChef(recipe.chef);
-      setDifficulty(recipe.difficulty);
-      setTime(recipe.time);
-      setIngredients(recipe.ingredients?.join('\n') || '');
-      setInstructions(recipe.instructions?.join('\n') || '');
-      setRating(recipe.rating?.toString() || '');
+      setTitle(recipe.nomeReceita);
+      setDescription(recipe.descricao);
+      setImage(recipe.imagem);
+      setChef(recipe.cozinheiro_id.nome);
+      setDifficulty(recipe.dificuldade);
+      setTime(recipe.tempo);
+      setIngredients(recipe.ingredientes?.join('\n') || '');
+      setInstructions(recipe.instrucoes?.join('\n') || '');
+      setRating(recipe.avaliacao?.toString() || '');
+      setCategory(recipe.categoria_id.nome);
     }
   }, [isOpen, recipe]);
 
@@ -74,15 +76,16 @@ export function EditRecipeDialog({ recipe, isOpen, onClose }: RecipeProps) {
     // Update the updatedAt date to now
     const updatedRecipe = {
       ...recipe,
-      title,
-      description,
-      image,
-      chef,
-      difficulty,
-      time,
-      ingredients: ingredients.split('\n').filter(line => line.trim() !== ''),
-      instructions: instructions.split('\n').filter(line => line.trim() !== ''),
-      rating: rating ? parseFloat(rating) : undefined,
+      nomeReceita: title,
+      descricao: description,
+      imagem: image,
+      cozinheiro_id: { ...recipe.cozinheiro_id, nome: chef },
+      categoria_id: { ...recipe.categoria_id, nome: category },
+      dificuldade: difficulty,
+      tempo: time,
+      ingredientes: ingredients.split('\n').filter(line => line.trim() !== ''),
+      instrucoes: instructions.split('\n').filter(line => line.trim() !== ''),
+      avaliacao: rating ? parseFloat(rating) : undefined,
       updatedAt: new Date().toISOString()
     };
 
@@ -102,11 +105,6 @@ export function EditRecipeDialog({ recipe, isOpen, onClose }: RecipeProps) {
     if (!date) return '';
     return format(new Date(date), "yyyy-MM-dd");
   };
-  const [category, setCategoryState] = useState<string>("");
-  
-  function handleCategoryChange(value: string): void {
-    setCategoryState(value);
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -159,7 +157,7 @@ export function EditRecipeDialog({ recipe, isOpen, onClose }: RecipeProps) {
             />
           </div>
 
-          <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit-difficulty">Dificuldade</Label>
               <Select
@@ -176,12 +174,12 @@ export function EditRecipeDialog({ recipe, isOpen, onClose }: RecipeProps) {
                 </SelectContent>
               </Select>
             </div>
-            {/* Novo campo de categoria */}
+
             <div className="space-y-2">
               <Label htmlFor="edit-category">Categoria</Label>
               <Select
                 value={category}
-                onValueChange={handleCategoryChange}
+                onValueChange={setCategory}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione a categoria" />

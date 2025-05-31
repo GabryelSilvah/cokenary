@@ -1,7 +1,11 @@
 package com.receitas.controller;
 
+import com.receitas.config.ResponseJson;
 import com.receitas.model.Cargo;
+import com.receitas.model.Funcionario;
 import com.receitas.repository.CargoRepository;
+import com.receitas.service.CargoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,75 +24,38 @@ public class CargoController {
 
     private final CargoRepository cargoRepository;
 
+    @Autowired
+    private CargoService cargoService;
+
     public CargoController(CargoRepository cargoRepository) {
         this.cargoRepository = cargoRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Cargo>> listarTodos() {
-        List<Cargo> cargos = cargoRepository.findAll();
-        return ResponseEntity.ok(cargos);
+    @GetMapping("/listar")
+    public ResponseEntity<ResponseJson> show() {
+        ResponseJson serviceResponse = cargoService.listarTodos();
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/byid/{id}")
     public ResponseEntity<Cargo> buscarPorId(@PathVariable Long id) {
         Optional<Cargo> cargo = cargoRepository.findById(id);
         return cargo.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<Cargo> criar(@RequestBody Cargo cargo) {
-        if (cargoRepository.existsByNome(cargo.getNome())) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        // Set default values if not provided
-        if (cargo.getData_inicio() == null) {
-            cargo.setData_inicio(LocalDate.now());
-        }
-        if (cargo.getIndAtivo() == null) {  // Changed from isIndAtivo() to getIndAtivo()
-            cargo.setIndAtivo(true);
-        }
-
-        Cargo cargoSalvo = cargoRepository.save(cargo);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(cargoSalvo.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(cargoSalvo);
+    @PostMapping("/cadastrar")
+    public ResponseEntity<ResponseJson> create(@RequestBody Cargo cargo) {
+        ResponseJson serviceResponse = cargoService.incluir(cargo);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/alterar/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Cargo cargoAtualizado) {
-        return cargoRepository.findById(id)
-                .map(cargo -> {
-                    if (!cargo.getNome().equals(cargoAtualizado.getNome())) {
-                        if (cargoAtualizado.getNome() != null &&
-                                !cargoAtualizado.getNome().isBlank() &&
-                                cargoRepository.existsByNome(cargoAtualizado.getNome())) {
-
-                            Map<String, String> erro = new HashMap<>();
-                            erro.put("mensagem", "Já existe um cargo com este nome");
-                            return ResponseEntity.badRequest().body(erro);
-                        }
-                    }
-
-                    cargo.atualizarDados(
-                            cargoAtualizado.getNome(),
-                            cargoAtualizado.getDescricao(),
-                            cargoAtualizado.getData_inicio(),
-                            cargoAtualizado.getData_fim(),
-                            cargoAtualizado.getIndAtivo()  // Changed from isIndAtivo() to getIndAtivo()
-                    );
-
-                    return ResponseEntity.ok(cargoRepository.save(cargo));
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return null;
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/excluir/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         if (!cargoRepository.existsById(id)) {
             return ResponseEntity.notFound().build();

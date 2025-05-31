@@ -3,6 +3,7 @@ package com.receitas.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,10 +21,10 @@ public class Cargo {
 
     @Column(name = "data_inicio")
     //@Temporal(TemporalType.DATE)
-    private LocalDate data_inicio;
+    private Date data_inicio;
 
     @Column(name = "data_fim")
-    private LocalDate data_fim;
+    private Date data_fim;
 
     @Column(name = "ind_ativo")
     private Boolean indAtivo = true;
@@ -32,6 +33,16 @@ public class Cargo {
     private List<Funcionario> funcionarios;
 
     public Cargo() {
+    }
+
+    public Cargo(Long id, String nome, String descricao, Date data_inicio, Date data_fim, Boolean indAtivo, List<Funcionario> funcionarios) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.data_inicio = data_inicio;
+        this.data_fim = data_fim;
+        this.indAtivo = indAtivo;
+        this.funcionarios = funcionarios;
     }
 
     // Getters e Setters
@@ -59,19 +70,19 @@ public class Cargo {
         this.descricao = descricao;
     }
 
-    public LocalDate getData_inicio() {
+    public Date getData_inicio() {
         return data_inicio;
     }
 
-    public void setData_inicio(LocalDate data_inicio) {
+    public void setData_inicio(Date data_inicio) {
         this.data_inicio = data_inicio;
     }
 
-    public LocalDate getData_fim() {
+    public Date getData_fim() {
         return data_fim;
     }
 
-    public void setData_fim(LocalDate data_fim) {
+    public void setData_fim(Date data_fim) {
         this.data_fim = data_fim;
     }
 
@@ -100,7 +111,7 @@ public class Cargo {
      * Atualiza os dados do cargo mantendo os valores existentes quando os novos são nulos
      */
     public void atualizarDados(String nome, String descricao,
-                               LocalDate dataInicio, LocalDate dataFim, Boolean indAtivo) {
+                               Date dataInicio, Date dataFim, Boolean indAtivo) {
         if (nome != null && !nome.isBlank()) {
             this.nome = nome;
         }

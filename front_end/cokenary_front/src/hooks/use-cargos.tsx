@@ -42,18 +42,26 @@ export const useCargos = () => {
     "Content-Type": "application/json",
   };
 
+  // Utilitário para converter os dados da API
+  const normalizeCargo = (cargo: any): Cargo => ({
+    id: cargo.id,
+    nome: cargo.nome,
+    descricao: cargo.descricao || null,
+    departamento: cargo.departamento || null,
+    nivel: cargo.nivel || null,
+    dataInicio: cargo.data_inicio || null,
+    dataFim: cargo.data_fim || null,
+    indAtivo: cargo.indAtivo ?? true,
+    funcionarios: cargo.funcionarios || [],
+    funcionariosCount: cargo.funcionarios?.length || 0,
+  });
+
   const { data: cargos, isLoading: isLoadingCargos, error: cargosError, refetch: refetchCargos } = useQuery<Cargo[], Error>({
     queryKey: ["cargos"],
     queryFn: async () => {
       try {
-        const response = await axios.get("http://localhost:8081/cargos", {
-          headers: defaultHeaders,
-        });
-        return response.data.map((cargo: Cargo) => ({
-          ...cargo,
-          funcionariosCount: cargo.funcionarios?.length || 0,
-          indAtivo: cargo.indAtivo ?? true
-        }));
+        const response = await axios.get("http://localhost:8081/cargos/listar", { headers: defaultHeaders });
+        return response.data.data.map(normalizeCargo);
       } catch (error) {
         return handleApiError(error);
       }
@@ -64,13 +72,8 @@ export const useCargos = () => {
     queryKey: ["cargos", "ativos"],
     queryFn: async () => {
       try {
-        const response = await axios.get("http://localhost:8081/cargos/ativos", {
-          headers: defaultHeaders,
-        });
-        return response.data.map((cargo: Cargo) => ({
-          ...cargo,
-          funcionariosCount: cargo.funcionarios?.length || 0
-        }));
+        const response = await axios.get("http://localhost:8081/cargos/ativos", { headers: defaultHeaders });
+        return response.data.data.map(normalizeCargo);
       } catch (error) {
         return handleApiError(error);
       }
@@ -81,13 +84,8 @@ export const useCargos = () => {
     queryKey: ["cargos", "inativos"],
     queryFn: async () => {
       try {
-        const response = await axios.get("http://localhost:8081/cargos/inativos", {
-          headers: defaultHeaders,
-        });
-        return response.data.map((cargo: Cargo) => ({
-          ...cargo,
-          funcionariosCount: cargo.funcionarios?.length || 0
-        }));
+        const response = await axios.get("http://localhost:8081/cargos/inativos", { headers: defaultHeaders });
+        return response.data.data.map(normalizeCargo);
       } catch (error) {
         return handleApiError(error);
       }
@@ -97,21 +95,19 @@ export const useCargos = () => {
   const createCargoMutation = useMutation({
     mutationFn: async (cargoData: Omit<Cargo, "id" | "funcionariosCount">) => {
       try {
-        const response = await axios.post("http://localhost:8081/cargos", 
+        const response = await axios.post("http://localhost:8081/cargos/cadastrar",
           {
-            ...cargoData,
+            nome: cargoData.nome,
             descricao: cargoData.descricao || null,
             departamento: cargoData.departamento || null,
             nivel: cargoData.nivel || null,
-            dataInicio: cargoData.dataInicio || new Date().toISOString().split('T')[0],
-            dataFim: cargoData.dataFim || null,
+            data_inicio: cargoData.dataInicio || new Date().toISOString().split('T')[0],
+            data_fim: cargoData.dataFim || null,
             indAtivo: cargoData.indAtivo ?? true
           },
-          {
-            headers: defaultHeaders,
-          }
+          { headers: defaultHeaders }
         );
-        return response.data;
+        return normalizeCargo(response.data.data);
       } catch (error) {
         return handleApiError(error);
       }
@@ -132,21 +128,19 @@ export const useCargos = () => {
     mutationFn: async ({ id, ...cargoData }: Cargo) => {
       try {
         const response = await axios.put(
-          `http://localhost:8081/cargos/${id}`,
+          `http://localhost:8081/cargos/alterar/${id}`,
           {
-            ...cargoData,
+            nome: cargoData.nome,
             descricao: cargoData.descricao || null,
             departamento: cargoData.departamento || null,
             nivel: cargoData.nivel || null,
-            dataInicio: cargoData.dataInicio || null,
-            dataFim: cargoData.dataFim || null,
+            data_inicio: cargoData.dataInicio || null,
+            data_fim: cargoData.dataFim || null,
             indAtivo: cargoData.indAtivo ?? true
           },
-          {
-            headers: defaultHeaders,
-          }
+          { headers: defaultHeaders }
         );
-        return response.data;
+        return normalizeCargo(response.data.data);
       } catch (error) {
         return handleApiError(error);
       }
@@ -154,7 +148,7 @@ export const useCargos = () => {
     onSuccess: (data, variables) => {
       queryClient.setQueryData(["cargos"], (oldData: Cargo[] | undefined) => {
         if (!oldData) return [data];
-        return oldData.map(cargo => 
+        return oldData.map(cargo =>
           cargo.id === variables.id ? { ...data, funcionariosCount: cargo.funcionariosCount } : cargo
         );
       });
@@ -171,9 +165,7 @@ export const useCargos = () => {
   const deleteCargoMutation = useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await axios.delete(`http://localhost:8081/cargos/${id}`, {
-          headers: defaultHeaders,
-        });
+        const response = await axios.delete(`http://localhost:8081/cargos/excluir/${id}`, { headers: defaultHeaders });
         return response.data;
       } catch (error) {
         return handleApiError(error);
@@ -199,14 +191,10 @@ export const useCargos = () => {
       queryKey: ["cargo", id],
       queryFn: async () => {
         try {
-          const response = await axios.get(`http://localhost:8081/cargos/${id}`, {
+          const response = await axios.get(`http://localhost:8081/cargos/byid/${id}`, {
             headers: defaultHeaders,
           });
-          return {
-            ...response.data,
-            funcionariosCount: response.data.funcionarios?.length || 0,
-            indAtivo: response.data.indAtivo ?? true
-          };
+          return normalizeCargo(response.data);
         } catch (error) {
           return handleApiError(error);
         }
