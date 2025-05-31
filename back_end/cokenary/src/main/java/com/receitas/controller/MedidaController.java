@@ -45,4 +45,10 @@ public class MedidaController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Medida alterada com sucesso!", medidaDTO));
     }
 
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<ResponseJson> excluir(@PathVariable("id") Long id) {
+        Boolean responseDelete = medidaService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categorias excluido com sucesso!"));
+    }
+
 }
