@@ -54,4 +54,24 @@ public class CategoriaService {
 
     }
 
+    public CategoriaDTO update(Long id, Categoria categoria) {
+
+        //Buscando categoria
+        Optional<Categoria> categoriaEncontrada = categoriaRepository.findById(id);
+
+        //Validando se categoria existe
+        if (categoriaEncontrada.isEmpty()) {
+            throw new CategoriaExistsException("A categoria de ID (" + id + ") não foi encontrada");
+        }
+
+        //Alterando categoria encontrada
+        categoriaEncontrada.get().setNome_categoria(categoria.getNome_categoria());
+
+        //Salvando categoria modificada
+        Categoria categoriaSalva = categoriaRepository.save(categoriaEncontrada.get());
+
+        //Retornando no formato DTO
+        return new CategoriaDTO(categoriaSalva.getId_cat(), categoriaSalva.getNome_categoria());
+    }
+
 }

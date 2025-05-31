@@ -27,6 +27,12 @@ public class CategoriaController {
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> cadastrar(@RequestBody Categoria categoria) {
         CategoriaDTO categoriaDTO = categoriaService.save(categoria);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias cadastrada com sucesso!", categoriaDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categoria cadastrada com sucesso!", categoriaDTO));
+    }
+
+    @PutMapping("/alterar/{id}")
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Categoria categoria) {
+        CategoriaDTO categoriaDTO = categoriaService.update(id, categoria);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categorias alterada com sucesso!", categoriaDTO));
     }
 }
