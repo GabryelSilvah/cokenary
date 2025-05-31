@@ -31,7 +31,7 @@ public class IngredienteController {
     @GetMapping("/byId/{id}")
     public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
         IngredienteDTO ingredienteDTO = ingredienteService.listById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias listadas com sucesso!", ingredienteDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias encontrada com sucesso!", ingredienteDTO));
     }
 
 
