@@ -13,7 +13,7 @@ public class Ingrediente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id") // Corrigido para o nome da coluna no banco
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "nome", nullable = false, length = 45)

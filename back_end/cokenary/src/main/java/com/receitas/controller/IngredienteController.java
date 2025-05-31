@@ -3,14 +3,13 @@ package com.receitas.controller;
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.CategoriaDTO;
 import com.receitas.dto.IngredienteDTO;
+import com.receitas.model.Categoria;
+import com.receitas.model.Ingrediente;
 import com.receitas.service.IngredienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +32,13 @@ public class IngredienteController {
         IngredienteDTO ingredienteDTO = ingredienteService.listById(id);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias encontrada com sucesso!", ingredienteDTO));
     }
+
+    @PostMapping("/cadastrar")
+    public ResponseEntity<ResponseJson> cadastrar(@RequestBody Ingrediente ingrediente) {
+        IngredienteDTO ingredienteDTO = ingredienteService.save(ingrediente);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Ingrdiente cadastrado com sucesso!", ingredienteDTO));
+    }
+
 
 
 }

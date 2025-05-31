@@ -51,4 +51,25 @@ public class IngredienteService {
         //Retornando categoria no formato DTO
         return new IngredienteDTO(ingredienteEncontrado.get().getId(), ingredienteEncontrado.get().getNome());
     }
+
+
+    public IngredienteDTO save(Ingrediente ingrediente) {
+        //Buscando ingrediente com o nome passado
+        Optional<Ingrediente> ingredienteEncontrada = ingredienteRepository.findByName(ingrediente.getNome());
+
+        //Validando se nome da ingrediente já existe
+        if (ingredienteEncontrada.isPresent()) {
+            throw new CategoriaExistsException("A ingrediente (" + ingrediente.getNome() + ") já existe");
+        }
+
+        //Salvando na base de dados
+        Ingrediente ingredienteSalva = ingredienteRepository.save(ingrediente);
+
+        //Retornando ingrediente no formato DTO
+        return new IngredienteDTO(
+                ingredienteSalva.getId(),
+                ingredienteSalva.getNome()
+        );
+    }
+
 }
