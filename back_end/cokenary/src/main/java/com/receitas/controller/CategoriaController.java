@@ -35,4 +35,10 @@ public class CategoriaController {
         CategoriaDTO categoriaDTO = categoriaService.update(id, categoria);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categorias alterada com sucesso!", categoriaDTO));
     }
+
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<ResponseJson> excluir(@PathVariable("id") Long id) {
+        Boolean responseDelete = categoriaService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categorias excluido com sucesso!"));
+    }
 }

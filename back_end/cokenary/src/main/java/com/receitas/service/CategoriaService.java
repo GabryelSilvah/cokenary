@@ -74,4 +74,19 @@ public class CategoriaService {
         return new CategoriaDTO(categoriaSalva.getId_cat(), categoriaSalva.getNome_categoria());
     }
 
+    public Boolean delete(Long id) {
+
+        //Buscando categoria
+        Optional<Categoria> categoriaEncontrada = categoriaRepository.findById(id);
+
+        //Validando se categoria existe
+        if (categoriaEncontrada.isEmpty()) {
+            throw new CategoriaExistsException("A categoria de ID (" + id + ") não foi encontrada");
+        }
+
+        categoriaRepository.deleteById(id);
+
+        return true;
+    }
+
 }
