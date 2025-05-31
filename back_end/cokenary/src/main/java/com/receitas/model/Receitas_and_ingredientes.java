@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Receitas_and_ingredientes {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

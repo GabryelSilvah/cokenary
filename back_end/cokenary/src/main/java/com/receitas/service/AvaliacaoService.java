@@ -63,4 +63,74 @@ public class AvaliacaoService {
                 avaliacaoEncontrada.get().getNota_avalicao()
         );
     }
+
+    public AvaliacaoDTO save(Avaliacao avaliacao) {
+
+        //Buscando avaliação com o nome passado
+        Optional<Avaliacao> categoriaEncontrada = avaliacaoRepository.findByName(avaliacao.getNome_receita_id().getNomeReceita());
+
+        //Validando se nome da avaliação já existe
+        if (categoriaEncontrada.isPresent()) {
+            throw new RegistroNotFoundException("A avaliação da receita (" + avaliacao.getNome_receita_id().getNomeReceita() + ") já existe");
+        }
+
+        //Salvando na base de dados
+        Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
+
+        //Retornando avaliação no formato DTO
+        return new AvaliacaoDTO(
+                avaliacaoSalva.getId(),
+                avaliacaoSalva.getDegustador_id().getNome(),
+                avaliacaoSalva.getCozinheiro_id().getNome(),
+                avaliacaoSalva.getNome_receita_id().getNomeReceita(),
+                avaliacaoSalva.getData_avaliada(),
+                avaliacaoSalva.getNota_avalicao()
+        );
+    }
+
+    public AvaliacaoDTO update(Long id, Avaliacao avaliacao) {
+
+        //Buscando avaliação
+        Optional<Avaliacao> avaliacaoEncontrada = avaliacaoRepository.findById(id);
+
+        //Validando se avaliação existe
+        if (avaliacaoEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("A avaliação de ID (" + id + ") não foi encontrada");
+        }
+
+        //Alterando avaliação encontrada
+        avaliacaoEncontrada.get().setDegustador_id(avaliacao.getDegustador_id());
+        avaliacaoEncontrada.get().setCozinheiro_id(avaliacao.getCozinheiro_id());
+        avaliacaoEncontrada.get().setNome_receita_id(avaliacao.getNome_receita_id());
+        avaliacaoEncontrada.get().setData_avaliada(avaliacao.getData_avaliada());
+        avaliacaoEncontrada.get().setNota_avalicao(avaliacao.getNota_avalicao());
+
+        //Salvando categoria modificada
+        Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacaoEncontrada.get());
+
+        //Retornando no formato DTO
+        return new AvaliacaoDTO(
+                avaliacaoSalva.getId(),
+                avaliacaoSalva.getDegustador_id().getNome(),
+                avaliacaoSalva.getCozinheiro_id().getNome(),
+                avaliacaoSalva.getNome_receita_id().getNomeReceita(),
+                avaliacaoSalva.getData_avaliada(),
+                avaliacaoSalva.getNota_avalicao()
+        );
+    }
+
+    public Boolean delete(Long id) {
+
+        //Buscando avaliação
+        Optional<Avaliacao> categoriaEncontrada = avaliacaoRepository.findById(id);
+
+        //Validando se avaliação existe
+        if (categoriaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("A avaliação de ID (" + id + ") não foi encontrada");
+        }
+
+        avaliacaoRepository.deleteById(id);
+
+        return true;
+    }
 }

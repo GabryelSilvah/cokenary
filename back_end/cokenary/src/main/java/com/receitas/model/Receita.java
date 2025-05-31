@@ -13,7 +13,7 @@ public class Receita {
 
     //Id
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_receita;
 
     //Nome
@@ -49,6 +49,9 @@ public class Receita {
     @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
     private List<Receitas_and_ingredientes> receitas_and_ingredientes;
 
+
+    @OneToMany(mappedBy = "nome_receita_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Avaliacao> avaliacaos;
 
     //Contrutores
     public Receita() {
@@ -129,5 +132,13 @@ public class Receita {
 
     public void setReceitas_and_ingredientes(List<Receitas_and_ingredientes> receitas_and_ingredientes) {
         this.receitas_and_ingredientes = receitas_and_ingredientes;
+    }
+
+    public List<Avaliacao> getAvaliacaos() {
+        return avaliacaos;
+    }
+
+    public void setAvaliacaos(List<Avaliacao> avaliacaos) {
+        this.avaliacaos = avaliacaos;
     }
 }

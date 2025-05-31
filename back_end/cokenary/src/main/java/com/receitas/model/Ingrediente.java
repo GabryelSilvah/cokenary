@@ -12,7 +12,7 @@ import java.util.List;
 public class Ingrediente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id") // Corrigido para o nome da coluna no banco
     private Long id;
 

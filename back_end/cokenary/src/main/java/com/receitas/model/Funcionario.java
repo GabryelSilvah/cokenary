@@ -37,6 +37,12 @@ public class Funcionario {
     @OneToMany(mappedBy = "cozinheiro_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Receita> receitas;
 
+    @OneToMany(mappedBy = "cozinheiro_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Avaliacao> avaliacoes_degustador;
+
+    @OneToMany(mappedBy = "degustador_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Avaliacao> avaliacoes_cozinheiro;
+
     public Funcionario() {
     }
 
@@ -119,5 +125,21 @@ public class Funcionario {
 
     public void setReceitas(List<Receita> receitas) {
         this.receitas = receitas;
+    }
+
+    public List<Avaliacao> getAvaliacoes_degustador() {
+        return avaliacoes_degustador;
+    }
+
+    public void setAvaliacoes_degustador(List<Avaliacao> avaliacoes_degustador) {
+        this.avaliacoes_degustador = avaliacoes_degustador;
+    }
+
+    public List<Avaliacao> getAvaliacoes_cozinheiro() {
+        return avaliacoes_cozinheiro;
+    }
+
+    public void setAvaliacoes_cozinheiro(List<Avaliacao> avaliacoes_cozinheiro) {
+        this.avaliacoes_cozinheiro = avaliacoes_cozinheiro;
     }
 }

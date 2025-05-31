@@ -2,14 +2,12 @@ package com.receitas.controller;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.AvaliacaoDTO;
+import com.receitas.model.Avaliacao;
 import com.receitas.service.AvaliacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,4 +29,23 @@ public class AvaliacaoController {
         AvaliacaoDTO avaliacaoDTO = avaliacaoService.listById(id);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Avaliação encontrada com sucesso!", avaliacaoDTO));
     }
+
+    @PostMapping("/cadastrar")
+    public ResponseEntity<ResponseJson> cadastrar(@RequestBody Avaliacao avaliacao) {
+        AvaliacaoDTO avaliacaoDTO = avaliacaoService.save(avaliacao);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Avaliação cadastrada com sucesso!", avaliacaoDTO));
+    }
+
+    @PutMapping("/alterar/{id}")
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Avaliacao avaliacao) {
+        AvaliacaoDTO avaliacaoDTO = avaliacaoService.update(id, avaliacao);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Avaliação alterada com sucesso!", avaliacaoDTO));
+    }
+
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<ResponseJson> excluir(@PathVariable("id") Long id) {
+        Boolean responseDelete = avaliacaoService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Avaliação excluido com sucesso!"));
+    }
+
 }
