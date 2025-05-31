@@ -92,4 +92,19 @@ public class IngredienteService {
         return new IngredienteDTO(ingredienteSalvo.getId(), ingredienteSalvo.getNome());
     }
 
+    public Boolean delete(Long id) {
+
+        //Buscando categoria
+        Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(id);
+
+        //Validando se ingrediente existe
+        if (ingredienteEncontrado.isEmpty()) {
+            throw new CategoriaExistsException("O ingrediente de ID (" + id + ") não foi encontrada");
+        }
+
+        ingredienteRepository.deleteById(id);
+
+        return true;
+    }
+
 }

@@ -46,4 +46,10 @@ public class IngredienteController {
     }
 
 
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<ResponseJson> excluir(@PathVariable("id") Long id) {
+        Boolean responseDelete = ingredienteService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Ingrediente excluido com sucesso!"));
+    }
+
 }
