@@ -12,13 +12,13 @@ public class Medida {
     //ID
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id_med")
     private Long id_med;
 
 
     //Nome da medida
     @NotNull(message = "Informe o nome da medida")
-    @Column(name = "nome", nullable = false, length = 45)
+    @Column(name = "nome_med", nullable = false, length = 45)
     private String nome_med;
 
     @OneToMany(mappedBy = "medida_id", fetch = FetchType.LAZY)

@@ -1,8 +1,10 @@
 package com.receitas.service;
 
+import com.receitas.dto.CategoriaDTO;
 import com.receitas.dto.IngredienteDTO;
 import com.receitas.dto.MedidaDTO;
 import com.receitas.exception.CategoriaExistsException;
+import com.receitas.model.Categoria;
 import com.receitas.model.Ingrediente;
 import com.receitas.model.Medida;
 import com.receitas.repository.MedidaRepository;
@@ -49,4 +51,24 @@ public class MedidaService {
         //Retornando categoria no formato DTO
         return new MedidaDTO(medidaEncontrado.get().getId_med(), medidaEncontrado.get().getNome_med());
     }
+
+    public MedidaDTO save(Medida medida) {
+        //Buscando medida com o nome passado
+        Optional<Medida> medidaEncontrada = medidaRepository.findByName(medida.getNome_med());
+
+        //Validando se nome da medida já existe
+        if (medidaEncontrada.isPresent()) {
+            throw new CategoriaExistsException("A Medida (" + medida.getNome_med() + ") já existe");
+        }
+
+        //Salvando na base de dados
+        Medida medidaSalva = medidaRepository.save(medida);
+
+        //Retornando medida no formato DTO
+        return new MedidaDTO(
+                medidaSalva.getId_med(),
+                medidaSalva.getNome_med()
+        );
+    }
+
 }

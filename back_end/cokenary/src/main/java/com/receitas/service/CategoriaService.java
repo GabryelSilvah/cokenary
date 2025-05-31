@@ -65,7 +65,6 @@ public class CategoriaService {
                 categoriaSalva.getId_cat(),
                 categoriaSalva.getNome_categoria()
         );
-
     }
 
     public CategoriaDTO update(Long id, Categoria categoria) {
