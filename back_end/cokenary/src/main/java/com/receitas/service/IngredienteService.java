@@ -1,9 +1,9 @@
 package com.receitas.service;
 
-import com.receitas.dto.CategoriaDTO;
+
 import com.receitas.dto.IngredienteDTO;
-import com.receitas.exception.CategoriaExistsException;
-import com.receitas.model.Categoria;
+import com.receitas.exception.RegistroExistsException;
+import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Ingrediente;
 import com.receitas.repository.IngredienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +20,16 @@ public class IngredienteService {
     private IngredienteRepository ingredienteRepository;
 
 
-    public List<CategoriaDTO> listAll() {
+    public List<IngredienteDTO> listAll() {
 
         //Buscando ingredientes
         List<Ingrediente> listaIngredientes = ingredienteRepository.findAll();
-        List<CategoriaDTO> listaIngredientesDTO = new ArrayList<>();
+        List<IngredienteDTO> listaIngredientesDTO = new ArrayList<>();
 
-        //Convertendo lista de categorias para categoriasDTO
+        //Convertendo para ingredientesDTO
         for (int i = 0; i < listaIngredientes.size(); i++) {
             listaIngredientesDTO.add(
-                    new CategoriaDTO(listaIngredientes.get(i).getId(), listaIngredientes.get(i).getNome())
+                    new IngredienteDTO(listaIngredientes.get(i).getId(), listaIngredientes.get(i).getNome())
             );
 
         }
@@ -40,15 +40,15 @@ public class IngredienteService {
 
     public IngredienteDTO listById(Long id) {
 
-        //Buscando categoria com o nome passado
+        //Buscando ingredientes
         Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(id);
 
-        //Validando se nome da categoria já existe
+        //Validando ingredites foi encontrado
         if (ingredienteEncontrado.isEmpty()) {
-            throw new CategoriaExistsException("O ingredite de ID (" + id + ") não foi encontrado");
+            throw new RegistroNotFoundException("O ingredite de ID (" + id + ") não foi encontrado");
         }
 
-        //Retornando categoria no formato DTO
+        //Retornando ingredientes no formato DTO
         return new IngredienteDTO(ingredienteEncontrado.get().getId(), ingredienteEncontrado.get().getNome());
     }
 
@@ -59,7 +59,7 @@ public class IngredienteService {
 
         //Validando se nome da ingrediente já existe
         if (ingredienteEncontrada.isPresent()) {
-            throw new CategoriaExistsException("A ingrediente (" + ingrediente.getNome() + ") já existe");
+            throw new RegistroExistsException("A ingrediente (" + ingrediente.getNome() + ") já existe");
         }
 
         //Salvando na base de dados
@@ -79,7 +79,7 @@ public class IngredienteService {
 
         //Validando se ingrediente existe
         if (ingredienteEncontrado.isEmpty()) {
-            throw new CategoriaExistsException("O ingrediente de ID (" + id + ") não foi encontrado");
+            throw new RegistroNotFoundException("O ingrediente de ID (" + id + ") não foi encontrado");
         }
 
         //Alterando ingrediente encontrada
@@ -94,12 +94,12 @@ public class IngredienteService {
 
     public Boolean delete(Long id) {
 
-        //Buscando categoria
+        //Buscando ingrediente
         Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(id);
 
-        //Validando se ingrediente existe
+        //Validando se ingrediente foi encontrado
         if (ingredienteEncontrado.isEmpty()) {
-            throw new CategoriaExistsException("O ingrediente de ID (" + id + ") não foi encontrada");
+            throw new RegistroNotFoundException("O ingrediente de ID (" + id + ") não foi encontrada");
         }
 
         ingredienteRepository.deleteById(id);

@@ -40,12 +40,8 @@ public class FuncionarioController {
 
     @PostMapping("/add_foto/{id}")
     public ResponseEntity<ResponseJson> add_foto_perfil(@RequestPart("file") MultipartFile arquivo, @PathVariable("id") Long id) {
-        try {
-            ResponseJson serviceResponse = service.salvarFotoFuncionario(arquivo, id);
-            return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
-        } catch (Exception erro) {
-            return null;
-        }
+        ResponseJson serviceResponse = service.salvarFotoFuncionario(arquivo, id);
+        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }
 
     @PutMapping("/alterar/{id}")

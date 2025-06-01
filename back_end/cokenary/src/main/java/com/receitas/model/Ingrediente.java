@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +20,13 @@ public class Ingrediente {
     @Column(name = "nome", nullable = false, length = 45)
     private String nome;
 
-    @OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)
-    private List<Receitas_and_ingredientes> receitas_and_ingredientes;
+
+    @ManyToMany(mappedBy = "ingredientes_id", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Receita> receitas_id;
+
+    //@OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)
+    //private List<Receitas_and_ingredientes> receitas_and_ingredientes;
 
 
     //Construtores
@@ -28,10 +34,10 @@ public class Ingrediente {
     public Ingrediente() {
     }
 
-    public Ingrediente(Long id, String nome, List<Receitas_and_ingredientes> receitas_and_ingredientes) {
+    public Ingrediente(Long id, String nome, List<Receita> receitas_id) {
         this.id = id;
         this.nome = nome;
-        this.receitas_and_ingredientes = receitas_and_ingredientes;
+        this.receitas_id = receitas_id;
     }
 
     //Gets e Sets
@@ -51,12 +57,12 @@ public class Ingrediente {
         this.nome = nome;
     }
 
-    public List<Receitas_and_ingredientes> getReceitas_and_ingredientes() {
-        return receitas_and_ingredientes;
+    public List<Receita> getReceitas_id() {
+        return receitas_id;
     }
 
-    public void setReceitas_and_ingredientes(List<Receitas_and_ingredientes> receitas_and_ingredientes) {
-        this.receitas_and_ingredientes = receitas_and_ingredientes;
+    public void setReceitas_id(List<Receita> receitas_id) {
+        this.receitas_id = receitas_id;
     }
 }
 

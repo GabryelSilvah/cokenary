@@ -2,15 +2,14 @@ package com.receitas.service;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.ReceitaDTO;
-import com.receitas.exception.CategoriaNotFoundException;
-import com.receitas.exception.FuncionarioNotFoundException;
-import com.receitas.exception.ReceitaNameExistsException;
-import com.receitas.exception.ReceitaNotFoundException;
+import com.receitas.exception.*;
 import com.receitas.model.Categoria;
 import com.receitas.model.Funcionario;
+import com.receitas.model.Ingrediente;
 import com.receitas.model.Receita;
 import com.receitas.repository.CategoriaRepository;
 import com.receitas.repository.FuncionarioRepository;
+import com.receitas.repository.IngredienteRepository;
 import com.receitas.repository.ReceitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +31,9 @@ public class ReceitaService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
+    @Autowired
+    private IngredienteRepository ingredienteRepository;
+
     public ResponseJson listAll() {
 
         List<Receita> receitas = receitaRepository.findAll();
@@ -45,7 +47,8 @@ public class ReceitaService {
                     receitas.get(i).getCategoria_id().getNome_categoria(),
                     receitas.get(i).getCozinheiro_id().getNome(),
                     receitas.get(i).getModo_preparo(),
-                    receitas.get(i).getData_criacao()
+                    receitas.get(i).getData_criacao(),
+                    receitas.get(i).getIngredientes_id()
             );
 
 
@@ -62,7 +65,17 @@ public class ReceitaService {
 
         Optional<Funcionario> funcionario = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
 
+        List<Ingrediente> listaIngredientes = new ArrayList<>();
 
+
+        for (int i = 0; i < receitaSalva.getIngredientes_id().size(); i++) {
+            Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(receitaSalva.getIngredientes_id().get(i).getId());
+            if (ingredienteEncontrado.isEmpty()) {
+                throw new RegistroNotFoundException("Nenhum ingrediente encontrado para o ID(" + receitaSalva.getIngredientes_id().get(i).getId() + ")");
+            }
+
+            listaIngredientes.add(ingredienteEncontrado.get());
+        }
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
                 receitaSalva.getId_receita(),
@@ -70,7 +83,8 @@ public class ReceitaService {
                 categoria.get().getNome_categoria(),
                 funcionario.get().getNome(),
                 receitaSalva.getModo_preparo(),
-                receitaSalva.getData_criacao()
+                receitaSalva.getData_criacao(),
+                listaIngredientes
         );
 
 
@@ -115,16 +129,17 @@ public class ReceitaService {
         receitaInsert.setModo_preparo(receitaRecebida.getModo_preparo());
 
         //Salvando alteração
-        Receita receitaALterada = receitaRepository.save(receitaInsert);
+        Receita receitaAlterada = receitaRepository.save(receitaInsert);
 
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTOAlterado = new ReceitaDTO(
-                receitaALterada.getId_receita(),
-                receitaALterada.getNomeReceita(),
+                receitaAlterada.getId_receita(),
+                receitaAlterada.getNomeReceita(),
                 categoria.get().getNome_categoria(),
                 funcionarioEncontrado.get().getNome(),
-                receitaALterada.getModo_preparo(),
-                receitaALterada.getData_criacao()
+                receitaAlterada.getModo_preparo(),
+                receitaAlterada.getData_criacao(),
+                receitaAlterada.getIngredientes_id()
         );
 
         return new ResponseJson(HttpStatus.CREATED, "Receita atualizado com sucesso!", receitaDTOAlterado);

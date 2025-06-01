@@ -1,17 +1,14 @@
 
 package com.receitas.model;
 
-import com.receitas.dto.ReceitaDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
 @Entity
 @Table(name = "receitas")
 public class Receita {
 
-    //Id
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id_receita;
@@ -39,39 +36,43 @@ public class Receita {
     @NotNull(message = "Informe o nome da categoria")
     private Categoria categoria_id;
 
-    //Quantidade de porção
+    //Passo a passo de preparação da receita
     @NotNull(message = "Informe o modo de preparo")
     @Column(name = "modo_preparo", nullable = false)
     private String modo_preparo;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "composicoes",
+            joinColumns = @JoinColumn(name = "receitas_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredientes_id")
+    )
+    private List<Ingrediente> ingredientes_id;
 
     //Relacionamento com a tabela receitas_and_ingredientes
-    @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
-    private List<Receitas_and_ingredientes> receitas_and_ingredientes;
+    //@OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
+    //private List<Receitas_and_ingredientes> receitas_and_ingredientes;
 
 
     //Contrutores
     public Receita() {
     }
 
-    public Receita(ReceitaDTO receitaDTO) {
-
-    }
-
     public Receita(
-            String nome,
+            Long id,
+            String nomeReceita,
             String data_criacao,
             Funcionario cozinheiro_id,
             Categoria categoria_id,
             String modo_preparo,
-            List<Receitas_and_ingredientes> receitas_and_ingredientes
+            List<Ingrediente> ingredientes_id
     ) {
-        this.nomeReceita = nome;
+        this.nomeReceita = nomeReceita;
         this.data_criacao = data_criacao;
         this.cozinheiro_id = cozinheiro_id;
         this.categoria_id = categoria_id;
         this.modo_preparo = modo_preparo;
-        this.receitas_and_ingredientes = receitas_and_ingredientes;
+        this.ingredientes_id = ingredientes_id;
     }
 
     //Gets e Sets
@@ -123,11 +124,12 @@ public class Receita {
         this.modo_preparo = modo_preparo;
     }
 
-    public List<Receitas_and_ingredientes> getReceitas_and_ingredientes() {
-        return receitas_and_ingredientes;
+
+    public List<Ingrediente> getIngredientes_id() {
+        return ingredientes_id;
     }
 
-    public void setReceitas_and_ingredientes(List<Receitas_and_ingredientes> receitas_and_ingredientes) {
-        this.receitas_and_ingredientes = receitas_and_ingredientes;
+    public void setIngredientes_id(List<Ingrediente> ingredientes_id) {
+        this.ingredientes_id = ingredientes_id;
     }
 }

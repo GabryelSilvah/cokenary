@@ -1,9 +1,7 @@
 package com.receitas.controller;
 
 import com.receitas.config.ResponseJson;
-import com.receitas.dto.CategoriaDTO;
 import com.receitas.dto.IngredienteDTO;
-import com.receitas.model.Categoria;
 import com.receitas.model.Ingrediente;
 import com.receitas.service.IngredienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +21,14 @@ public class IngredienteController {
 
     @GetMapping("/listar")
     public ResponseEntity<ResponseJson> listar() {
-        List<CategoriaDTO> listaIngredientesDTO = ingredienteService.listAll();
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias listadas com sucesso!", listaIngredientesDTO));
+        List<IngredienteDTO> listaIngredientesDTO = ingredienteService.listAll();
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Ingredientes listados com sucesso!", listaIngredientesDTO));
     }
 
     @GetMapping("/byId/{id}")
     public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
         IngredienteDTO ingredienteDTO = ingredienteService.listById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categorias encontrada com sucesso!", ingredienteDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Ingredientes encontrado com sucesso!", ingredienteDTO));
     }
 
     @PostMapping("/cadastrar")
@@ -42,7 +40,7 @@ public class IngredienteController {
     @PutMapping("/alterar/{id}")
     public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Ingrediente ingrediente) {
         IngredienteDTO ingredienteDTO = ingredienteService.update(id, ingrediente);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Categorias alterada com sucesso!", ingredienteDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Ingrediente alterado com sucesso!", ingredienteDTO));
     }
 
 

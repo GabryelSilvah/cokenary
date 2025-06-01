@@ -6,18 +6,15 @@ import com.receitas.model.Cargo;
 import com.receitas.model.Funcionario;
 import com.receitas.repository.CargoRepository;
 import com.receitas.repository.FuncionarioRepository;
+import com.receitas.util.FotoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -27,8 +24,6 @@ public class FuncionarioService {
 
     @Autowired
     private CargoRepository cargoRepository;
-
-    private static final String CAMINHO_FOTO_PERFIl = "C:\\Users\\Gabryel Silvah\\Desktop\\ambiente_teste";
 
     public ResponseJson listAll() {
 
@@ -173,24 +168,27 @@ public class FuncionarioService {
         return new ResponseJson(HttpStatus.OK, "Funcionário excluido com sucesso!");
     }
 
-    public ResponseJson salvarFotoFuncionario(MultipartFile arquivo, Long id) throws IOException {
-        if (arquivo == null) {
-            throw new NullPointerException("Nenhuma foto de perfil enviada");
+    public ResponseJson salvarFotoFuncionario(MultipartFile arquivo, Long id) {
+
+        FotoUtil fotoUtil = new FotoUtil();
+        fotoUtil.setCaminhoDestinoFoto("C:\\Users\\Gabryel Silvah\\Desktop\\ambiente_teste");
+
+        String nomeFoto;
+
+        try {
+            nomeFoto = fotoUtil.salvarFoto(arquivo);
+        } catch (IOException erro) {
+            return null;
         }
-
-        File destinoArquivo = new File(CAMINHO_FOTO_PERFIl + File.separator + arquivo.getOriginalFilename());
-
-        if (!Objects.equals(destinoArquivo.getParent(), CAMINHO_FOTO_PERFIl)) {
-            throw new SecurityException("Arquivo não suportado");
-        }
-
-        Files.copy(arquivo.getInputStream(), destinoArquivo.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 
         //Salvar caminho da imagem de perfil no banco de dados do funcionário
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
+
         Funcionario funcionarioInsert = funcionarioEncontrado.get();
-        funcionarioInsert.setImagem_perfil(arquivo.getOriginalFilename());
+
+        funcionarioInsert.setImagem_perfil(nomeFoto);
+
         funcioRepository.save(funcionarioInsert);
 
 
