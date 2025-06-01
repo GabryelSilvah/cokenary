@@ -8,51 +8,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/funcionarios")
 @CrossOrigin(origins = "http://localhost:8082")
 public class FuncionarioController {
     @Autowired
-    private FuncionarioService service;
+    private FuncionarioService funcionarioService;
 
     @GetMapping("/listar")
-    public ResponseEntity<ResponseJson> show() {
-        ResponseJson serviceResponse = service.listAll();
-        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    public ResponseEntity<ResponseJson> listar() {
+        List<FuncionarioDTO> listaFuncionariosDTO = funcionarioService.listAll();
+        return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Funcionarios listadas com sucesso!", listaFuncionariosDTO));
     }
 
     @GetMapping("/byId/{id}")
-    public ResponseEntity<ResponseJson> show_by_id(@PathVariable Long id) {
-        ResponseJson serviceResponse = service.listById(id);
-        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
+        FuncionarioDTO funcionarioDTO = funcionarioService.listById(id);
+        return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Funcionario encontrada com sucesso!", funcionarioDTO));
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ResponseJson> create(@RequestBody Funcionario funcionario) {
-        ResponseJson serviceResponse = service.saveFuncionario(funcionario);
-        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
-    }
-
-    @PostMapping("/add_foto/{id}")
-    public ResponseEntity<ResponseJson> add_foto_perfil(@RequestPart("file") MultipartFile arquivo, @PathVariable("id") Long id) {
-        ResponseJson serviceResponse = service.salvarFotoFuncionario(arquivo, id);
-        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    public ResponseEntity<ResponseJson> cadastrar(@RequestBody Funcionario funcionario) {
+        FuncionarioDTO funcionarioDTO = funcionarioService.save(funcionario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario cadastrado com sucesso!", funcionarioDTO));
     }
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<ResponseJson> update(@PathVariable("id") Long id, @RequestBody Funcionario funcionario) {
-        ResponseJson serviceResponse = this.service.update(id, funcionario);
-        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Funcionario funcionario) {
+        FuncionarioDTO funcionarioDTO = funcionarioService.update(id, funcionario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario alterado com sucesso!", funcionarioDTO));
     }
 
     @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<ResponseJson> deletar(@PathVariable("id") Long id) {
-        ResponseJson serviceResponse = service.delete(id);
-        return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
+    public ResponseEntity<ResponseJson> excluir(@PathVariable("id") Long id) {
+        Boolean responseDelete = funcionarioService.delete(id);
+        return ResponseEntity.ok().body(new ResponseJson(HttpStatus.CREATED, "Funcionario excluido com sucesso!"));
     }
 }

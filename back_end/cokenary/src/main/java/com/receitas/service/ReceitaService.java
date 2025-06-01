@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,15 +60,40 @@ public class ReceitaService {
 
     public ResponseJson save(Receita receitaRecebida) {
 
-        Receita receitaSalva = receitaRepository.save(receitaRecebida);
+        //Validando se o nome da receita já existe
+        Optional<Receita> receitaNomeEncontrada = receitaRepository.findByNomeReceita(receitaRecebida.getNomeReceita());
+        if (receitaNomeEncontrada.isPresent()) {
+            throw new ReceitaNameExistsException("Falha, o nome da receita inserido já existe (" + receitaRecebida.getNomeReceita() + ")");
+        }
 
-        Optional<Categoria> categoria = categoriaRepository.findById(receitaRecebida.getCategoria_id().getId_cat());
-
+        //Buscando funcinário/cozinheiro inserido
         Optional<Funcionario> funcionario = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
 
+        //Validando se o funcionário/cozinheiro existe
+        if (funcionario.isEmpty()) {
+            throw new FuncionarioNotFoundException("Funcionário de ID(" + receitaRecebida.getCozinheiro_id().getId_func() + ") não encontrado");
+        }
+
+        //Validando se funcionário inserirdo possui o cargo de cozinheiro
+        if (!funcionario.get().getCargo().getNome().equals("Cozinheiro")) {
+            throw new CozinheiroException("Funcionário de ID(" + receitaRecebida.getCozinheiro_id().getId_func() + ") não possui cargo de cozinheiro");
+        }
+
+        //Buscando categoria inserida
+        Optional<Categoria> categoria = categoriaRepository.findById(receitaRecebida.getCategoria_id().getId_cat());
+
+        //Validando se categoria existe
+        if (categoria.isEmpty()) {
+            throw new CategoriaNotFoundException("Categoria de ID(" + receitaRecebida.getCategoria_id().getId_cat() + ") não foi encontrada");
+        }
+
+        //Salvando receita
+        Receita receitaSalva = receitaRepository.save(receitaRecebida);
+
+        //Declaranco lista para armazenar lista de ingredientes da receita
         List<Ingrediente> listaIngredientes = new ArrayList<>();
 
-
+        //Buscando cada ingrediente pelo ID retornado
         for (int i = 0; i < receitaSalva.getIngredientes_id().size(); i++) {
             Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(receitaSalva.getIngredientes_id().get(i).getId());
             if (ingredienteEncontrado.isEmpty()) {
@@ -76,6 +102,7 @@ public class ReceitaService {
 
             listaIngredientes.add(ingredienteEncontrado.get());
         }
+
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
                 receitaSalva.getId_receita(),
@@ -100,28 +127,36 @@ public class ReceitaService {
         }
 
         //Validando se o nome da receita já existe na tabela
-        Receita receitaNomeExiste = receitaRepository.findByNomeReceita(receitaRecebida.getNomeReceita());
-        if (!receitaNomeExiste.getId_receita().equals(id)) {
+        Optional<Receita> receitaNomeEncontrada = receitaRepository.findByNomeReceita(receitaRecebida.getNomeReceita());
+        if (receitaNomeEncontrada.isPresent() && !Objects.equals(receitaNomeEncontrada.get().getNomeReceita(), receitaRecebida.getNomeReceita())) {
             throw new ReceitaNameExistsException("Falha, o nome da receita inserido já existe (" + receitaRecebida.getNomeReceita() + ")");
         }
 
-
-        //Pesquisando categoria pelo ID e validando se foi encontrada
+        //Buscando categoria inserida
         Optional<Categoria> categoria = categoriaRepository.findById(receitaRecebida.getCategoria_id().getId_cat());
+
+        //Validando se categoria existe
         if (categoria.isEmpty()) {
-            throw new CategoriaNotFoundException("Falha, nenhuma categoria encontrada com o ID informado");
+            throw new CategoriaNotFoundException("Categoria de ID(" + receitaRecebida.getCategoria_id().getId_cat() + ") não foi encontrada");
+        }
+
+        //Buscando funcinário/cozinheiro inserido
+        Optional<Funcionario> funcionario = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
+
+        //Validando se o funcionário/cozinheiro existe
+        if (funcionario.isEmpty()) {
+            throw new FuncionarioNotFoundException("Funcionário de ID(" + receitaRecebida.getCozinheiro_id().getId_func() + ") não encontrado");
+        }
+
+        //Validando se funcionário inserirdo possui o cargo de cozinheiro
+        if (!funcionario.get().getCargo().getNome().equals("Cozinheiro")) {
+            throw new CozinheiroException("Funcionário de ID(" + receitaRecebida.getCozinheiro_id().getId_func() + ") não possui cargo de cozinheiro");
         }
 
 
-        //Pesquisando cozinheiro/funcionario pelo ID e validando se foi encontrado
-        Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(receitaRecebida.getCozinheiro_id().getId_func());
-        if (funcionarioEncontrado.isEmpty()) {
-            throw new FuncionarioNotFoundException("Falha, não foi encontrado nenhum funcionário(cozinheiro) com ID (" + receitaRecebida.getCozinheiro_id().getId_func() + ") informado");
-        }
-
-
-        Receita receitaInsert = receitaEncontrada.get();
         //Setando  na receita encontrado informações recebebidas para alteração
+        Receita receitaInsert = receitaEncontrada.get();
+
         receitaInsert.setNomeReceita(receitaRecebida.getNomeReceita());
         receitaInsert.setData_criacao(receitaRecebida.getData_criacao());
         receitaInsert.setCategoria_id(receitaRecebida.getCategoria_id());
@@ -136,7 +171,7 @@ public class ReceitaService {
                 receitaAlterada.getId_receita(),
                 receitaAlterada.getNomeReceita(),
                 categoria.get().getNome_categoria(),
-                funcionarioEncontrado.get().getNome(),
+                funcionario.get().getNome(),
                 receitaAlterada.getModo_preparo(),
                 receitaAlterada.getData_criacao(),
                 receitaAlterada.getIngredientes_id()
@@ -146,6 +181,7 @@ public class ReceitaService {
     }
 
     public ResponseJson delete(Long id) {
+
         //Verificando se funcionário existe
         Optional<Receita> receitaEncontrada = receitaRepository.findById(id);
         if (receitaEncontrada.isEmpty()) {

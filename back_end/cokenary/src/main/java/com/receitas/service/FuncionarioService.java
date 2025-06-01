@@ -2,6 +2,9 @@ package com.receitas.service;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
+import com.receitas.exception.BadRequestException;
+import com.receitas.exception.RegistroExistsException;
+import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Cargo;
 import com.receitas.model.Funcionario;
 import com.receitas.repository.CargoRepository;
@@ -25,11 +28,18 @@ public class FuncionarioService {
     @Autowired
     private CargoRepository cargoRepository;
 
-    public ResponseJson listAll() {
+    public List<FuncionarioDTO> listAll() {
 
         //Buscando dados do funcionário
         List<Funcionario> funcionariosEncontrados = funcioRepository.findAllJoin();
-        List<FuncionarioDTO> funcionariosDTO = new ArrayList<>(); //Inicializando lista de funcionárioDTO
+
+        //Validando se algum funcionário foi encontrado
+        if (funcionariosEncontrados.isEmpty()) {
+            throw new RegistroNotFoundException("Nenhum funcionário encontrado");
+        }
+
+        //Inicializando lista de funcionárioDTO
+        List<FuncionarioDTO> listaFuncionariosDTO = new ArrayList<>();
 
         //Pecorrendo lista de funcionário, transformando em DTOs e adicionando na lista funcionariosDTO
         for (int i = 0; i < funcionariosEncontrados.size(); i++) {
@@ -42,95 +52,93 @@ public class FuncionarioService {
                     funcionariosEncontrados.get(i).getCargo().getNome(),
                     funcionariosEncontrados.get(i).getImagem_perfil()
             );
-            funcionariosDTO.add(funcionario);//Adiciona na lista DTO
+
+            //Adiciona na lista DTO
+            listaFuncionariosDTO.add(funcionario);
         }
-        return new ResponseJson(HttpStatus.OK, "Funcionários listados com sucesso!", funcionariosDTO);
+
+        return listaFuncionariosDTO;
     }
 
-    public ResponseJson listById(Long id) {
+    public FuncionarioDTO listById(Long id) {
 
         //Buscando funcionário pelo ID
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
 
-        //Validando se algum funcionário foi encontrado, e transformando em DTO
+        //Validando se algum funcionário foi encontrado
         if (funcionarioEncontrado.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Nenhum funcionário encontrado");
+            throw new RegistroNotFoundException("Funcionário de ID (" + id + ") não foi encontrado");
         }
 
-        return new ResponseJson(HttpStatus.OK, "Funcionário encontrado com sucesso!",
-                new FuncionarioDTO(
-                        funcionarioEncontrado.get().getId_func(),
-                        funcionarioEncontrado.get().getNome(),
-                        funcionarioEncontrado.get().getRg(),
-                        funcionarioEncontrado.get().getDt_adm(),
-                        funcionarioEncontrado.get().getSalario(),
-                        funcionarioEncontrado.get().getCargo().getNome(),
-                        funcionarioEncontrado.get().getImagem_perfil()
-                ));
+        return new FuncionarioDTO(
+                funcionarioEncontrado.get().getId_func(),
+                funcionarioEncontrado.get().getNome(),
+                funcionarioEncontrado.get().getRg(),
+                funcionarioEncontrado.get().getDt_adm(),
+                funcionarioEncontrado.get().getSalario(),
+                funcionarioEncontrado.get().getCargo().getNome(),
+                funcionarioEncontrado.get().getImagem_perfil()
+        );
     }
 
-    public ResponseJson saveFuncionario(Funcionario funcionario) {
+    public FuncionarioDTO save(Funcionario funcionario) {
 
         //Validando se já existe um funcionário com esse nome
         Funcionario funcionarioEncontrado = funcioRepository.findByNome(funcionario.getNome());
         if (funcionarioEncontrado != null) {
-            return new ResponseJson(HttpStatus.BAD_REQUEST, "Falha, já existe um funcionário com esse nome");
+            throw new RegistroExistsException("Falha, já existe um funcionário com esse nome");
         }
 
-        //Validando se foi passado o ID do cargo
-        if (funcionario.getCargo().getId() == null) {
-            return new ResponseJson(HttpStatus.BAD_REQUEST, "Falha, o ID do cargo não foi informado");
+        //Buscando cargo
+        Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
+
+        //Validando se cargo existe
+        if (cargoEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Falha, o cargo com ID (" + funcionario.getCargo().getId() + ") não foi informado");
         }
 
-        //Pegando cargo pelo ID e validando se existe cargo com esse ID
-        Optional<Cargo> cargo = cargoRepository.findById(funcionario.getCargo().getId());
-        if (cargo.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum cargo encontrado com o ID informado");
+        //Convertendo rg para String, para conta os caracteres
+        String rgString = funcionario.getRg().toString();
+
+        //Validando se rg foi inserido de forma correta
+        if (!(rgString.length() >= 7 && rgString.length() <= 9)) {
+            throw new BadRequestException("O número de rg deve possuir entre 7 e 9 dígitos, sem caracteres especiais. Foram informados (" + rgString.length() + ") dígitos");
         }
 
         //Cadastrando funcionário no sistema
         Funcionario funcionarioSalvo = funcioRepository.save(funcionario);
 
-        //Validando se funcionário foi salvo
-        if (funcionarioSalvo == null) {
-            return new ResponseJson(HttpStatus.BAD_REQUEST, "Falha, ocorreu uma falha ao tentar salvar o funcionário");
-        }
 
         //Transformando em DTO
-        return new ResponseJson(HttpStatus.CREATED, "Funcionário cadastrado com sucesso", new FuncionarioDTO(
+        return new FuncionarioDTO(
                 funcionarioSalvo.getId_func(),
                 funcionarioSalvo.getNome(),
                 funcionarioSalvo.getRg(),
                 funcionarioSalvo.getDt_adm(),
                 funcionarioSalvo.getSalario(),
-                cargo.get().getNome(),
+                cargoEncontrado.get().getNome(),
                 funcionarioSalvo.getImagem_perfil()
-        ));
+        );
     }
 
-    public ResponseJson update(Long id, Funcionario funcionario) {
+    public FuncionarioDTO update(Long id, Funcionario funcionario) {
+
         //Buscando funcionário
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
 
         //Validando se foi encontrado algum funcionário com o ID informado
         if (funcionarioEncontrado.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nunhum funcinário encontrado com esse ID (" + id + ")");
+            throw new RegistroNotFoundException("Falha, funcionário com (" + id + ") não foi encontrado");
         }
 
-
-        //Pegando cargo pelo ID e validando se existe cargo com esse ID
-        Optional<Cargo> cargo = cargoRepository.findById(funcionario.getCargo().getId());
-        if (cargo.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum cargo encontrado com o ID informado");
-        }
-
-
-        //Validando se cargo informado existe
+        //Buscando cargo
         Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
-        if (cargoEncontrado.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, não foi encontrado nenhum cargo com ID (" + funcionario.getCargo().getId() + ") informado");
-        }
 
+
+        //Validando se cargo existe
+        if (cargoEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Falha, o cargo com ID (" + funcionario.getCargo().getId() + ") não foi informado");
+        }
 
         //Setando informações no funcionário encontrado
         Funcionario funcionarioInsert = funcionarioEncontrado.get();
@@ -139,60 +147,40 @@ public class FuncionarioService {
         funcionarioInsert.setDt_adm(funcionario.getDt_adm());
         funcionarioInsert.setSalario(funcionario.getSalario());
         funcionarioInsert.setCargo(funcionario.getCargo());
+
+        //Salvando no banco as alterações
         Funcionario funcionarioAlterado = funcioRepository.save(funcionarioInsert);
 
+
         //Convertendo em DTO para enviar na request
-        FuncionarioDTO funcionarioDTOAlterado = new FuncionarioDTO(
+        return new FuncionarioDTO(
                 funcionarioAlterado.getId_func(),
                 funcionarioAlterado.getNome(),
                 funcionarioAlterado.getRg(),
                 funcionarioAlterado.getDt_adm(),
                 funcionarioAlterado.getSalario(),
-                cargo.get().getNome(),
+                cargoEncontrado.get().getNome(),
                 funcionarioAlterado.getImagem_perfil()
         );
 
-        return new ResponseJson(HttpStatus.CREATED, "Funcionário atualizado com sucesso!", funcionarioDTOAlterado);
     }
 
-    public ResponseJson delete(Long id) {
+    public Boolean delete(Long id) {
 
         //Verificando se funcionário existe
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
         if (funcionarioEncontrado.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum funcionário encontrado com esse ID (" + id + ")");
+            throw new RegistroNotFoundException("Falha, funcionário com ID (" + id + ") não foi encontrado");
         }
 
         //Excluindo fuuncionário
         funcioRepository.delete(funcionarioEncontrado.get());
-        return new ResponseJson(HttpStatus.OK, "Funcionário excluido com sucesso!");
+        return true;
     }
 
-    public ResponseJson salvarFotoFuncionario(MultipartFile arquivo, Long id) {
+    public String salvarFotoFuncionario(MultipartFile arquivo, Long id) {
 
-        FotoUtil fotoUtil = new FotoUtil();
-        fotoUtil.setCaminhoDestinoFoto("C:\\Users\\Gabryel Silvah\\Desktop\\ambiente_teste");
-
-        String nomeFoto;
-
-        try {
-            nomeFoto = fotoUtil.salvarFoto(arquivo);
-        } catch (IOException erro) {
-            return null;
-        }
-
-
-        //Salvar caminho da imagem de perfil no banco de dados do funcionário
-        Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
-
-        Funcionario funcionarioInsert = funcionarioEncontrado.get();
-
-        funcionarioInsert.setImagem_perfil(nomeFoto);
-
-        funcioRepository.save(funcionarioInsert);
-
-
-        return new ResponseJson(HttpStatus.OK, "Salvo com sucesso!");
+        return "";
     }
 
 }

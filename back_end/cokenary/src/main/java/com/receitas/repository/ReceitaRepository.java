@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ReceitaRepository extends JpaRepository<Receita, Long> {
 
-    Receita findByNomeReceita(String nome);
+    Optional<Receita> findByNomeReceita(String nome);
 
     @NativeQuery("SELECT * FROM receitas INNER JOIN categorias ON receitas.categoria_id = categorias.id_cat INNER JOIN funcionarios ON funcionarios.id_func = receitas.cozinheiro_id;")
     List<Receita> findAllJoin();
