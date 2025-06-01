@@ -92,6 +92,23 @@ public class ExceptionsController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
     }
 
+    @ExceptionHandler(RestauranteNotFoundException.class)
+    public ResponseEntity<?> restauranteNotFound(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorReponse);
+    }
+
+    @ExceptionHandler(RestauranteExistsException.class)
+    public ResponseEntity<?> restauranteExists(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
+    }
+
+    @ExceptionHandler(ReferenciaNotFoundException.class)
+    public ResponseEntity<?> referenciaNotFound(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorReponse);
+    }
 }
 
 
