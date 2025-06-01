@@ -98,6 +98,14 @@ public class ExceptionsController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
     }
 
+    //Erros ocasionados por dados ou estrutura incorretos do cliente
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> badRequestException(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
+    }
+
+
 }
 
 

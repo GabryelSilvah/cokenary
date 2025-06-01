@@ -15,7 +15,7 @@ public class Funcionario {
     private Long id_func;
     @NotNull(message = "RG do funcionário não foi informado")
     @Column(name = "rg")
-    private int rg;
+    private Long rg;
 
     @NotNull(message = "Nome do funcionário não foi informado")
     @Column(name = "nome")
@@ -41,7 +41,7 @@ public class Funcionario {
     }
 
 
-    public Funcionario(int rg, String nome, Date dt_adm, float salario, Cargo cargo_id) {
+    public Funcionario(Long rg, String nome, Date dt_adm, float salario, Cargo cargo_id) {
         this.rg = rg;
         this.nome = nome;
         this.dt_adm = dt_adm;
@@ -49,7 +49,7 @@ public class Funcionario {
         this.cargo_id = cargo_id;
     }
 
-    public Funcionario(int rg, String nome, Date dt_adm, float salario) {
+    public Funcionario(Long rg, String nome, Date dt_adm, float salario) {
         this.rg = rg;
         this.nome = nome;
         this.dt_adm = dt_adm;
@@ -61,7 +61,7 @@ public class Funcionario {
         return id_func;
     }
 
-    public int getRg() {
+    public Long getRg() {
         return rg;
     }
 
@@ -85,7 +85,7 @@ public class Funcionario {
         this.id_func = id_func;
     }
 
-    public void setRg(int rg) {
+    public void setRg(Long rg) {
         this.rg = rg;
     }
 
