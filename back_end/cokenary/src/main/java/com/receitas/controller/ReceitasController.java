@@ -2,12 +2,14 @@ package com.receitas.controller;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
+import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Funcionario;
 import com.receitas.model.Receita;
 import com.receitas.service.ReceitaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/receitas")
@@ -22,7 +24,10 @@ public class ReceitasController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ResponseJson> cadastre(@RequestBody Receita receita) {
+    public ResponseEntity<ResponseJson> cadastre(@RequestPart("file") MultipartFile arquivo, @RequestPart("receita") Receita receita) {
+        if (arquivo.isEmpty()) {
+            throw new RegistroNotFoundException("Nenhum arquivo enviado");
+        }
         ResponseJson serviceResponse = receitaService.save(receita);
         return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }

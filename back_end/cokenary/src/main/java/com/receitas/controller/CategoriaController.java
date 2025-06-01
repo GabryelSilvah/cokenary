@@ -26,8 +26,8 @@ public class CategoriaController {
 
     @GetMapping("/byId/{id}")
     public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
-        CategoriaDTO CategoriaDTO = categoriaService.listById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categoria encontrada com sucesso!", CategoriaDTO));
+        CategoriaDTO categoriaDTO = categoriaService.listById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Categoria encontrada com sucesso!", categoriaDTO));
     }
 
     @PostMapping("/cadastrar")

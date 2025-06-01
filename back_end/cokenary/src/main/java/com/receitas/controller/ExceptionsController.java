@@ -81,13 +81,19 @@ public class ExceptionsController {
 
 
     @ExceptionHandler(RegistroNotFoundException.class)
-    public ResponseEntity<?> RegistroNotFound(Exception exception) {
+    public ResponseEntity<?> registroNotFound(Exception exception) {
         ErrorReponse errorReponse = new ErrorReponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorReponse);
     }
 
     @ExceptionHandler(RegistroExistsException.class)
-    public ResponseEntity<?> RegistroExists(Exception exception) {
+    public ResponseEntity<?> registroExists(Exception exception) {
+        ErrorReponse errorReponse = new ErrorReponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
+    }
+
+    @ExceptionHandler(CozinheiroException.class)
+    public ResponseEntity<?> cozinheiroException(Exception exception) {
         ErrorReponse errorReponse = new ErrorReponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorReponse);
     }
