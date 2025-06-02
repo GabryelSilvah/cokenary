@@ -99,6 +99,7 @@ public class ReceitaService {
 
         List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaSalva.getId_receita());
 
+
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
                 receitaSalva.getId_receita(),
