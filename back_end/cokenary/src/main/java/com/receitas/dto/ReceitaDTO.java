@@ -13,6 +13,6 @@ public record ReceitaDTO(
         String cozinheiro,
         String modo_preparo,
         String data_criacao,
-        List<Receitas_and_ingredientes> ingredientes_id
+        List<Ingredientes_receita> ingredientes_id
 ) {
 }

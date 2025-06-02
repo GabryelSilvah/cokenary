@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class Ingrediente {
     private String nome;
 
     @OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Receitas_and_ingredientes> receitas_and_medidas;
 
 

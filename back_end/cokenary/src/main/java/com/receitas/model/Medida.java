@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -21,7 +22,9 @@ public class Medida {
     @Column(name = "nome_med", nullable = false, length = 45)
     private String nome_med;
 
+
     @OneToMany(mappedBy = "medida_id", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Receitas_and_ingredientes> receitas_and_ingredientes;
 
 

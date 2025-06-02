@@ -8,7 +8,7 @@ public class Receitas_and_ingredientes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_composicao;
 
     @ManyToOne
     @JoinColumn(name = "medida_id")
@@ -22,12 +22,12 @@ public class Receitas_and_ingredientes {
 
 
     //Gets e Sets
-    public Long getId() {
-        return id;
+    public Long getId_composicao() {
+        return id_composicao;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId_composicao(Long id_composicao) {
+        this.id_composicao = id_composicao;
     }
 
     public Medida getMedida_id() {

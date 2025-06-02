@@ -23,7 +23,7 @@ public interface Receitas_and_ingredintesRepository extends JpaRepository<Receit
 
 
     @NativeQuery(
-            "SELECT  medidas.nome_med, ingredientes.nome, receitas_and_ingredientes.receita_id " +
+            "SELECT  receitas_and_ingredientes.id_composicao, medidas.nome_med, ingredientes.nome " +
                     "FROM receitas_and_ingredientes " +
                     "INNER JOIN ingredientes " +
                     "ON ingredientes.id_ingred = receitas_and_ingredientes.ingrediente_id " +
@@ -34,5 +34,5 @@ public interface Receitas_and_ingredintesRepository extends JpaRepository<Receit
                     "WHERE receita_id = :id_receita;"
 
     )
-    List<Receitas_and_ingredientes> findByIdJoin(Long id_receita);
+    List<Ingredientes_receita> findByIdJoin(Long id_receita);
 }

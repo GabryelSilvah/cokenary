@@ -1,17 +1,15 @@
 package com.receitas.model;
 
 public class Ingredientes_receita {
+    private Long id_composicao;
     private String nome_med;
     private String nome;
-    private Long receita_id;
 
 
-
-
-    public Ingredientes_receita(String nome_med, String nome, Long receita_id) {
+    public Ingredientes_receita(Long id_composicao, String nome_med, String nome) {
+        this.id_composicao = id_composicao;
         this.nome_med = nome_med;
         this.nome = nome;
-        this.receita_id = receita_id;
     }
 
     public String getNome_med() {
@@ -30,11 +28,11 @@ public class Ingredientes_receita {
         this.nome = nome;
     }
 
-    public Long getReceita_id() {
-        return receita_id;
+    public Long getId_composicao() {
+        return id_composicao;
     }
 
-    public void setReceita_id(Long receita_id) {
-        this.receita_id = receita_id;
+    public void setId_composicao(Long id_composicao) {
+        this.id_composicao = id_composicao;
     }
 }

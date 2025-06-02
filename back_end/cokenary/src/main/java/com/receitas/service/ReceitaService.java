@@ -40,7 +40,7 @@ public class ReceitaService {
 
         //Pecorrendo lista de funcionário, transformando em DTOs e adicionando na lista funcionariosDTO
         for (int i = 0; i < receitas.size(); i++) {
-            List<Receitas_and_ingredientes> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitas.get(i).getId_receita());
+            List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitas.get(i).getId_receita());
 
             ReceitaDTO receitaDTO = new ReceitaDTO(
                     receitas.get(i).getId_receita(),
@@ -93,10 +93,11 @@ public class ReceitaService {
         for (int i = 1; i < receitaRecebida.getIngredientes_id().size(); i++) {
             receitasAndIngredintesRepository.save(receitaRecebida.getIngredientes_id().get(i));
         }
+
         //Declaranco lista para armazenar lista de ingredientes da receita
         List<Ingrediente> listaIngredientes = new ArrayList<>();
 
-        List<Receitas_and_ingredientes> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaSalva.getId_receita());
+        List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaSalva.getId_receita());
 
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
@@ -161,7 +162,7 @@ public class ReceitaService {
         //Salvando alteração
         Receita receitaAlterada = receitaRepository.save(receitaInsert);
 
-        List<Receitas_and_ingredientes> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaAlterada.getId_receita());
+        List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaAlterada.getId_receita());
 
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTOAlterado = new ReceitaDTO(
