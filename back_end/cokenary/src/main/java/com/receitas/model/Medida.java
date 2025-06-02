@@ -30,11 +30,11 @@ public class Medida {
     public Medida() {
     }
 
-    public Medida(Long id, String nome) {
-        this.id_med = id;
-        this.nome_med = nome;
+    public Medida(Long id_med, String nome_med, List<Receitas_and_ingredientes> receitas_and_ingredientes) {
+        this.id_med = id_med;
+        this.nome_med = nome_med;
+        this.receitas_and_ingredientes = receitas_and_ingredientes;
     }
-
 
     //Gets e Sets
 

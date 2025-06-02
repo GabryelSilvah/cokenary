@@ -3,14 +3,8 @@ package com.receitas.service;
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.ReceitaDTO;
 import com.receitas.exception.*;
-import com.receitas.model.Categoria;
-import com.receitas.model.Funcionario;
-import com.receitas.model.Ingrediente;
-import com.receitas.model.Receita;
-import com.receitas.repository.CategoriaRepository;
-import com.receitas.repository.FuncionarioRepository;
-import com.receitas.repository.IngredienteRepository;
-import com.receitas.repository.ReceitaRepository;
+import com.receitas.model.*;
+import com.receitas.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,13 +29,19 @@ public class ReceitaService {
     @Autowired
     private IngredienteRepository ingredienteRepository;
 
+    @Autowired
+    private Receitas_and_ingredintesRepository receitasAndIngredintesRepository;
+
     public ResponseJson listAll() {
 
         List<Receita> receitas = receitaRepository.findAll();
         List<ReceitaDTO> receitasDTOList = new ArrayList<>(); //Inicializando lista de funcionárioDTO
 
+
         //Pecorrendo lista de funcionário, transformando em DTOs e adicionando na lista funcionariosDTO
         for (int i = 0; i < receitas.size(); i++) {
+            List<Receitas_and_ingredientes> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitas.get(i).getId_receita());
+
             ReceitaDTO receitaDTO = new ReceitaDTO(
                     receitas.get(i).getId_receita(),
                     receitas.get(i).getNomeReceita(),
@@ -49,7 +49,7 @@ public class ReceitaService {
                     receitas.get(i).getCozinheiro_id().getNome(),
                     receitas.get(i).getModo_preparo(),
                     receitas.get(i).getData_criacao(),
-                    receitas.get(i).getIngredientes_id()
+                    receitasAndIngredientesEncontrada
             );
 
 
@@ -90,18 +90,13 @@ public class ReceitaService {
         //Salvando receita
         Receita receitaSalva = receitaRepository.save(receitaRecebida);
 
+        for (int i = 1; i < receitaRecebida.getIngredientes_id().size(); i++) {
+            receitasAndIngredintesRepository.save(receitaRecebida.getIngredientes_id().get(i));
+        }
         //Declaranco lista para armazenar lista de ingredientes da receita
         List<Ingrediente> listaIngredientes = new ArrayList<>();
 
-        //Buscando cada ingrediente pelo ID retornado
-        for (int i = 0; i < receitaSalva.getIngredientes_id().size(); i++) {
-            Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(receitaSalva.getIngredientes_id().get(i).getId());
-            if (ingredienteEncontrado.isEmpty()) {
-                throw new RegistroNotFoundException("Nenhum ingrediente encontrado para o ID(" + receitaSalva.getIngredientes_id().get(i).getId() + ")");
-            }
-
-            listaIngredientes.add(ingredienteEncontrado.get());
-        }
+        List<Receitas_and_ingredientes> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaSalva.getId_receita());
 
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTO = new ReceitaDTO(
@@ -111,7 +106,7 @@ public class ReceitaService {
                 funcionario.get().getNome(),
                 receitaSalva.getModo_preparo(),
                 receitaSalva.getData_criacao(),
-                listaIngredientes
+                receitasAndIngredientesEncontrada
         );
 
 
@@ -166,6 +161,8 @@ public class ReceitaService {
         //Salvando alteração
         Receita receitaAlterada = receitaRepository.save(receitaInsert);
 
+        List<Receitas_and_ingredientes> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaAlterada.getId_receita());
+
         //Convertendo em DTO para enviar na request
         ReceitaDTO receitaDTOAlterado = new ReceitaDTO(
                 receitaAlterada.getId_receita(),
@@ -174,7 +171,7 @@ public class ReceitaService {
                 funcionario.get().getNome(),
                 receitaAlterada.getModo_preparo(),
                 receitaAlterada.getData_criacao(),
-                receitaAlterada.getIngredientes_id()
+                receitasAndIngredientesEncontrada
         );
 
         return new ResponseJson(HttpStatus.CREATED, "Receita atualizado com sucesso!", receitaDTOAlterado);

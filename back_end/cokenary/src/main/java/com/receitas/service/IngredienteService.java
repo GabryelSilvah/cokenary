@@ -29,7 +29,7 @@ public class IngredienteService {
         //Convertendo para ingredientesDTO
         for (int i = 0; i < listaIngredientes.size(); i++) {
             listaIngredientesDTO.add(
-                    new IngredienteDTO(listaIngredientes.get(i).getId(), listaIngredientes.get(i).getNome())
+                    new IngredienteDTO(listaIngredientes.get(i).getId_ingred(), listaIngredientes.get(i).getNome())
             );
 
         }
@@ -49,7 +49,7 @@ public class IngredienteService {
         }
 
         //Retornando ingredientes no formato DTO
-        return new IngredienteDTO(ingredienteEncontrado.get().getId(), ingredienteEncontrado.get().getNome());
+        return new IngredienteDTO(ingredienteEncontrado.get().getId_ingred(), ingredienteEncontrado.get().getNome());
     }
 
 
@@ -67,7 +67,7 @@ public class IngredienteService {
 
         //Retornando ingrediente no formato DTO
         return new IngredienteDTO(
-                ingredienteSalva.getId(),
+                ingredienteSalva.getId_ingred(),
                 ingredienteSalva.getNome()
         );
     }
@@ -89,7 +89,7 @@ public class IngredienteService {
         Ingrediente ingredienteSalvo = ingredienteRepository.save(ingredienteEncontrado.get());
 
         //Retornando no formato DTO
-        return new IngredienteDTO(ingredienteSalvo.getId(), ingredienteSalvo.getNome());
+        return new IngredienteDTO(ingredienteSalvo.getId_ingred(), ingredienteSalvo.getNome());
     }
 
     public Boolean delete(Long id) {

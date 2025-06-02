@@ -1,10 +1,6 @@
 package com.receitas.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -13,40 +9,42 @@ import java.util.List;
 public class Ingrediente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_ingred")
+    private Long id_ingred;
 
     @Column(name = "nome", nullable = false, length = 45)
     private String nome;
 
+    @OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)
+    private List<Receitas_and_ingredientes> receitas_and_medidas;
 
-    @ManyToMany(mappedBy = "ingredientes_id", fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<Receita> receitas_id;
 
-    //@OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)
-    //private List<Receitas_and_ingredientes> receitas_and_ingredientes;
+
+    //@ManyToMany(mappedBy = "ingredientes_id", fetch = FetchType.EAGER)
+    //@JsonIgnore
+    //private List<Receita> receitas_id;
+
+
 
 
     //Construtores
-
     public Ingrediente() {
     }
 
-    public Ingrediente(Long id, String nome, List<Receita> receitas_id) {
-        this.id = id;
+    public Ingrediente(Long id_ingred, String nome, List<Receitas_and_ingredientes> receitas_and_medidas) {
+        this.id_ingred = id_ingred;
         this.nome = nome;
-        this.receitas_id = receitas_id;
+        this.receitas_and_medidas = receitas_and_medidas;
     }
 
     //Gets e Sets
-    public Long getId() {
-        return id;
+    public Long getId_ingred() {
+        return id_ingred;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId_ingred(Long id_ingred) {
+        this.id_ingred = id_ingred;
     }
 
     public String getNome() {
@@ -57,12 +55,12 @@ public class Ingrediente {
         this.nome = nome;
     }
 
-    public List<Receita> getReceitas_id() {
-        return receitas_id;
+    public List<Receitas_and_ingredientes> getReceitas_and_medidas() {
+        return receitas_and_medidas;
     }
 
-    public void setReceitas_id(List<Receita> receitas_id) {
-        this.receitas_id = receitas_id;
+    public void setReceitas_and_medidas(List<Receitas_and_ingredientes> receitas_and_medidas) {
+        this.receitas_and_medidas = receitas_and_medidas;
     }
 }
 

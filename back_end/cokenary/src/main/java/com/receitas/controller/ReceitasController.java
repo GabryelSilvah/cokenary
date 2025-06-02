@@ -24,10 +24,7 @@ public class ReceitasController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ResponseJson> cadastre(@RequestPart("file") MultipartFile arquivo, @RequestPart("receita") Receita receita) {
-        if (arquivo.isEmpty()) {
-            throw new RegistroNotFoundException("Nenhum arquivo enviado");
-        }
+    public ResponseEntity<ResponseJson> cadastre(@RequestBody Receita receita) {
         ResponseJson serviceResponse = receitaService.save(receita);
         return ResponseEntity.status(serviceResponse.getStatus()).body(serviceResponse);
     }

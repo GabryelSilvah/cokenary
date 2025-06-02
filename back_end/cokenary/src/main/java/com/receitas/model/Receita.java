@@ -3,6 +3,7 @@ package com.receitas.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Entity
@@ -41,17 +42,20 @@ public class Receita {
     @Column(name = "modo_preparo", nullable = false)
     private String modo_preparo;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
+    private List<Receitas_and_ingredientes> ingredientes_id;
+
+
+   /* @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "composicoes",
             joinColumns = @JoinColumn(name = "receitas_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredientes_id")
     )
-    private List<Ingrediente> ingredientes_id;
+    private List<Ingrediente> ingredientes_id;*/
 
     //Relacionamento com a tabela receitas_and_ingredientes
-    //@OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
-    //private List<Receitas_and_ingredientes> receitas_and_ingredientes;
+
 
 
     //Contrutores
@@ -59,14 +63,15 @@ public class Receita {
     }
 
     public Receita(
-            Long id,
+            Long id_receita,
             String nomeReceita,
             String data_criacao,
             Funcionario cozinheiro_id,
             Categoria categoria_id,
             String modo_preparo,
-            List<Ingrediente> ingredientes_id
+            List<Receitas_and_ingredientes> ingredientes_id
     ) {
+        this.id_receita = id_receita;
         this.nomeReceita = nomeReceita;
         this.data_criacao = data_criacao;
         this.cozinheiro_id = cozinheiro_id;
@@ -125,11 +130,11 @@ public class Receita {
     }
 
 
-    public List<Ingrediente> getIngredientes_id() {
+    public List<Receitas_and_ingredientes> getIngredientes_id() {
         return ingredientes_id;
     }
 
-    public void setIngredientes_id(List<Ingrediente> ingredientes_id) {
+    public void setIngredientes_id(List<Receitas_and_ingredientes> ingredientes_id) {
         this.ingredientes_id = ingredientes_id;
     }
 }

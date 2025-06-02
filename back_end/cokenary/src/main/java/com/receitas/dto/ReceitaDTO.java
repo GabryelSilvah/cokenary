@@ -1,6 +1,8 @@
 package com.receitas.dto;
 
 import com.receitas.model.Ingrediente;
+import com.receitas.model.Ingredientes_receita;
+import com.receitas.model.Receitas_and_ingredientes;
 
 import java.util.List;
 
@@ -11,6 +13,6 @@ public record ReceitaDTO(
         String cozinheiro,
         String modo_preparo,
         String data_criacao,
-        List<Ingrediente> ingredientes_id
+        List<Receitas_and_ingredientes> ingredientes_id
 ) {
 }
