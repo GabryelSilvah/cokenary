@@ -33,11 +33,6 @@ public class FuncionarioService {
         //Buscando dados do funcionário
         List<Funcionario> funcionariosEncontrados = funcioRepository.findAllJoin();
 
-        //Validando se algum funcionário foi encontrado
-        if (funcionariosEncontrados.isEmpty()) {
-            throw new RegistroNotFoundException("Nenhum funcionário encontrado");
-        }
-
         //Inicializando lista de funcionárioDTO
         List<FuncionarioDTO> listaFuncionariosDTO = new ArrayList<>();
 

@@ -12,7 +12,7 @@ public class Medida {
 
     //ID
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_med")
     private Long id_med;
 

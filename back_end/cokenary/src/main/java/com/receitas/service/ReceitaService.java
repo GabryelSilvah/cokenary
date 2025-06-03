@@ -1,6 +1,7 @@
 package com.receitas.service;
 
 import com.receitas.config.ResponseJson;
+import com.receitas.dto.FuncionarioDTO;
 import com.receitas.dto.ReceitaDTO;
 import com.receitas.exception.*;
 import com.receitas.model.*;
@@ -8,6 +9,7 @@ import com.receitas.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,10 @@ public class ReceitaService {
     @Autowired
     private Receitas_and_ingredintesRepository receitasAndIngredintesRepository;
 
-    public ResponseJson listAll() {
+    @Autowired
+    private MedidaRepository medidaRepository;
+
+    public List<ReceitaDTO> listAll() {
 
         List<Receita> receitas = receitaRepository.findAll();
         List<ReceitaDTO> receitasDTOList = new ArrayList<>(); //Inicializando lista de funcionárioDTO
@@ -55,10 +60,36 @@ public class ReceitaService {
 
             receitasDTOList.add(receitaDTO);//Adiciona na lista DTO
         }
-        return new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso!", receitasDTOList);
+        return receitasDTOList;
     }
 
-    public ResponseJson save(Receita receitaRecebida) {
+    public ReceitaDTO listById(Long id) {
+
+        //Buscando receita pelo ID
+        Optional<Receita> receitaEncontrada = receitaRepository.findById(id);
+
+        //Validando se algum receita foi encontrado
+        if (receitaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("Falha, receita de ID (" + id + ") não foi encontrado");
+        }
+
+        //Buscando lista de ingredientes da receita
+        List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(id);
+
+
+        return new ReceitaDTO(
+                receitaEncontrada.get().getId_receita(),
+                receitaEncontrada.get().getNomeReceita(),
+                receitaEncontrada.get().getCategoria_id().getNome_categoria(),
+                receitaEncontrada.get().getCozinheiro_id().getNome(),
+                receitaEncontrada.get().getModo_preparo(),
+                receitaEncontrada.get().getData_criacao(),
+                receitasAndIngredientesEncontrada
+        );
+    }
+
+    @Transactional
+    public ReceitaDTO save(Receita receitaRecebida) {
 
         //Validando se o nome da receita já existe
         Optional<Receita> receitaNomeEncontrada = receitaRepository.findByNomeReceita(receitaRecebida.getNomeReceita());
@@ -90,18 +121,33 @@ public class ReceitaService {
         //Salvando receita
         Receita receitaSalva = receitaRepository.save(receitaRecebida);
 
-        for (int i = 1; i < receitaRecebida.getIngredientes_id().size(); i++) {
+        //Salvando ingredientes
+        for (int i = 0; i < receitaRecebida.getIngredientes_id().size(); i++) {
+
+            //Validando se medida existe
+            Optional<Medida> medidaEncontrada = medidaRepository.findById(receitaRecebida.getIngredientes_id().get(i).getMedida_id().getId_med());
+            if (medidaEncontrada.isEmpty()) {
+                throw new RegistroNotFoundException("Medida de ID(" + receitaRecebida.getIngredientes_id().get(i).getMedida_id().getId_med() + ") não foi encontrada");
+            }
+
+            //Validando se ingredinte existe
+            Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(receitaRecebida.getIngredientes_id().get(i).getIngrediente_id().getId_ingred());
+            if (ingredienteEncontrado.isEmpty()) {
+                throw new RegistroNotFoundException("Ingrediente de ID(" + receitaRecebida.getIngredientes_id().get(i).getIngrediente_id().getId_ingred() + ") não foi encontrado");
+            }
+
+            //Setando o número de ID da receita que vai receber a lista de ingredientes
+            receitaRecebida.getIngredientes_id().get(i).setReceita_id(new Receita(receitaSalva.getId_receita()));
             receitasAndIngredintesRepository.save(receitaRecebida.getIngredientes_id().get(i));
         }
 
         //Declaranco lista para armazenar lista de ingredientes da receita
         List<Ingrediente> listaIngredientes = new ArrayList<>();
-
         List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaSalva.getId_receita());
 
 
         //Convertendo em DTO para enviar na request
-        ReceitaDTO receitaDTO = new ReceitaDTO(
+        return new ReceitaDTO(
                 receitaSalva.getId_receita(),
                 receitaSalva.getNomeReceita(),
                 categoria.get().getNome_categoria(),
@@ -110,12 +156,10 @@ public class ReceitaService {
                 receitaSalva.getData_criacao(),
                 receitasAndIngredientesEncontrada
         );
-
-
-        return new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso!", receitaDTO);
     }
 
-    public ResponseJson update(Long id, Receita receitaRecebida) {
+    @Transactional
+    public ReceitaDTO update(Long id, Receita receitaRecebida) {
 
         //Pesquisando receita pelo ID e validando se foi encontrada
         Optional<Receita> receitaEncontrada = receitaRepository.findByIdJoin(id);
@@ -163,10 +207,34 @@ public class ReceitaService {
         //Salvando alteração
         Receita receitaAlterada = receitaRepository.save(receitaInsert);
 
-        List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(receitaAlterada.getId_receita());
+        List<Ingredientes_receita> receitasAndIngredientesEncontrada = receitasAndIngredintesRepository.findByIdJoin(id);
+
+        //Salvando ingredientes
+        for (int i = 0; i < receitaRecebida.getIngredientes_id().size(); i++) {
+
+            //Validando se medida existe
+            Optional<Medida> medidaEncontrada = medidaRepository.findById(receitaRecebida.getIngredientes_id().get(i).getMedida_id().getId_med());
+            if (medidaEncontrada.isEmpty()) {
+                throw new RegistroNotFoundException("Medida de ID(" + receitaRecebida.getIngredientes_id().get(i).getMedida_id().getId_med() + ") não foi encontrada");
+            }
+
+            //Validando se ingredinte existe
+            Optional<Ingrediente> ingredienteEncontrado = ingredienteRepository.findById(receitaRecebida.getIngredientes_id().get(i).getIngrediente_id().getId_ingred());
+            if (ingredienteEncontrado.isEmpty()) {
+                throw new RegistroNotFoundException("Ingrediente de ID(" + receitaRecebida.getIngredientes_id().get(i).getIngrediente_id().getId_ingred() + ") não foi encontrado");
+            }
+
+            //Setando o número de ID da receita que vai receber a lista de ingredientes
+            receitaRecebida.getIngredientes_id().get(i).setReceita_id(new Receita(receitaAlterada.getId_receita()));
+
+           Receitas_and_ingredientes receita_and_ingred_insert = (Receitas_and_ingredientes)receitaInsert.getIngredientes_id().get(i);
+            receitasAndIngredintesRepository.save(receita_and_ingred_insert);
+        }
+
+
 
         //Convertendo em DTO para enviar na request
-        ReceitaDTO receitaDTOAlterado = new ReceitaDTO(
+        return new ReceitaDTO(
                 receitaAlterada.getId_receita(),
                 receitaAlterada.getNomeReceita(),
                 categoria.get().getNome_categoria(),
@@ -175,21 +243,19 @@ public class ReceitaService {
                 receitaAlterada.getData_criacao(),
                 receitasAndIngredientesEncontrada
         );
-
-        return new ResponseJson(HttpStatus.CREATED, "Receita atualizado com sucesso!", receitaDTOAlterado);
     }
 
-    public ResponseJson delete(Long id) {
+    public boolean delete(Long id) {
 
         //Verificando se funcionário existe
         Optional<Receita> receitaEncontrada = receitaRepository.findById(id);
         if (receitaEncontrada.isEmpty()) {
-            return new ResponseJson(HttpStatus.NOT_FOUND, "Falha, nenhum receita encontrado com esse ID (" + id + ")");
+            throw new ResourceNotFoundException("Falha, nenhum receita encontrado com esse ID (" + id + ")");
         }
 
         //Excluindo fuuncionário
         receitaRepository.delete(receitaEncontrada.get());
-        return new ResponseJson(HttpStatus.OK, "Receita excluida com sucesso!");
+        return true;
     }
 
 }

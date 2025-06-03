@@ -20,6 +20,14 @@ public class Receitas_and_ingredientes {
     @JoinColumn(name = "receita_id")
     private Receita receita_id;
 
+    public Receitas_and_ingredientes(){}
+
+    public Receitas_and_ingredientes(Long id_composicao, Medida medida_id, Ingrediente ingrediente_id, Receita receita_id) {
+        this.id_composicao = id_composicao;
+        this.medida_id = medida_id;
+        this.ingrediente_id = ingrediente_id;
+        this.receita_id = receita_id;
+    }
 
     //Gets e Sets
     public Long getId_composicao() {

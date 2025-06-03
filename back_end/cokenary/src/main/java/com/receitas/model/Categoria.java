@@ -10,7 +10,7 @@ import java.util.List;
 public class Categoria {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_cat;
 
     @NotNull(message = "Informe o nome da categoria")

@@ -12,7 +12,7 @@ import java.util.List;
 public class Receita {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_receita;
 
     //Nome
@@ -43,24 +43,17 @@ public class Receita {
     @Column(name = "modo_preparo", nullable = false)
     private String modo_preparo;
 
-    @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Receitas_and_ingredientes> ingredientes_id;
-
-
-   /* @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "composicoes",
-            joinColumns = @JoinColumn(name = "receitas_id"),
-            inverseJoinColumns = @JoinColumn(name = "ingredientes_id")
-    )
-    private List<Ingrediente> ingredientes_id;*/
-
-    //Relacionamento com a tabela receitas_and_ingredientes
 
 
 
     //Contrutores
     public Receita() {
+    }
+
+    public Receita(Long id_receita) {
+        this.id_receita = id_receita;
     }
 
     public Receita(
