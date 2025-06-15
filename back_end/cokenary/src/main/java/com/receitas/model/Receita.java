@@ -46,6 +46,9 @@ public class Receita {
     @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Receitas_and_ingredientes> ingredientes_id;
 
+    @OneToMany(mappedBy = "fk_receita", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Publicacao_livro> listaPublicacoes;
+
 
 
     //Contrutores

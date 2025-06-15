@@ -1,13 +1,12 @@
 package com.receitas.service;
 
-import com.receitas.config.ResponseJson;
-import com.receitas.dto.FuncionarioDTO;
+import com.receitas.dto.Composicao_ReceitaDTO;
+import com.receitas.dto.Receita_all_infor;
 import com.receitas.dto.ReceitaDTO;
 import com.receitas.exception.*;
 import com.receitas.model.*;
 import com.receitas.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,9 @@ public class ReceitaService {
 
     @Autowired
     private IngredienteRepository ingredienteRepository;
+
+    @Autowired
+    private Composicao_ReceitaRepository composicaoReceitaRepository;
 
     @Autowired
     private Receitas_and_ingredintesRepository receitasAndIngredintesRepository;
@@ -106,7 +108,7 @@ public class ReceitaService {
         }
 
         //Validando se funcionário inserirdo possui o cargo de cozinheiro
-        if (!funcionario.get().getCargo().getNome().equals("Cozinheiro")) {
+        if (!funcionario.get().getCargo().getNome().equals("cozinheiro")) {
             throw new CozinheiroException("Funcionário de ID(" + receitaRecebida.getCozinheiro_id().getId_func() + ") não possui cargo de cozinheiro");
         }
 
@@ -227,10 +229,9 @@ public class ReceitaService {
             //Setando o número de ID da receita que vai receber a lista de ingredientes
             receitaRecebida.getIngredientes_id().get(i).setReceita_id(new Receita(receitaAlterada.getId_receita()));
 
-           Receitas_and_ingredientes receita_and_ingred_insert = (Receitas_and_ingredientes)receitaInsert.getIngredientes_id().get(i);
+            Receitas_and_ingredientes receita_and_ingred_insert = (Receitas_and_ingredientes) receitaInsert.getIngredientes_id().get(i);
             receitasAndIngredintesRepository.save(receita_and_ingred_insert);
         }
-
 
 
         //Convertendo em DTO para enviar na request
@@ -256,6 +257,37 @@ public class ReceitaService {
         //Excluindo fuuncionário
         receitaRepository.delete(receitaEncontrada.get());
         return true;
+    }
+
+    public Receita_all_infor listByIdAllInfor(Long id) {
+
+        System.out.println("Teste 00: ");
+        //Buscando receita pelo ID
+        Optional<Receita_all_infor> receitaEncontrada = receitaRepository.findByIdJoinDetails(id);
+        System.out.println("Teste 0: ");
+
+        //Validando se algum receita foi encontrado
+        if (receitaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("Falha, receita de ID (" + id + ") não foi encontrado");
+        }
+
+        //Buscando lista de ingredientes da receita
+        List<Composicao_ReceitaDTO> ingredientesEncontrados = composicaoReceitaRepository.findJoinAllDetails(id);
+
+        System.out.println("Teste 1: " + receitaEncontrada.get().getModo_preparo());
+        System.out.println("Teste 2: " + ingredientesEncontrados.get(0).getNome_ingred());
+
+        return new Receita_all_infor(
+                receitaEncontrada.get().getId_receita(),
+                receitaEncontrada.get().getId_func(),
+                receitaEncontrada.get().getId_cat(),
+                receitaEncontrada.get().getNome_receita(),
+                receitaEncontrada.get().getData_criacao(),
+                receitaEncontrada.get().getCozinheiro_id(),
+                receitaEncontrada.get().getCategoria_id(),
+                receitaEncontrada.get().getModo_preparo(),
+                ingredientesEncontrados
+        );
     }
 
 }

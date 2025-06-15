@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,6 +26,7 @@ public class Restaurante {
     private String telefone;
 
     @OneToMany(mappedBy = "restauranteId", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Referencia> referencias;
 
     // Construtores

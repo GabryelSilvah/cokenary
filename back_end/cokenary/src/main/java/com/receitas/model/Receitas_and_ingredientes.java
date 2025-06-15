@@ -10,6 +10,9 @@ public class Receitas_and_ingredientes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_composicao;
 
+    //@Column(name = "porcoes")
+    //private int porcoes;
+
     @ManyToOne
     @JoinColumn(name = "medida_id")
     private Medida medida_id;

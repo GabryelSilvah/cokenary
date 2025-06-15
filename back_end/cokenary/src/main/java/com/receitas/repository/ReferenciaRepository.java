@@ -1,7 +1,9 @@
 package com.receitas.repository;
 
 import com.receitas.model.Referencia;
+import com.receitas.model.Restaurante;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,4 +21,15 @@ public interface ReferenciaRepository extends JpaRepository<Referencia, Long> {
 
     @Query("SELECT r FROM Referencia r WHERE r.restauranteId.idRestaurante = :restauranteId")
     List<Referencia> findByRestauranteId(@Param("restauranteId") Long restauranteId);
+
+
+    @NativeQuery(
+            "SELECT id_restaurante, restaurantes.nome, contato, telefone\n" +
+                    "FROM referencias\n" +
+                    "INNER JOIN restaurantes\n" +
+                    "ON restaurantes.id_restaurante = referencias.restaurante_id\n" +
+                    "WHERE referencias.funcionario_id = :id;"
+    )
+
+    List<Restaurante> findByFuncionario(Long id);
 }

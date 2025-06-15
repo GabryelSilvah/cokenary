@@ -1,5 +1,7 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.receitas.dto.FuncionarioChegadaDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -35,9 +37,22 @@ public class Funcionario {
     private Cargo cargo_id;
 
     @OneToMany(mappedBy = "cozinheiro_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Receita> receitas;
 
+    @OneToMany(mappedBy = "fk_editor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Livro> listaLivros;
+
     public Funcionario() {
+    }
+
+    public Funcionario(FuncionarioChegadaDTO funcionarioFullDTO) {
+        this.rg = funcionarioFullDTO.getRg();
+        this.nome = funcionarioFullDTO.getNome();
+        this.dt_adm = funcionarioFullDTO.getDt_adm();
+        this.cargo_id = funcionarioFullDTO.getCargo();
+        this.salario = funcionarioFullDTO.getSalario();
     }
 
 
@@ -119,5 +134,13 @@ public class Funcionario {
 
     public void setReceitas(List<Receita> receitas) {
         this.receitas = receitas;
+    }
+
+    public List<Livro> getListaLivros() {
+        return listaLivros;
+    }
+
+    public void setListaLivros(List<Livro> listaLivros) {
+        this.listaLivros = listaLivros;
     }
 }

@@ -2,6 +2,8 @@ package com.receitas.controller;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
+import com.receitas.dto.FuncionarioChegadaDTO;
+import com.receitas.dto.FuncionarioSaidaDTO;
 import com.receitas.model.Funcionario;
 import com.receitas.service.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,20 @@ public class FuncionarioController {
 
     @GetMapping("/byId/{id}")
     public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
-        FuncionarioDTO funcionarioDTO = funcionarioService.listById(id);
+        FuncionarioSaidaDTO funcionarioDTO = funcionarioService.listById(id);
         return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Funcionario encontrada com sucesso!", funcionarioDTO));
     }
 
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> cadastrar(@RequestBody Funcionario funcionario) {
         FuncionarioDTO funcionarioDTO = funcionarioService.save(funcionario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario cadastrado com sucesso!", funcionarioDTO));
+    }
+
+    @PostMapping("/v2/cadastrar")
+    public ResponseEntity<ResponseJson> cadastrarCompleto(@RequestBody FuncionarioChegadaDTO funcionario) {
+        System.out.println("Testando chegada");
+        FuncionarioDTO funcionarioDTO = funcionarioService.saveFull(funcionario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario cadastrado com sucesso!", funcionarioDTO));
     }
 

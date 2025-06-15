@@ -1,21 +1,23 @@
 package com.receitas.service;
 
-import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
+import com.receitas.dto.FuncionarioChegadaDTO;
+import com.receitas.dto.FuncionarioSaidaDTO;
 import com.receitas.exception.BadRequestException;
 import com.receitas.exception.RegistroExistsException;
 import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Cargo;
 import com.receitas.model.Funcionario;
+import com.receitas.model.Referencia;
+import com.receitas.model.Restaurante;
 import com.receitas.repository.CargoRepository;
 import com.receitas.repository.FuncionarioRepository;
-import com.receitas.util.FotoUtil;
+import com.receitas.repository.ReferenciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,9 @@ public class FuncionarioService {
 
     @Autowired
     private CargoRepository cargoRepository;
+
+    @Autowired
+    private ReferenciaRepository referenciaRepository;
 
     public List<FuncionarioDTO> listAll() {
 
@@ -55,7 +60,7 @@ public class FuncionarioService {
         return listaFuncionariosDTO;
     }
 
-    public FuncionarioDTO listById(Long id) {
+    public FuncionarioSaidaDTO listById(Long id) {
 
         //Buscando funcionário pelo ID
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
@@ -65,14 +70,18 @@ public class FuncionarioService {
             throw new RegistroNotFoundException("Funcionário de ID (" + id + ") não foi encontrado");
         }
 
-        return new FuncionarioDTO(
+        List<Restaurante> referenciaEncontrada = referenciaRepository.findByFuncionario(id);
+
+
+        return new FuncionarioSaidaDTO(
                 funcionarioEncontrado.get().getId_func(),
                 funcionarioEncontrado.get().getNome(),
                 funcionarioEncontrado.get().getRg(),
                 funcionarioEncontrado.get().getDt_adm(),
                 funcionarioEncontrado.get().getSalario(),
                 funcionarioEncontrado.get().getCargo().getNome(),
-                funcionarioEncontrado.get().getImagem_perfil()
+                funcionarioEncontrado.get().getImagem_perfil(),
+                referenciaEncontrada
         );
     }
 
@@ -102,6 +111,55 @@ public class FuncionarioService {
 
         //Cadastrando funcionário no sistema
         Funcionario funcionarioSalvo = funcioRepository.save(funcionario);
+
+
+        //Transformando em DTO
+        return new FuncionarioDTO(
+                funcionarioSalvo.getId_func(),
+                funcionarioSalvo.getNome(),
+                funcionarioSalvo.getRg(),
+                funcionarioSalvo.getDt_adm(),
+                funcionarioSalvo.getSalario(),
+                cargoEncontrado.get().getNome(),
+                funcionarioSalvo.getImagem_perfil()
+        );
+    }
+
+    @Transactional
+    public FuncionarioDTO saveFull(FuncionarioChegadaDTO funcionario) {
+
+
+
+        //Validando se já existe um funcionário com esse nome
+        Funcionario funcionarioEncontrado = funcioRepository.findByNome(funcionario.getNome());
+        if (funcionarioEncontrado != null) {
+            throw new RegistroExistsException("Falha, já existe um funcionário com esse nome");
+        }
+
+        //Buscando cargo
+        Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
+
+        //Validando se cargo existe
+        if (cargoEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Falha, o cargo com ID (" + funcionario.getCargo().getId() + ") não foi informado");
+        }
+
+        //Convertendo rg para String, para conta os caracteres
+        String rgString = funcionario.getRg().toString();
+
+        //Validando se rg foi inserido de forma correta
+        if (!(rgString.length() >= 7 && rgString.length() <= 9)) {
+            throw new BadRequestException("O número de rg deve possuir entre 7 e 9 dígitos, sem caracteres especiais. Foram informados (" + rgString.length() + ") dígitos");
+        }
+
+        //Cadastrando funcionário no sistema
+        Funcionario funcionarioSalvo = funcioRepository.save(new Funcionario(funcionario));
+
+        //Cadastrando referência de restaurante associado ao funcionário
+        for (int i = 0; i < funcionario.getListaRestaurante().size(); i++) {
+            Referencia novaReferencia = new Referencia(funcionarioSalvo, funcionario.getListaRestaurante().get(i), null, null);
+            referenciaRepository.save(novaReferencia);
+        }
 
 
         //Transformando em DTO

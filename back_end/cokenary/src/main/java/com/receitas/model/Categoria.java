@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -18,6 +19,7 @@ public class Categoria {
     private String nome_categoria;
 
     @OneToMany(mappedBy = "categoria_id")
+    @JsonIgnore
     private List<Receita> receitas;
 
     //Construtores

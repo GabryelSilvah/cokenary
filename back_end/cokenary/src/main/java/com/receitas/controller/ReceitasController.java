@@ -1,17 +1,14 @@
 package com.receitas.controller;
 
 import com.receitas.config.ResponseJson;
-import com.receitas.dto.FuncionarioDTO;
+import com.receitas.dto.Receita_all_infor;
 import com.receitas.dto.ReceitaDTO;
-import com.receitas.exception.RegistroNotFoundException;
-import com.receitas.model.Funcionario;
 import com.receitas.model.Receita;
 import com.receitas.service.ReceitaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,6 +29,13 @@ public class ReceitasController {
         ReceitaDTO receitasDTOS = receitaService.listById(id);
         return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso", receitasDTOS));
     }
+
+    @GetMapping("/byIdAllInfor/{id}")
+    public ResponseEntity<ResponseJson> listar_por_id_allInfor(@PathVariable("id") Long id) {
+        Receita_all_infor receitasDTOS = receitaService.listByIdAllInfor(id);
+        return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Receitas listadas com sucesso", receitasDTOS));
+    }
+
 
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> cadastrar(@RequestBody Receita receita) {

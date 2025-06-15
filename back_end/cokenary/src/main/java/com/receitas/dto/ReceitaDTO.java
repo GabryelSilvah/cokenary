@@ -16,3 +16,19 @@ public record ReceitaDTO(
         List<Ingredientes_receita> ingredientes_id
 ) {
 }
+
+/*
+* public class ReceitaDTO{
+    Long id_receita;
+    String nome_receita;
+    String categoria;
+    String cozinheiro;
+    String modo_preparo;
+    String data_criacao;
+    List<Ingredientes_receita> ingredientes_id;
+}
+
+*
+*
+*
+* */
