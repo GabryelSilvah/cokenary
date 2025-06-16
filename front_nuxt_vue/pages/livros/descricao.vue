@@ -19,8 +19,8 @@
 
         <div class="container_agregados_receita">
           <h3 class="subtitulo_topicos">Ingredientes:</h3>
-          <ul class="lista_ingredientes" v-for="ingrediente in pagina.composicao">
-            <li>{{ ingrediente.nome_ingred }} {{ ingrediente.nome_med }}</li>
+          <ul class="lista_ingredientes">
+            <li  v-for="ingrediente in pagina.composicao">{{ ingrediente.nome_ingred }} {{ ingrediente.nome_med }}</li>
           </ul>
           <h3 class="subtitulo_topicos">Modo de preparo</h3>
 
@@ -53,6 +53,5 @@ const route = useRoute();
 
 const livroEncontrado = await byIdLivros(route.query.id_livro);
 
-console.log(JSON.stringify(livroEncontrado.value.data));
 
 </script>

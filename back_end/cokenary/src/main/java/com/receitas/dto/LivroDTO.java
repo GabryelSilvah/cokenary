@@ -1,5 +1,7 @@
 package com.receitas.dto;
 
+import com.receitas.model.Funcionario;
+
 import java.util.List;
 
 public class LivroDTO {
@@ -10,20 +12,20 @@ public class LivroDTO {
 
     private int isbn;
 
-    private String editor;
+    private Funcionario editor;
 
     private List<Receita_all_infor> receitas_livro;
 
 
     //Construtor
-    public LivroDTO(Long id_livro, String titulo_livro, int isbn, String editor) {
+    public LivroDTO(Long id_livro, String titulo_livro, int isbn, Funcionario editor) {
         this.id_livro = id_livro;
         this.titulo_livro = titulo_livro;
         this.isbn = isbn;
         this.editor = editor;
     }
 
-    public LivroDTO(Long id_livro, String titulo_livro, int isbn, String editor, List<Receita_all_infor> receitas_livro) {
+    public LivroDTO(Long id_livro, String titulo_livro, int isbn, Funcionario editor, List<Receita_all_infor> receitas_livro) {
         this.id_livro = id_livro;
         this.titulo_livro = titulo_livro;
         this.isbn = isbn;
@@ -56,11 +58,11 @@ public class LivroDTO {
         this.isbn = isbn;
     }
 
-    public String getEditor() {
+    public Funcionario getEditor() {
         return editor;
     }
 
-    public void setEditor(String editor) {
+    public void setEditor(Funcionario editor) {
         this.editor = editor;
     }
 

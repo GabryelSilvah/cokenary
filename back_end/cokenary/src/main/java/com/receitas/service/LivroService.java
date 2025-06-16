@@ -53,7 +53,7 @@ public class LivroService {
                     livrosEncontrados.get(i).getId_livro(),
                     livrosEncontrados.get(i).getTituloLivro(),
                     livrosEncontrados.get(i).getIsbn(),
-                    livrosEncontrados.get(i).getFk_editor().getNome()
+                    livrosEncontrados.get(i).getFk_editor()
             );
 
             //Adiciona na lista DTO
@@ -86,7 +86,7 @@ public class LivroService {
                 livroEncontrada.get().getId_livro(),
                 livroEncontrada.get().getTituloLivro(),
                 livroEncontrada.get().getIsbn(),
-                livroEncontrada.get().getFk_editor().getNome(),
+                livroEncontrada.get().getFk_editor(),
                 listaReceitasLivro
         );
 
@@ -119,7 +119,7 @@ public class LivroService {
                 livroSalvo.getId_livro(),
                 livroSalvo.getTituloLivro(),
                 livroSalvo.getIsbn(),
-                funcionarioEncontrado.get().getNome()
+                funcionarioEncontrado.get()
         );
     }
 
@@ -158,6 +158,7 @@ public class LivroService {
         return listById(livroSalvo.getId_livro());
     }
 
+    
     public LivroDTO update(Long id, Livro livro) {
 
         //Buscando livro
@@ -190,7 +191,7 @@ public class LivroService {
                 livroEncontrado.get().getId_livro(),
                 livroEncontrado.get().getTituloLivro(),
                 livroEncontrado.get().getIsbn(),
-                funcionarioEncontrado.get().getNome()
+                funcionarioEncontrado.get()
         );
     }
 

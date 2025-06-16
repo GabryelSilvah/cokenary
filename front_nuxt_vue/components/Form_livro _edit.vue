@@ -76,7 +76,7 @@ const livroModel = defineModel("livroModel", {
     id_livro: 0,
     titulo_livro: "",
     isbn: 27494,
-    editor: { id_func: 1 },
+    editor: { id_func: 0 },
     composicao_receitas: []
   }
 });
@@ -85,10 +85,8 @@ const livroModel = defineModel("livroModel", {
 
 
 async function alterarLivro(id_livro) {
-  console.log("Forma " + id_livro);
   const livroAlterado = await alterarLivros(id_livro, livroModel.value);
   fecharForm();
-
 }
 
 
@@ -111,8 +109,6 @@ async function addReceitasNaLista() {
   };
 
   livroModel.value.composicao_receitas.push(composicao_receitas);
-
-  console.log(JSON.stringify(livroModel.value.composicao_receitas))
 
 }
 

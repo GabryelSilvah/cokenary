@@ -31,7 +31,7 @@
         </div>
 
         <h2 class="titulo_livro">{{ livro.titulo_livro }}</h2>
-        <h3 class="nome_editor">Por: {{ livro.editor }}</h3>
+        <h3 class="nome_editor">Por: {{ livro.editor.nome }}</h3>
       </div>
 
 
@@ -66,7 +66,7 @@ const livroModel = ref({
   id_livro: 0,
   titulo_livro: "",
   isbn: 27494,
-  editor: { id_func: 1 },
+  editor: { id_func: 0 },
   composicao_receitas: []
 });
 
@@ -82,9 +82,10 @@ function abrirForm() {
 async function abrirFormEdit(id_livro) {
 
   const livroEncontrado = await byIdLivros(id_livro);
+
   livroModel.value.id_livro = livroEncontrado.value.data.id_livro;
   livroModel.value.titulo_livro = livroEncontrado.value.data.titulo_livro;
-  livroModel.value.editor.id_func = livroEncontrado.value.data.editor;
+  livroModel.value.editor.id_func = livroEncontrado.value.data.editor.id_func;
   livroModel.value.composicao_receitas = livroEncontrado.value.data.receitas_livro;
 
 
