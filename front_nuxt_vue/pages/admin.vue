@@ -5,19 +5,41 @@
       <div class="sidebar-header">
         <h1>Painel Administrativo</h1>
         <p class="subtitle">Gerencie todos os aspectos do seu sistema</p>
-        
+
       </div>
 
       <nav>
         <ul>
           <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-          <li><a href="#"><i class="fas fa-utensils"></i> Receitas</a></li>
+
+
+          <li>
+            <NuxtLink :to="{ path: '/perfil' }">
+              <i class="fas fa-user"></i> Perfil
+            </NuxtLink>
+          </li>
+
+          <li>
+            <NuxtLink :to="{ path: '/food' }">
+              <i class="fas fa-utensils"></i> Receitas
+            </NuxtLink>
+          </li>
+
+
+          <li>
+            <NuxtLink :to="{ path: '/avaliacao' }">
+              <i class="fas fa-star"></i> Avaliações
+            </NuxtLink>
+          </li>
+
           <li>
             <NuxtLink :to="{ path: '/restaurantes', query: { id_restaurantes: 1 } }">
               <i class="fas fa-store"></i> Restaurantes
             </NuxtLink>
           </li>
-        
+
+
+
           <li>
             <NuxtLink :to="{ path: '/funcionarios', query: { id_funcionario: 1 } }">
               <i class="fas fa-users"></i> funcionários
@@ -61,7 +83,7 @@
           <li class="logout-link"><a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
 
 
-      
+
 
         </ul>
 
@@ -187,5 +209,5 @@ export default {
 </script>
 
 <style>
-@import url("~/assets/css/admin.css");	
+@import url("~/assets/css/admin.css");
 </style>

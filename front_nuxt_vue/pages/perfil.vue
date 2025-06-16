@@ -29,48 +29,31 @@
 
       <div class="profile-details">
         <section class="personal-info">
-          <h2>Informações Pessoais</h2>
-          <p>Atualize suas informações de perfil</p>
+  <h2>Dados do Funcionário</h2>
+  <p>Veja as informações relacionadas ao seu trabalho</p>
 
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Nome</label>
-              <div class="info-value">Marcos</div>
-            </div>
+  <div class="info-grid">
+    <div class="info-item">
+      <label>Quantidade de Receitas</label>
+      <div class="info-value">35</div> <!-- Substitua pelo valor real com variável se desejar -->
+    </div>
 
-            <div class="info-item">
-              <label>Email</label>
-              <div class="info-value">marcos.souza@exemplo.com</div>
-            </div>
+    <div class="info-item">
+      <label>Restaurante</label>
+      <div class="info-value">Restaurante Sabor do Chef</div> <!-- Substitua por variável dinâmica se quiser -->
+    </div>
 
-            <div class="info-item">
-              <label>Telefone</label>
-              <div class="info-value">(21) 98765-4321</div>
-            </div>
+    <div class="info-item">
+      <label>Cargo</label>
+      <div class="info-value">Chef de Cozinha</div>
+    </div>
 
-            <div class="info-item">
-              <label>Endereço</label>
-              <div class="info-value">Av. Brasil, 1500</div>
-            </div>
-
-            <div class="info-item">
-              <label>Cidade</label>
-              <div class="info-value">Rio de Janeiro</div>
-            </div>
-
-            <div class="info-item full-width">
-              <label>Sobre você</label>
-              <div class="info-value">
-                Desenvolvedor web com 5 anos de experiência, especializado em Vue.js e Node.js. Apaixonado por criar soluções eficientes e interfaces intuitivas.
-              </div>
-            </div>
-          </div>
-
-          <div class="action-buttons">
-            <button class="cancel-btn">Cancelar</button>
-            <button class="save-btn">Salvar Alterações</button>
-          </div>
-        </section>
+    <div class="info-item">
+      <label>Membro desde</label>
+      <div class="info-value">Março 2022</div>
+    </div>
+  </div>
+</section>
       </div>
     </div>
   </div>

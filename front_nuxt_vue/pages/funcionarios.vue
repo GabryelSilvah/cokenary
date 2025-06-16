@@ -1,14 +1,14 @@
 <template>
-
-  <Menu />
-
   <main>
+    <Menu />
 
     <div class="container">
       <h1>Funcionários</h1>
       <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-input" />
 
-      <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
+      <button @click="openAdd" class="add-button">
+        Adicionar Funcionário
+      </button>
 
       <table class="employee-table">
         <thead>
@@ -17,15 +17,17 @@
             <th>Salário</th>
             <th>RG</th>
             <th>Admissão</th>
+            <th>Cargo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="f in filteredFuncionarios" :key="f.id">
             <td>{{ f.nome }}</td>
-            <td>{{ f.salario }}</td>
+            <td>R$ {{ f.salario.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</td>
             <td>{{ f.rg }}</td>
-            <td>{{ f.admissao }}</td>
+            <td>{{ formatDate(f.dt_adm) }}</td>
+            <td>{{ f.cargo?.nome || f.cargo || 'N/A' }}</td>
             <td>
               <button @click="edit(f)" class="edit-button">Editar</button>
               <button @click="confirmDelete(f)" class="delete-button">Excluir</button>
@@ -36,18 +38,30 @@
 
       <!-- Modais -->
       <div v-if="renderModals">
-        <!-- Modal de Adicionar/Editar -->
+        <!-- Modal Adicionar/Editar -->
         <div v-if="showAddModal" class="modal-overlay">
           <div class="modal">
             <h2>{{ editing ? 'Editar Funcionário' : 'Adicionar Funcionário' }}</h2>
+
             <label>Nome:</label>
-            <input v-model="current.nome" type="text" />
+            <input v-model="current.nome" type="text" required />
+
             <label>Salário:</label>
-            <input v-model="current.salario" type="number" />
+            <input v-model="current.salario" type="number" step="0.01" required />
+
             <label>RG:</label>
-            <input v-model="current.rg" type="text" />
-            <label>Admissão:</label>
-            <input v-model="current.admissao" type="date" />
+            <input v-model="current.rg" type="number" required />
+
+            <label>Data de Admissão:</label>
+            <input v-model="current.dt_adm" type="date" required />
+
+            <label>Cargo:</label>
+            <select v-model="current.cargo_id" required>
+              <option disabled value="">Selecione um cargo</option>
+              <option v-for="cargo in cargos" :key="cargo.id_cargo" :value="cargo.id_cargo">
+                {{ cargo.nome }}
+              </option>
+            </select>
 
             <div class="modal-actions">
               <button @click="save" class="save-button">Salvar</button>
@@ -73,80 +87,181 @@
 </template>
 
 <script>
+import {
+  funcionarioListar,
+  funcionarioCadastrar,
+  funcionarioAlterar,
+  funcionarioDeletar
+} from '~/assets/api_funcionario/funcionario.js';
+
+import { cargoListar } from '~/assets/js/request_api_cargo.js';
+
 export default {
   data() {
     return {
-      funcionarios: [
-        { id: 1, nome: 'Ana Lima', salario: 3500, rg: '123456', admissao: '2023-01-10' },
-        { id: 2, nome: 'Carlos Souza', salario: 4200, rg: '654321', admissao: '2022-09-15' }
-      ],
-      current: { id: null, nome: '', salario: '', rg: '', admissao: '' },
+      funcionarios: [],
+      cargos: [],
+      current: {
+        id_func: null,
+        nome: '',
+        salario: 0,
+        rg: null,
+        dt_adm: '',
+        cargo_id: ''
+      },
       editing: false,
       showAddModal: false,
       showConfirmModal: false,
       search: '',
       renderModals: true
-    }
+    };
   },
   computed: {
     filteredFuncionarios() {
       return this.funcionarios.filter(f =>
-        f.nome.toLowerCase().includes(this.search.toLowerCase())
-      )
+        f.nome.toLowerCase().includes(this.search.toLowerCase()) ||
+        f.rg.toString().includes(this.search)
+      );
     }
   },
+  async created() {
+    await this.fetchFuncionarios();
+    await this.fetchCargos();
+  },
   methods: {
-    openAdd() {
-      this.editing = false
-      this.resetCurrent()
-      this.toggleModalAdd(true)
-    },
-    edit(f) {
-      this.current = { ...f }
-      this.editing = true
-      this.toggleModalAdd(true)
-    },
-    confirmDelete(f) {
-      this.current = { ...f }
-      this.showConfirmModal = true
-    },
-    deleteNow() {
-      this.funcionarios = this.funcionarios.filter(f => f.id !== this.current.id)
-      this.closeModal()
-    },
-    save() {
-      if (this.editing) {
-        const index = this.funcionarios.findIndex(f => f.id === this.current.id)
-        if (index !== -1) this.funcionarios.splice(index, 1, { ...this.current })
-      } else {
-        const newId = this.funcionarios.length ? Math.max(...this.funcionarios.map(f => f.id)) + 1 : 1
-        this.funcionarios.push({ ...this.current, id: newId })
+    async fetchFuncionarios() {
+      try {
+        const response = await funcionarioListar();
+        this.funcionarios = Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error('Erro ao buscar funcionários:', error);
+        this.funcionarios = [];
       }
-      this.closeModal()
+    },
+    async fetchCargos() {
+      try {
+        const response = await cargoListar();
+        const cargosArray = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+          ? response.data
+          : Object.values(response)[0];
+
+        this.cargos = Array.isArray(cargosArray)
+          ? cargosArray.map(cargo => ({
+              id_cargo: cargo.id_cargo || cargo.id,
+              nome: cargo.nome
+            }))
+          : [];
+      } catch (error) {
+        console.error('Erro ao carregar cargos:', error);
+        this.cargos = [];
+      }
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR');
+    },
+    formatDateForAPI(dateString) {
+      return new Date(dateString).toISOString().split('T')[0];
+    },
+    openAdd() {
+      this.editing = false;
+      this.resetCurrent();
+      this.showAddModal = true;
+    },
+    edit(funcionario) {
+      // 🔍 Encontrar o cargo correto pelo ID (funciona com id ou id_cargo)
+      const cargoId = funcionario.cargo?.id || funcionario.cargo?.id_cargo || '';
+      this.current = {
+        id_func: funcionario.id_func || funcionario.id,
+        nome: funcionario.nome,
+        salario: funcionario.salario,
+        rg: funcionario.rg,
+        dt_adm: funcionario.dt_adm ? new Date(funcionario.dt_adm).toISOString().split('T')[0] : '',
+        cargo_id: cargoId
+      };
+
+      this.editing = true;
+      this.showAddModal = true;
+    },
+    validateForm() {
+      const erros = [];
+
+      if (!this.current.nome) erros.push('Nome é obrigatório!');
+      if (!this.current.rg) erros.push('RG é obrigatório!');
+      if (!this.current.dt_adm) erros.push('Data de admissão é obrigatória!');
+      if (!this.current.cargo_id) erros.push('Selecione um cargo!');
+
+      if (erros.length) {
+        console.warn('Validação falhou:', erros.join(', '));
+        return false;
+      }
+
+      return true;
+    },
+    async save() {
+      try {
+        if (!this.validateForm()) return;
+
+        const funcionarioData = {
+          nome: this.current.nome.trim(),
+          salario: parseFloat(this.current.salario),
+          rg: this.current.rg.toString(),
+          dt_adm: this.formatDateForAPI(this.current.dt_adm),
+          cargo: { id: parseInt(this.current.cargo_id) }
+        };
+
+        if (this.editing) {
+          await funcionarioAlterar(this.current.id_func, funcionarioData);
+        } else {
+          await funcionarioCadastrar(funcionarioData);
+        }
+
+        await this.fetchFuncionarios();
+        this.closeModal();
+
+        console.log('Funcionário salvo com sucesso!');
+      } catch (error) {
+        console.error('Erro ao salvar:', error.response?.data || error.message);
+      }
+    },
+    confirmDelete(funcionario) {
+      this.current = {
+        ...funcionario,
+        id_func: funcionario.id_func || funcionario.id
+      };
+      this.showConfirmModal = true;
+    },
+    async deleteNow() {
+      try {
+        await funcionarioDeletar(this.current.id_func);
+        await this.fetchFuncionarios();
+        this.closeModal();
+      } catch (error) {
+        console.error('Erro ao excluir funcionário:', error);
+      }
     },
     closeModal() {
-      this.showAddModal = false
-      this.showConfirmModal = false
-      this.resetCurrent()
-      this.forceRerenderModals()
-    },
-    toggleModalAdd(val) {
-      this.showAddModal = val
-      if (!val) {
-        this.resetCurrent()
-        this.forceRerenderModals()
-      }
+      this.showAddModal = false;
+      this.showConfirmModal = false;
+      this.resetCurrent();
     },
     resetCurrent() {
-      this.current = { id: null, nome: '', salario: '', rg: '', admissao: '' }
-    },
-    forceRerenderModals() {
-      this.renderModals = false
-      this.$nextTick(() => (this.renderModals = true))
+      this.current = {
+        id_func: null,
+        nome: '',
+        salario: 0,
+        rg: null,
+        dt_adm: '',
+        cargo_id: ''
+      };
     }
   }
-}
+};
 </script>
+
 
 <style scoped>
 @import url("~/assets/css/funcionario.css");
