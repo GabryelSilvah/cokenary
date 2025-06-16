@@ -1,0 +1,139 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+/*  */
+
+.container_btn_opcoes {
+  width: 80vw;
+  margin-top: 100px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px;
+}
+
+.container_btn_opcoes button {
+  height: 33px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 7px;
+  border: none;
+  border-radius: 10px;
+  background-color: rgb(28, 28, 28);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.container_btn_opcoes button img {
+  width: 15px;
+  height: 15px;
+  object-fit: cover;
+}
+
+
+/*  */
+
+.container_livros {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 50px 0;
+  gap: 20px;
+}
+
+.livro {
+  position: relative;
+  width: 230px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container_img_livro {
+  width: 200px;
+  height: 320px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 2px 2px 20px rgb(181, 181, 181);
+}
+
+.img_livro {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.titulo_livro {
+  max-width: 100%;
+  word-break: keep-all;
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.nome_editor {
+  max-width: 100%;
+  max-height: 100%;
+  padding: 4px;
+  border-radius: 7px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: rgb(88, 11, 253);
+  overflow: hidden;
+}
+
+.container_black {
+  position: absolute;
+  width: 200px;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10%;
+  border-radius: 8px;
+  transition: 0.6s;
+}
+
+.container_btn_livro {
+  width: 90%;
+  margin-bottom: 70px;
+  display: flex;
+  justify-content: center;
+  gap: 10%;
+}
+
+
+.btn_livros {
+  display: none;
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
+  padding: 4px;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+#btn_excluir{
+  background-color: rgb(255, 56, 56);
+}
+
+.container_black:hover {
+  .btn_livros {
+    display: flex;
+  };
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.276);
+}

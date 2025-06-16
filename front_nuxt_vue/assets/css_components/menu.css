@@ -1,0 +1,84 @@
+body {
+  overflow-x: hidden;
+  background-color: #fff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+.menu {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(247, 247, 247);
+  border-bottom: 1px solid rgb(167, 167, 167);
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+
+.menu nav {
+  width: 80vw;
+  position: relative;
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.menu ul {
+  position: absolute;
+  right: 2%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 30px;
+}
+
+.menu ul a {
+  text-decoration: none;
+}
+
+.menu ul li {
+  list-style-type: none;
+  color: #000000;
+  font-family: sans-serif;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.menu .perfil_menu {
+  position: absolute;
+  right: 10px;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-right: 20px;
+}
+
+.perfil_menu .foto_usuario {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+main {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.titulo_page{
+  text-decoration: none;
+  color: #000;
+  font-size: 1.6rem;
+}
