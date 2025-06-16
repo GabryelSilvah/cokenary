@@ -24,6 +24,7 @@ public class Receita {
     //Data de criação
     @Column(name = "data_criacao", nullable = false)
     @Temporal(TemporalType.DATE)
+    @NotNull(message = "Data de criação da receita não foi definida")
     private String data_criacao;
 
     //Nome do cozinheiro
@@ -43,12 +44,15 @@ public class Receita {
     @Column(name = "modo_preparo", nullable = false)
     private String modo_preparo;
 
+    @OneToMany(mappedBy = "fk_receita", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Avaliacao> listaAvaliacoes;
+
     @OneToMany(mappedBy = "receita_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Receitas_and_ingredientes> ingredientes_id;
 
     @OneToMany(mappedBy = "fk_receita", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Publicacao_livro> listaPublicacoes;
-
 
 
     //Contrutores

@@ -8,6 +8,9 @@ import java.util.Optional;
 
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
 
-    @NativeQuery("SELECT * FROM avaliacoes WHERE nome_receita_id = :name")
+    @NativeQuery("SELECT * FROM avaliacoes WHERE fk_receita = :name")
     Optional<Avaliacao> findByName(String name);
+
+    @NativeQuery("SELECT * FROM avaliacoes WHERE fk_degustador = :id_degustador and fk_receita = :id_receita")
+    Optional<Avaliacao> findByDegustador(Long id_degustador, Long id_receita);
 }

@@ -1,6 +1,7 @@
 package com.receitas.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,11 +13,12 @@ public class Cargo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(name = "nome", nullable = false, unique = true)
+    @NotNull(message = "Informe o nome do cargo")
     private String nome;
 
     //Construtores
-
     public Cargo() {
 
     }

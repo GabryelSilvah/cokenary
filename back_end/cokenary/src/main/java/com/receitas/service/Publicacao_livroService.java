@@ -8,7 +8,10 @@ import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Funcionario;
 import com.receitas.model.Livro;
 import com.receitas.model.Publicacao_livro;
+import com.receitas.model.Receita;
+import com.receitas.repository.LivroRepository;
 import com.receitas.repository.Publicacao_livroRepository;
+import com.receitas.repository.ReceitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,12 @@ public class Publicacao_livroService {
 
     @Autowired
     private Publicacao_livroRepository publicacaoLivroRepository;
+
+    @Autowired
+    private LivroRepository livroRepository;
+
+    @Autowired
+    private ReceitaRepository receitaRepository;
 
     public List<Publicacao_livroDTO> listAll() {
 
@@ -67,6 +76,26 @@ public class Publicacao_livroService {
     }
 
     public Publicacao_livroDTO save(Publicacao_livro publicacaoLivro) {
+
+        //Validando de livro existe
+        Optional<Livro> livroEncontrado = livroRepository.findById(publicacaoLivro.getFk_livro().getId_livro());
+        if (livroEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("O livro de ID (" + publicacaoLivro.getFk_livro().getId_livro() + ") não foi encontrado");
+        }
+
+
+        //Validando se receita existe
+        Optional<Receita> receitaEncontrada = receitaRepository.findById(publicacaoLivro.getFk_receita().getId_receita());
+        if (receitaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("A receita de ID (" + publicacaoLivro.getFk_receita().getId_receita() + ") não foi encontrada");
+        }
+
+
+        //Validando se já existe publicação da receita informada no livro declarado
+        Optional<Publicacao_livro> publicacaoEncontrada = publicacaoLivroRepository.findByFkReceitaAndLivro(publicacaoLivro.getFk_receita().getId_receita(), publicacaoLivro.getFk_livro().getId_livro());
+        if (publicacaoEncontrada.isPresent()) {
+            throw new RegistroExistsException("Publicação de ID receita (" + publicacaoLivro.getFk_receita().getId_receita() + ") e ID livro (" + publicacaoLivro.getFk_livro().getId_livro() + ") já existe");
+        }
 
 
         //Salvando na base de dados

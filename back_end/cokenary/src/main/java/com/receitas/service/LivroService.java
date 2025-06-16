@@ -194,6 +194,55 @@ public class LivroService {
         );
     }
 
+    public LivroDTO updateCompleto(Long id, LivroCompletoDTO livroDTO) {
+
+        //Buscando livro
+        Optional<Livro> livroEncontrado = livroRepository.findById(id);
+
+        //Buscando funcinário/editor inserido
+        Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(livroDTO.getEditor().getId_func());
+
+        //Validando se o funcionário/editor existe
+        if (funcionarioEncontrado.isEmpty()) {
+            throw new FuncionarioNotFoundException("Funcionário/editor de ID(" + livroDTO.getEditor().getId_func() + ") não encontrado");
+        }
+
+        //Validando se livro existe
+        if (livroEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("O cargo de ID (" + id + ") não foi encontrado");
+        }
+
+        //Alterando livro encontrada
+        livroEncontrado.get().setTituloLivro(livroDTO.getTitulo_livro());
+        livroEncontrado.get().setIsbn(livroDTO.getIsbn());
+        livroEncontrado.get().setFk_editor(livroDTO.getEditor());
+
+        //Salvando cargo modificado
+        Livro livroSalvo = livroRepository.save(livroEncontrado.get());
+
+        //Salvando novas receitas adicionadas
+        for (int i = 0; i < livroDTO.getComposicao_receitas().size(); i++) {
+            Optional<Publicacao_livro> publicacaoEncontrada =
+                    publicacaoLivroRepository.findByFkReceitaAndLivro(livroDTO.getComposicao_receitas().get(i).getFk_receita().getId_receita(), id);
+
+
+            if (publicacaoEncontrada.isEmpty()) {
+
+                //Criando novo objeto de publicação de livro
+                Publicacao_livro novaPubblicacao = new Publicacao_livro(
+                        new Livro(id),
+                        new Receita(livroDTO.getComposicao_receitas().get(i).getFk_receita().getId_receita())
+                );
+
+                Publicacao_livroDTO publicacaoSalva = publicacaoLivroService.save(novaPubblicacao);
+            }
+        }
+
+
+        //Retornando cargo no formato DTO
+        return listById(livroSalvo.getId_livro());
+    }
+
     public Boolean delete(Long id) {
 
         //Buscando livro

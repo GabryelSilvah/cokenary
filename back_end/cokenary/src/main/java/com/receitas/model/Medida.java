@@ -10,16 +10,15 @@ import java.util.List;
 @Table(name = "medidas")
 public class Medida {
 
-    //ID
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_med")
     private Long id_med;
 
 
-    //Nome da medida
-    @NotNull(message = "Informe o nome da medida")
+
     @Column(name = "nome_med", nullable = false, length = 45)
+    @NotNull(message = "Informe o nome da medida")
     private String nome_med;
 
 
@@ -29,7 +28,6 @@ public class Medida {
 
 
     //Construtores
-
     public Medida() {
     }
 

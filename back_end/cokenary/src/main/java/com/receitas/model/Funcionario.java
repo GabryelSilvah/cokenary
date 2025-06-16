@@ -15,34 +15,48 @@ public class Funcionario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_func;
+
     @NotNull(message = "RG do funcionário não foi informado")
     @Column(name = "rg")
     private Long rg;
 
+
     @NotNull(message = "Nome do funcionário não foi informado")
     @Column(name = "nome")
     private String nome;
+
     @NotNull(message = "Data de admissão do funcionário não foi informado")
     @Column(name = "dt_adm")
     private Date dt_adm;
+
     @NotNull(message = "Salário do funcionário não foi informado")
     @Column(name = "salario")
     private float salario;
 
+
     @Column(name = "imagem_perfil")
     private String imagem_perfil;
+
 
     @ManyToOne
     @JoinColumn(name = "cargo_id")
     private Cargo cargo_id;
 
+
     @OneToMany(mappedBy = "cozinheiro_id", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Receita> receitas;
 
+
     @OneToMany(mappedBy = "fk_editor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Livro> listaLivros;
+
+
+    @OneToMany(mappedBy = "fk_degustador", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Avaliacao> listaDegustadores;
+
 
     public Funcionario() {
     }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Publicacao_livroRepository extends JpaRepository<Publicacao_livro, Long> {
 
@@ -18,5 +19,12 @@ public interface Publicacao_livroRepository extends JpaRepository<Publicacao_liv
                     "WHERE fk_livro = :id;"
     )
     List<Publicacao_livroDTO> findJoinAllDetails(Long id);
+
+
+    @NativeQuery("SELECT * FROM publicacoes_livros WHERE fk_livro = :id_livro")
+    List<Publicacao_livro> findByFkReceita(Long id_livro);
+
+    @NativeQuery("SELECT * FROM publicacoes_livros WHERE fk_receita = :id_receita and fk_livro = :id_livro")
+    Optional<Publicacao_livro> findByFkReceitaAndLivro(Long id_receita, Long id_livro);
 
 }

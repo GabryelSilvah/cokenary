@@ -2,6 +2,7 @@ package com.receitas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Ingrediente {
     private Long id_ingred;
 
     @Column(name = "nome", nullable = false, length = 45)
+    @NotNull(message = "Informe o nome do ingrediente")
     private String nome;
 
     @OneToMany(mappedBy = "ingrediente_id", fetch = FetchType.LAZY)

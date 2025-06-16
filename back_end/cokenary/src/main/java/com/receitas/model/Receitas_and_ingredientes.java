@@ -1,6 +1,7 @@
 package com.receitas.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "receitas_and_ingredientes")
@@ -10,18 +11,25 @@ public class Receitas_and_ingredientes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_composicao;
 
-    //@Column(name = "porcoes")
-    //private int porcoes;
 
     @ManyToOne
     @JoinColumn(name = "medida_id")
+    @NotNull(message = "Informe o ID na medida usada")
     private Medida medida_id;
+
     @ManyToOne
     @JoinColumn(name = "ingrediente_id")
+    @NotNull(message = "Informe o ID do ingrediente usado")
     private Ingrediente ingrediente_id;
+
     @ManyToOne
     @JoinColumn(name = "receita_id")
+    @NotNull(message = "Informe o ID da receita associada aos ingredientes e medidas")
     private Receita receita_id;
+
+    //@Column(name = "porcoes")
+    //@NotNull(message = "Informe a quantidade de porções do ingrediente")
+    //private int porcoes;
 
     public Receitas_and_ingredientes(){}
 

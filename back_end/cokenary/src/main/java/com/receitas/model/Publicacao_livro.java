@@ -41,8 +41,6 @@ public class Publicacao_livro {
 
 
     //Sets e gets
-
-
     public Long getId_publicacao() {
         return id_publicacao;
     }

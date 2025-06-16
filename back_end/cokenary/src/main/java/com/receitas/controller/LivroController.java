@@ -48,8 +48,8 @@ public class LivroController {
 
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Livro livro) {
-        LivroDTO livroDTO = livroService.update(id, livro);
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody LivroCompletoDTO livro) {
+        LivroDTO livroDTO = livroService.updateCompleto(id, livro);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Livro alterado com sucesso!", livroDTO));
     }
 
