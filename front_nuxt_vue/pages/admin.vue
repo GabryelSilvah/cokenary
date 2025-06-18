@@ -63,7 +63,7 @@
             </nuxt-link>
           </li>
           <li>
-            <nuxt-link :to="{ path: '/livro' }">
+            <nuxt-link :to="{ path: '/livros/listar' }">
               <i class="fas fa-book"></i> Livro
             </nuxt-link>
           </li>

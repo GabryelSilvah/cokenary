@@ -59,33 +59,28 @@
             </div>
         </section>
 
-
         <!-- Chamando componente de formulário e passando dados vindo da API para os campos de select no formulario -->
         <FormFood id="form" :categorias="listasCategorias" :ingredientes="listasIngredientes" :medidas="listasMedidas"
-            :funcionarios="listasFuncionarios" v-model:nome_ref="nome_ref" v-model:categoria_ref="categoria_ref"
-            v-model:cozinheiro_ref="cozinheiro_ref" v-model:modo_preparo_ref="modo_preparo_ref"
-            v-model:ingredientes_ref="ingredientes_ref" v-model:composicao_ref="composicao_ref"
-            v-model:receitaModel="receitaModel" />
+            :funcionarios="listasFuncionarios" v-model:ingredientes_ref="ingredientes_ref"
+            v-model:composicao_ref="composicao_ref" v-model:receitaModel="receitaModel" />
 
         <!-- Chamando componente de formulário e passando dados vindo da API para os campos de select no formulario -->
         <Form_food_edit id="formEdit" :categorias="listasCategorias" :ingredientes="listasIngredientes"
-            :medidas="listasMedidas" :funcionarios="listasFuncionarios" v-model:nome_ref="nome_ref"
-            v-model:categoria_ref="categoria_ref" v-model:cozinheiro_ref="cozinheiro_ref"
-            v-model:modo_preparo_ref="modo_preparo_ref" v-model:ingredientes_ref="ingredientes_ref"
+            :medidas="listasMedidas" :funcionarios="listasFuncionarios" v-model:ingredientes_ref="ingredientes_ref"
             v-model:composicao_ref="composicao_ref" v-model:receitaModel="receitaModel" />
 
     </main>
 </template>
 
 
-<style>
+<style scoped>
 @import url("~/assets/css/food.css");
 </style>
 
 
 <script setup scoped lang="js">
 import { listarCategorias } from '~/common/api/categorias_request';
-import { listarFuncionarios } from '~/common/api/funcionarios_request';
+import { byNomeCargoFuncionarios } from '~/common/api/funcionarios_request';
 import { listarIngredientes } from '~/common/api/ingredientes_request';
 import { listarMedidas } from '~/common/api/medida_request';
 import { deletarReceitas, listarReceitas, byIdAllInfor } from '~/common/api/receitas_request';
@@ -94,7 +89,7 @@ import Form_food_edit from '~/components/Form_food_edit.vue';
 
 
 //Request de receitas (recebendo lista de receitas)
-const listasReceitas = await listarReceitas();
+let listasReceitas = await listarReceitas();
 
 
 //Request de categorias (recebendo lista de categorias de receitas)
@@ -109,29 +104,28 @@ const listasMedidas = await listarMedidas();
 
 
 //Request de funcionários (recebendo lista de categorias de receitas)
-const listasFuncionarios = await listarFuncionarios();
+const listasFuncionarios = await byNomeCargoFuncionarios("cozinheiro");
+
 
 
 //Inicializando variáveis que vão receber dados do formulário
-const nome_ref = ref("");
-const categoria_ref = ref(0);
-const cozinheiro_ref = ref(0);
-const modo_preparo_ref = ref("");
 const ingredientes_ref = ref(0);
 const medida_ref = ref(0);
-
-const receitaModel = ref("receitaModel");
-
-const composicao_ref = ref({
-    medida_id: { id_med: 0 },
-    ingrediente_id: { id_ingred: 0 }
-
+const receitaModel = ref({
+    nomeReceita: "",
+    data_criacao: "",
+    categoria_id: { id_cat: 0 },
+    cozinheiro_id: { id_func: 0 },
+    modo_preparo: "",
+    ingredientes_id: []
 });
+
+
+const composicao_ref = ref({});
 
 
 //Função para exibir formulário
 function abrirForm() {
-
     receitaModel.value = {
         nomeReceita: "",
         data_criacao: "",
@@ -140,7 +134,7 @@ function abrirForm() {
         modo_preparo: "",
         ingredientes_id: []
     };
-
+    
     //Exibindo formulário
     let form = document.querySelector("#form");
     form.setAttribute("style", "display:flex");
@@ -151,6 +145,7 @@ function abrirForm() {
 async function abrirFormEdit(dados_receita) {
 
     receitaModel.value = {
+        id_receita: 0,
         nomeReceita: "",
         data_criacao: "",
         categoria_id: { id_cat: 0 },
@@ -163,33 +158,39 @@ async function abrirFormEdit(dados_receita) {
     if (dados_receita.id_receita != null) {
         const receitaDetalahada = await byIdAllInfor(dados_receita.id_receita);
 
-        console.log(JSON.stringify(receitaDetalahada.value.data.id_cat))
-        nome_ref.value = receitaDetalahada.value.data.nome_receita;
-        modo_preparo_ref.value = dados_receita.modo_preparo;
-        categoria_ref.value = receitaDetalahada.value.data.id_cat;
-        cozinheiro_ref.value = receitaDetalahada.value.data.id_func;
+        if (receitaDetalahada.value) {
+
+            receitaModel.value.id_receita = receitaDetalahada.value.data.id_receita;
+            receitaModel.value.nomeReceita = receitaDetalahada.value.data.nome_receita;
+            receitaModel.value.categoria_id.id_cat = receitaDetalahada.value.data.id_cat;
+            receitaModel.value.cozinheiro_id.id_func = receitaDetalahada.value.data.id_func;
+            receitaModel.value.modo_preparo = dados_receita.modo_preparo;
 
 
 
-        for (let i = 0; i < receitaDetalahada.value.data.composicao.length; i++) {
+            for (let i = 0; i < receitaDetalahada.value.data.composicao.length; i++) {
 
-            composicao_ref.value = {
-                ingrediente_id: { id_ingred: 0, nome_ingred: "" },
-                medida_id: { id_med: 0, nome_med: "" }
-            };
+                composicao_ref.value = {
+                    id_composicao: 0,
+                    ingrediente_id: { id_ingred: 0, nome_ingred: "" },
+                    porcoes: 1,
+                    medida_id: { id_med: 0, nome_med: "" }
+                };
 
-            //Pegar ingrediente e medida selecionados e adicionar no objeto (composicao_ref)
-            composicao_ref.value.ingrediente_id.id_ingred = receitaDetalahada.value.data.composicao[i].id_ingred;
-            composicao_ref.value.ingrediente_id.nome_ingred = receitaDetalahada.value.data.composicao[i].nome_ingred;
-            composicao_ref.value.medida_id.id_med = receitaDetalahada.value.data.composicao[i].id_med;
-            composicao_ref.value.medida_id.nome_med = receitaDetalahada.value.data.composicao[i].nome_med;
+                //Pegar ingrediente e medida selecionados e adicionar no objeto (composicao_ref)
+                composicao_ref.value.id_composicao = receitaDetalahada.value.data.composicao[i].id_composicao;
+                composicao_ref.value.ingrediente_id.id_ingred = receitaDetalahada.value.data.composicao[i].id_ingred;
+                composicao_ref.value.ingrediente_id.nome_ingred = receitaDetalahada.value.data.composicao[i].nome_ingred;
+                composicao_ref.value.medida_id.id_med = receitaDetalahada.value.data.composicao[i].id_med;
+                composicao_ref.value.medida_id.nome_med = receitaDetalahada.value.data.composicao[i].nome_med;
+                composicao_ref.value.porcoes = receitaDetalahada.value.data.composicao[i].porcoes;
 
-            //Adicionando ingredientes em (receitaModel)
-            receitaModel.value.ingredientes_id.push(composicao_ref.value);
+                //Adicionando ingredientes em (receitaModel)
+                receitaModel.value.ingredientes_id.push(composicao_ref.value);
+
+            }
 
         }
-
-
 
         dados_receita = null;
     }
@@ -205,6 +206,7 @@ async function abrirFormEdit(dados_receita) {
 async function excluir_receita(id_receita) {
     //Request de receitas (recebendo lista de receitas)
     const receitaExcluida = await deletarReceitas(id_receita);
+    listasReceitas = await listarReceitas();
 }
 
 </script>

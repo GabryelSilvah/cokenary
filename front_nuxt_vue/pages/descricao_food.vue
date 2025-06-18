@@ -7,13 +7,15 @@
         <section class="container_desc_food">
             <div class="detalhes" v-if="receitaPorID">
                 <h2 class="titulo_food">{{ receitaPorID.data.nome_receita }}</h2>
-                <p id="modo_preparo">
-                    {{ receitaPorID.data.modo_preparo }}
-                </p>
+              
                 <div class="itens_food">
                     <p>Categoria: </p>
                     <p>{{ receitaPorID.data.categoria }}</p>
                 </div>
+
+                  <p id="modo_preparo">
+                    {{ receitaPorID.data.modo_preparo }}
+                </p>
             </div>
             <img src="public/image/lamen2.jpg" class="img_food" alt="">
         </section>
@@ -42,7 +44,7 @@
 
                 <ul class="lista_ingredientes" v-for="ingrediente in receitaPorID.data.ingredientes_id"
                     :key="ingrediente.id_ingred">
-                    <li>{{ ingrediente.nome }} {{ ingrediente.nome_med }}</li>
+                    <li>{{ ingrediente.nome }} - {{ ingrediente.porcoes }} {{ ingrediente.nome_med }}</li>
                 </ul>
             </div>
         </section>

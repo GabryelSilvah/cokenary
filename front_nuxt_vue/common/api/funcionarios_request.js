@@ -1,4 +1,4 @@
-export { listarFuncionarios, byIdFuncionarios, cadastrarFuncionarios, alterarFuncionarios, deletarFuncionarios };
+export { listarFuncionarios, byIdFuncionarios, byNomeCargoFuncionarios, cadastrarFuncionarios, alterarFuncionarios, deletarFuncionarios };
 
 const URL_BASE_API = "http://localhost:8081/funcionarios";
 
@@ -23,12 +23,20 @@ async function byIdFuncionarios(id_func) {
   return responseAPI;
 }
 
+//Buscar pelo nome do cargo
+async function byNomeCargoFuncionarios(id_nome_cargo) {
+
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byCargo/" + id_nome_cargo);
+
+  return responseAPI;
+}
+
 //Cadastrar
 async function cadastrarFuncionarios(corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/cadastrar",
     {
       method: "POST",
-      headers: { "Content-Type": "applifuncion/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(corpo_request)
     });
 
@@ -39,7 +47,7 @@ async function cadastrarFuncionarios(corpo_request) {
 async function alterarFuncionarios(id_func, corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/alterar/" + id_func, {
     method: "PUT",
-    headers: { "Content-Type": "applifuncion/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(corpo_request)
   });;
 

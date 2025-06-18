@@ -32,7 +32,7 @@ async function cadastrarReceitas(corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/cadastrar",
     {
       method: "POST",
-      headers: { "Content-Type": "applireceitaion/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(corpo_request)
     });
 
@@ -43,18 +43,21 @@ async function cadastrarReceitas(corpo_request) {
 async function alterarReceitas(id_receita, corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/alterar/" + id_receita, {
     method: "PUT",
-    headers: { "Content-Type": "applireceitaion/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(corpo_request)
   });
 
+
   return responseAPI;
 }
+
+
 
 //Deletar
 async function deletarReceitas(id_receita) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/excluir/" + id_receita, {
     method: "DELETE",
-    headers: { "Content-Type": "applireceitaion/json" }
+    headers: { "Content-Type": "application/json" }
   });
 
   return responseAPI;

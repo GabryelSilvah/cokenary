@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .cargos-container {
-  width: 100vw;
+  width: fit-content;
   margin: 0 auto;
   padding: 2rem;
   font-family: 'Inter', sans-serif;

@@ -41,7 +41,7 @@ async function alterarMedida(id_med, corpo_request) {
     method: "PUT",
     headers: { "Content-Type": "applimedion/json" },
     body: JSON.stringify(corpo_request)
-  });;
+  });
 
   return responseAPI;
 }

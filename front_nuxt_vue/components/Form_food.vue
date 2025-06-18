@@ -11,11 +11,11 @@
 
 
                 <label for="">Nome da Receita:</label>
-                <input type="text" v-model="nome_ref" name="nome_ref" placeholder="Ex: Risoto de camarão" required>
+                <input type="text" v-model="receitaModel.nomeReceita" name="nome_ref" placeholder="Ex: Risoto de camarão" required>
 
 
                 <label for="">Categoria:</label>
-                <select required name="categoria" id="" v-model="categoria_ref">
+                <select required name="categoria" id="" v-model="receitaModel.categoria_id.id_cat">
                     <option value="0">Selecione</option>
                     <option v-if="categorias" v-for="categoria in categorias.data" :key="categoria.id_cat"
                         :value="categoria.id_cat">
@@ -25,7 +25,7 @@
 
 
                 <label for="">Cozinheiro:</label>
-                <select name="cozinheiro" id="" v-model="cozinheiro_ref" required>
+                <select name="cozinheiro" id="" v-model="receitaModel.cozinheiro_id.id_func" required>
                     <option value="0">Selecione</option>
                     <option v-if="funcionarios" v-for="cozinheiro in funcionarios.data" :key="cozinheiro.id_func"
                         :value="cozinheiro.id">
@@ -38,8 +38,9 @@
                 <div class="container_itens_add" id="caixa_de_itens_salvas">
                     <h2>Adicione ingredientes e suas medidas</h2>
                     <div class="container_composicao" v-for="ingr in receitaModel.ingredientes_id">
-                        <p>{{ ingr.ingrediente_id.nome_ingred }}</p>
-                        <p>{{ ingr.medida_id.nome_med }}</p>
+                        <p>Ingred: {{ ingr.ingrediente_id.nome_ingred }}</p>
+                        <p>Porções: {{ ingr.porcoes }}</p>
+                        <p>Medida: {{ ingr.medida_id.nome_med }}</p>
                     </div>
                 </div>
 
@@ -57,7 +58,7 @@
                         </select>
 
                         <!-- Quantidade de porções -->
-                        <input type="number" min="1" value="1" class="input_quantidade">
+                        <input type="number" min="1" v-model="porcao_ref" class="input_quantidade">
 
 
                         <!-- Selecionar medida -->
@@ -77,7 +78,7 @@
 
 
                 <label for="">Modo de Preparo:</label>
-                <textarea name="" id="" v-model="modo_preparo_ref" placeholder="Descreva o modo de preparo">
+                <textarea required  v-model="receitaModel.modo_preparo" placeholder="Descreva o modo de preparo" >
                 </textarea>
 
 
@@ -138,13 +139,7 @@ defineProps({
 });
 
 
-//Inicializando variáveis que vão receber dados do formulário
-const nome_ref = defineModel('nome_ref');
-const categoria_ref = defineModel('categoria_ref');
-const cozinheiro_ref = defineModel('cozinheiro_ref');
-const modo_preparo_ref = defineModel('modo_preparo_ref');
-const ingredientes_ref = defineModel("ingredientes_ref");
-const medida_ref = defineModel("medida_ref");
+
 
 const receitaModel = defineModel("receitaModel", {
     default: {
@@ -157,6 +152,11 @@ const receitaModel = defineModel("receitaModel", {
     }
 });
 
+
+//Inicializando variáveis que vão receber dados do formulário
+const ingredientes_ref = defineModel("ingredientes_ref");
+const medida_ref = defineModel("medida_ref",{default:0});
+const porcao_ref = defineModel("porcao_ref",{default:1});
 const composicao_ref = defineModel("composicao_ref");
 
 
@@ -181,6 +181,7 @@ async function addIngredienteNaLista() {
 
     composicao_ref.value = {
         ingrediente_id: { id_ingred: 0, nome_ingred: "" },
+        porcoes: 1,
         medida_id: { id_med: 0, nome_med: "" }
     };
 
@@ -190,6 +191,7 @@ async function addIngredienteNaLista() {
     composicao_ref.value.ingrediente_id.nome_ingred = ingredienteEncontrado.value.data.nome;
     composicao_ref.value.medida_id.id_med = medida_ref.value;
     composicao_ref.value.medida_id.nome_med = medidaEncontrada.value.data.nome_med;
+    composicao_ref.value.porcoes = porcao_ref;
 
 
     //Adicionando ingredientes em (receitaModel)
@@ -201,14 +203,7 @@ async function addIngredienteNaLista() {
 //com exerção do do campo ingrediente porque já foi pego pela função addIngredienteNaLista()
 async function pegarDadosForm() {
 
-
-    receitaModel.value.nomeReceita = nome_ref.value;
     receitaModel.value.data_criacao = "2025-05-03";
-    receitaModel.value.categoria_id.id_cat = categoria_ref.value;
-    receitaModel.value.cozinheiro_id.id_func = cozinheiro_ref.value;
-    receitaModel.value.modo_preparo = modo_preparo_ref.value;
-
-
 
     //Enviando dados para API
     const {

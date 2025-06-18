@@ -7,7 +7,7 @@
 
 .page_livro {
     width: 50vw;
-    min-height: calc(100vh + 30vw);
+    height: calc(100vh + 30vw);
     border-radius: 10px;
     box-shadow: 2px 2px 20px rgb(219, 219, 219);
     padding: 5%;
@@ -47,12 +47,12 @@
 
 .subttitulo_receita {
     width: fit-content;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 600;
     margin-bottom: 10px;
     background-color: rgb(240, 160, 41);
     color: #fff;
-    padding: 2px 5px;
+    padding: 5px 5px 5px 5px;
     border-radius: 7px;
 }
 
@@ -73,7 +73,7 @@
     list-style-type: decimal;
     margin-left: 40px;
     margin-right: 40px;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     font-size: 1rem;
     font-family: sans-serif;
 }

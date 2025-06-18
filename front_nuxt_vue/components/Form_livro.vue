@@ -11,11 +11,13 @@
         <input v-model="livroModel.titulo_livro" type="text" placeholder="Ex: Receitas Premium">
 
         <label for="">Criado por</label>
-        <select name="" id="" v-model="receita_ref">
+        <select name="criador_receita" id="" v-model="livroModel.editor.id_func">
           <option value="0" selected>Selecione</option>
-          <option :value="editor.id_func" v-for="editor in listaFuncionarios" :key="editor.id_func">
+
+          <option :value="editor.id" v-for="editor in listaFuncionarios" :key="editor.id_func">
             {{ editor.nome }}
           </option>
+          
         </select>
 
 
@@ -29,7 +31,7 @@
         </div>
 
 
-        <select name="" id="" v-model="receita_ref">
+        <select name="receita_livro" id="" v-model="receita_ref">
           <option value="0" selected>Selecione</option>
           <option :value="receita.id_receita" v-for="receita in listaReceitas" :key="receita.id_receita">
             {{ receita.nome_receita }}
@@ -70,14 +72,13 @@ defineProps(
 
 
 //Definindo ligação bilateral com inputs
-const receita_ref = defineModel("receita_ref");
+const receita_ref = ref("receita_ref",{default:0});
 const livroModel = ref({
   titulo_livro: "",
   isbn: 27494,
-  editor: { id_func: 1 },
+  editor: { id_func: 0 },
   composicao_receitas: []
 });
-
 
 
 

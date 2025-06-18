@@ -10,6 +10,7 @@
     </div>
 
     <FormLivro id="form" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data" />
+
     <Form_livro_edit id="form_edit" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data"
       v-model:livroModel="livroModel" />
 
@@ -56,19 +57,22 @@ import Form_livro_edit from '~/components/Form_livro _edit.vue';
 
 
 
-const listaLivros = await listarLivros();
+let listaLivros = await listarLivros();
 
 const listaReceitas = await listarReceitas();
 
 const listaFuncionarios = await listarFuncionarios();
+
 
 const livroModel = ref({
   id_livro: 0,
   titulo_livro: "",
   isbn: 27494,
   editor: { id_func: 0 },
-  composicao_receitas: []
+  composicao_receitas: [],
+  receitas_deletar: []
 });
+
 
 
 //Abrir formulário de cadastrar livro
@@ -82,6 +86,7 @@ function abrirForm() {
 async function abrirFormEdit(id_livro) {
 
   const livroEncontrado = await byIdLivros(id_livro);
+
 
   livroModel.value.id_livro = livroEncontrado.value.data.id_livro;
   livroModel.value.titulo_livro = livroEncontrado.value.data.titulo_livro;
@@ -97,6 +102,8 @@ async function abrirFormEdit(id_livro) {
 async function excluirLivro(id_livro) {
 
   const responseAPI = await deletarLivros(id_livro);
+  listaLivros = await listarLivros();
+
 
 }
 

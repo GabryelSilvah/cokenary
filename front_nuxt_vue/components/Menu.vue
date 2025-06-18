@@ -18,6 +18,9 @@
         <NuxtLink to="/funcionarios">
           <li>Funcionários</li>
         </NuxtLink>
+        <NuxtLink to="/livros/listar">
+          <li>livros</li>
+        </NuxtLink>
         <NuxtLink to="/perfil">
           <li>Perfil</li>
         </NuxtLink>
