@@ -37,7 +37,7 @@ public class AvaliacaoController {
     }
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Avaliacao avaliacao) {
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody AvaliacaoDTO avaliacao) {
         AvaliacaoDTO avaliacaoDTO = avaliacaoService.update(id, avaliacao);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Avaliação alterada com sucesso!", avaliacaoDTO));
     }

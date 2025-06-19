@@ -18,6 +18,8 @@ public class AvaliacaoDTO {
     private Date data_avaliada;
 
     private int nota_avaliacao;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Date data_alteracao;
 
     //Construtores
 
@@ -31,13 +33,6 @@ public class AvaliacaoDTO {
 
     //Construtor
     public AvaliacaoDTO(int nota_avaliacao) {
-        this.nota_avaliacao = nota_avaliacao;
-    }
-
-    public AvaliacaoDTO(FuncionarioSaidaDTO degustador, ReceitaFullDTO receita, Date data_avaliada, int nota_avaliacao) {
-        this.degustador = degustador;
-        this.receita = receita;
-        this.data_avaliada = data_avaliada;
         this.nota_avaliacao = nota_avaliacao;
     }
 
@@ -55,6 +50,16 @@ public class AvaliacaoDTO {
         this.receita = nome_receita;
         this.data_avaliada = data_avaliada;
         this.nota_avaliacao = nota_avaliacao;
+    }
+
+    public AvaliacaoDTO(Long id_avaliacao, FuncionarioSaidaDTO degustador, FuncionarioSaidaDTO cozinheiro, ReceitaFullDTO receita, Date data_avaliada, int nota_avaliacao, Date data_alteracao) {
+        this.id_avaliacao = id_avaliacao;
+        this.degustador = degustador;
+        this.cozinheiro = cozinheiro;
+        this.receita = receita;
+        this.data_avaliada = data_avaliada;
+        this.nota_avaliacao = nota_avaliacao;
+        this.data_alteracao = data_alteracao;
     }
 
     //Gets e sets
@@ -106,5 +111,13 @@ public class AvaliacaoDTO {
 
     public void setNota_avaliacao(int nota_avaliacao) {
         this.nota_avaliacao = nota_avaliacao;
+    }
+
+    public Date getData_alteracao() {
+        return data_alteracao;
+    }
+
+    public void setData_alteracao(Date data_alteracao) {
+        this.data_alteracao = data_alteracao;
     }
 }

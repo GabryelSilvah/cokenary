@@ -78,7 +78,8 @@ public class AvaliacaoService {
                 new FuncionarioSaidaDTO(avaliacaoEncontrada.get().getFk_receita().getCozinheiro_id().getId_func(), avaliacaoEncontrada.get().getFk_receita().getCozinheiro_id().getNome()),
                 new ReceitaFullDTO(avaliacaoEncontrada.get().getFk_receita().getId_receita(), avaliacaoEncontrada.get().getFk_receita().getNomeReceita()),
                 avaliacaoEncontrada.get().getData_avaliada(),
-                avaliacaoEncontrada.get().getNota_avaliacao()
+                avaliacaoEncontrada.get().getNota_avaliacao(),
+                avaliacaoEncontrada.get().getData_alteracao()
         );
     }
 
@@ -127,7 +128,7 @@ public class AvaliacaoService {
         );
     }
 
-    public AvaliacaoDTO update(Long id, Avaliacao avaliacao) {
+    public AvaliacaoDTO update(Long id, AvaliacaoDTO avaliacaoDTO) {
 
         //Buscando avaliação
         Optional<Avaliacao> avaliacaoEncontrada = avaliacaoRepository.findById(id);
@@ -135,44 +136,24 @@ public class AvaliacaoService {
             throw new RegistroNotFoundException("Avaliação de ID (" + id + ") não foi encontrada");
         }
 
-        //Validando se já existe avaliação para essa receita feita por esse degustador
-        Optional<Avaliacao> categoriaEncontrada = avaliacaoRepository.findByName(avaliacao.getFk_receita().getNomeReceita());
-        if (categoriaEncontrada.isPresent()) {
-            throw new RegistroNotFoundException("A avaliação da receita (" + avaliacao.getFk_receita().getNomeReceita() + ") já existe");
-        }
-
-
-        //Validando se funcionário degustador existe
-        Optional<Funcionario> degustadorEncontrado = funcionarioRepository.findById(avaliacao.getFk_degustador().getId_func());
-        if (degustadorEncontrado.isEmpty()) {
-            throw new RegistroNotFoundException("O degustador de ID (" + avaliacao.getFk_degustador().getId_func() + ") não foi encontrado");
-        }
-
-
-        //Validando se receita existe
-        Optional<Receita> receitaEncontrada = receitaRepository.findById(avaliacao.getFk_receita().getId_receita());
-        if (receitaEncontrada.isEmpty()) {
-            throw new RegistroNotFoundException("A receita de ID (" + avaliacao.getFk_receita().getId_receita() + ") não foi encontrada");
-        }
-
         //Alterando avaliação encontrada
-        avaliacaoEncontrada.get().setFk_degustador(avaliacao.getFk_degustador());
-        avaliacaoEncontrada.get().setFk_receita(avaliacao.getFk_receita());
-        avaliacaoEncontrada.get().setData_avaliada(avaliacao.getData_avaliada());
-        avaliacaoEncontrada.get().setNota_avaliacao(avaliacao.getNota_avaliacao());
+        avaliacaoEncontrada.get().setNota_avaliacao(avaliacaoDTO.getNota_avaliacao());
+        avaliacaoEncontrada.get().setData_alteracao(new Date());
+
 
         //Salvando categoria modificada
-        Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacaoEncontrada.get());
+        Avaliacao avaliacaoAlterada = avaliacaoRepository.save(avaliacaoEncontrada.get());
 
 
         //Retornando avaliação no formato DTO
         return new AvaliacaoDTO(
-                avaliacaoSalva.getId(),
-                new FuncionarioSaidaDTO(degustadorEncontrado.get().getId_func(), degustadorEncontrado.get().getNome()),
-                new FuncionarioSaidaDTO(receitaEncontrada.get().getCozinheiro_id().getId_func(), receitaEncontrada.get().getCozinheiro_id().getNome()),
-                new ReceitaFullDTO(receitaEncontrada.get().getId_receita(), receitaEncontrada.get().getNomeReceita()),
-                avaliacaoSalva.getData_avaliada(),
-                avaliacaoSalva.getNota_avaliacao()
+                avaliacaoAlterada.getId(),
+                new FuncionarioSaidaDTO(avaliacaoEncontrada.get().getFk_degustador().getId_func(), avaliacaoEncontrada.get().getFk_degustador().getNome()),
+                new FuncionarioSaidaDTO(avaliacaoEncontrada.get().getFk_receita().getCozinheiro_id().getId_func(), avaliacaoEncontrada.get().getFk_receita().getCozinheiro_id().getNome()),
+                new ReceitaFullDTO(avaliacaoEncontrada.get().getFk_receita().getId_receita(), avaliacaoEncontrada.get().getFk_receita().getNomeReceita()),
+                avaliacaoAlterada.getData_avaliada(),
+                avaliacaoAlterada.getNota_avaliacao(),
+                avaliacaoAlterada.getData_alteracao()
         );
     }
 

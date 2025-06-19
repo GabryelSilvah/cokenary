@@ -24,16 +24,18 @@ public class Avaliacao {
     private Receita fk_receita;
 
     @Column(name = "data_avaliada")
-    //@NotNull(message = "Data de criação não foi definida")
+    @NotNull(message = "Data de criação não foi definida")
     private Date data_avaliada;
 
     @Column(name = "nota_avaliacao", length = 1)
     @NotNull(message = "Informe uma nota para a receita")
     private int nota_avaliacao;
 
+    @Column(name = "data_alteracao")
+    private Date data_alteracao;
+
+
     //Construtores
-
-
     public Avaliacao() {
     }
 
@@ -41,8 +43,9 @@ public class Avaliacao {
         this.id = id;
     }
 
-    public Avaliacao(int nota_avaliacao) {
+    public Avaliacao(int nota_avaliacao, Date data_alteracao) {
         this.nota_avaliacao = nota_avaliacao;
+        this.data_alteracao = data_alteracao;
     }
 
     public Avaliacao( Funcionario fk_desgustador, Receita fk_nome_receita, Date data_avaliada, int nota_avaliacao) {
@@ -59,6 +62,16 @@ public class Avaliacao {
         this.fk_receita = fk_nome_receita;
         this.data_avaliada = data_avaliada;
         this.nota_avaliacao = nota_avaliacao;
+    }
+
+
+    public Avaliacao(Long id, Funcionario fk_degustador, Receita fk_receita, Date data_avaliada, int nota_avaliacao, Date data_alteracao) {
+        this.id = id;
+        this.fk_degustador = fk_degustador;
+        this.fk_receita = fk_receita;
+        this.data_avaliada = data_avaliada;
+        this.nota_avaliacao = nota_avaliacao;
+        this.data_alteracao = data_alteracao;
     }
 
     //Gets e Sets
@@ -103,8 +116,11 @@ public class Avaliacao {
     }
 
 
+    public Date getData_alteracao() {
+        return data_alteracao;
+    }
 
-
-
-
+    public void setData_alteracao(Date data_alteracao) {
+        this.data_alteracao = data_alteracao;
+    }
 }
