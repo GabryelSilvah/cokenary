@@ -1,45 +1,37 @@
-package com.receitas.model;
+package com.receitas.dto;
 
-import com.receitas.dto.MetricasDTO;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.receitas.model.Funcionario;
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "metricas")
-public class Metricas {
+public class MetricasDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_metrica;
-
-    @Column(name = "quantidade_receitas")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private int quantidade_receitas;
-
-    @Column(name = "quantidade_livros")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private int quantidade_livros;
-
-    @Column(name = "media_avaliacoes")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private double media_avaliacoes;
 
-    @OneToOne
-    @JoinColumn(name = "fk_funcionario")
-    private Funcionario fk_funcionario;
-
-    //Construtor
+    private FuncionarioSaidaDTO fk_funcionario;
 
 
-    public Metricas() {
+    //Construtores
+    public MetricasDTO() {
     }
 
-    public Metricas(Long id_metrica) {
+    public MetricasDTO(Long id_metrica) {
         this.id_metrica = id_metrica;
     }
 
-    public Metricas(Long id_metrica, Funcionario fk_funcionario) {
+    public MetricasDTO(Long id_metrica, FuncionarioSaidaDTO fk_funcionario) {
         this.id_metrica = id_metrica;
         this.fk_funcionario = fk_funcionario;
     }
 
-    public Metricas(Long id_metrica, int quantidade_receitas, int quantidade_livros, double media_avaliacoes, Funcionario fk_funcionario) {
+    public MetricasDTO(Long id_metrica, int quantidade_receitas, int quantidade_livros, double media_avaliacoes, FuncionarioSaidaDTO fk_funcionario) {
         this.id_metrica = id_metrica;
         this.quantidade_receitas = quantidade_receitas;
         this.quantidade_livros = quantidade_livros;
@@ -47,16 +39,8 @@ public class Metricas {
         this.fk_funcionario = fk_funcionario;
     }
 
-    public Metricas(MetricasDTO metricasDTO) {
-        this.id_metrica = metricasDTO.getId_metrica();
-        this.quantidade_receitas = metricasDTO.getQuantidade_receitas();
-        this.quantidade_livros = metricasDTO.getQuantidade_livros();
-        this.media_avaliacoes = metricasDTO.getMedia_avaliacoes();
-        this.fk_funcionario = new Funcionario(metricasDTO.getFk_funcionario().getId_func(),metricasDTO.getFk_funcionario().getNome());
-    }
 
     //Gets e sets
-
 
     public Long getId_metrica() {
         return id_metrica;
@@ -90,11 +74,11 @@ public class Metricas {
         this.media_avaliacoes = media_avaliacoes;
     }
 
-    public Funcionario getFk_funcionario() {
+    public FuncionarioSaidaDTO getFk_funcionario() {
         return fk_funcionario;
     }
 
-    public void setFk_funcionario(Funcionario fk_funcionario) {
+    public void setFk_funcionario(FuncionarioSaidaDTO fk_funcionario) {
         this.fk_funcionario = fk_funcionario;
     }
 }

@@ -1,6 +1,8 @@
 package com.receitas.dto;
 
-public record UsuarioDTO(String email, String role) {
+import com.receitas.model.Cargo;
+
+public record UsuarioDTO(String email, Cargo role) {
 
 }
 

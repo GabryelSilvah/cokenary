@@ -1,5 +1,6 @@
 package com.receitas.security;
 
+import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Usuario;
 import com.receitas.repository.UsuarioRepository;
 import com.receitas.service.In_tokeJWT;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class FillterToken extends OncePerRequestFilter {
@@ -37,9 +39,12 @@ public class FillterToken extends OncePerRequestFilter {
             String subject = authService.validateToken(tokenHeader);
             //Buscando usuário na base de dados
 
-            Usuario usuario = usuarioRepository.findByEmail(subject);
+            Optional<Usuario> usuario = usuarioRepository.findByEmail(subject);
+            if (usuario.isEmpty()) {
+                throw new RegistroNotFoundException("Usuário (" + subject + ") informado  no Token da requisição não foi encontrado");
+            }
 
-            var autenticacao = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+            var autenticacao = new UsernamePasswordAuthenticationToken(usuario, null, usuario.get().getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(autenticacao);
         }
 

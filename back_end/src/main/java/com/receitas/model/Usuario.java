@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -28,14 +29,26 @@ public class Usuario implements UserDetails {
 
     @NotNull(message = "Informe uma Role")
     @NotEmpty
-    private String role;
+    @ManyToOne
+    @JoinColumn(name = "role")
+    private Cargo role;
+
+    @OneToOne
+    @JoinColumn(name = "fk_funcionario")
+    private Funcionario fk_funcionario;
 
 
     //Construtores
     public Usuario(){
 
     }
-    public Usuario(String email, String senha, String role) {
+
+    public Usuario(Long id, String email) {
+        this.id = id;
+        this.email = email;
+    }
+
+    public Usuario(String email, String senha, Cargo role) {
         this.email = email;
         this.senha = senha;
         this.role = role;
@@ -79,19 +92,27 @@ public class Usuario implements UserDetails {
         this.senha = senha;
     }
 
-    public String getRole() {
+    public Cargo getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Cargo role) {
         this.role = role;
+    }
+
+    public Funcionario getFk_funcionario() {
+        return fk_funcionario;
+    }
+
+    public void setFk_funcionario(Funcionario fk_funcionario) {
+        this.fk_funcionario = fk_funcionario;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-
-        return List.of(new SimpleGrantedAuthority(this.role));
+        return Collections.emptyList();
+        //return List.of(new SimpleGrantedAuthority(this.role));
     }
 
     @Override

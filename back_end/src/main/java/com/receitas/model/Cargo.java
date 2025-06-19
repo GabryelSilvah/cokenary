@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,6 +18,10 @@ public class Cargo {
     @Column(name = "nome", nullable = false, unique = true)
     @NotNull(message = "Informe o nome do cargo")
     private String nome;
+
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Usuario> listaUsuario;
 
     //Construtores
     public Cargo() {

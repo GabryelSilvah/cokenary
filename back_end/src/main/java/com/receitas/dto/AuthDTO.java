@@ -1,6 +1,8 @@
 package com.receitas.dto;
 
-public record AuthDTO(String email, String senha, String role) {
+import com.receitas.model.Cargo;
+
+public record AuthDTO(String email, String senha, Cargo role) {
 
 }
 

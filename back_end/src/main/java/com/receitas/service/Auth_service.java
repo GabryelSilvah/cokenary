@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.Optional;
+
 @Service
 @CrossOrigin
 public class Auth_service implements UserDetailsService {
@@ -20,9 +22,9 @@ public class Auth_service implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Usuario usuario = usuarioRepository.findByEmail(email);
-        if (usuario != null) {
-            return usuario;
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+        if (usuario.isPresent()) {
+            return usuario.get();
         }
 
         throw new UserNotFoundExcetion("Usuário não encontrado: " + email);

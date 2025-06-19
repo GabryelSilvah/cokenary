@@ -57,6 +57,12 @@ public class Funcionario {
     @JsonIgnore
     private List<Avaliacao> listaDegustadores;
 
+    @OneToOne(mappedBy = "fk_funcionario", fetch = FetchType.LAZY)
+    private Usuario fk_usuario_forte;
+
+    @OneToOne(mappedBy = "fk_funcionario", fetch = FetchType.LAZY)
+    private Metricas fk_metricas_forte;
+
 
     public Funcionario() {
     }
@@ -178,4 +184,6 @@ public class Funcionario {
     public void setListaLivros(List<Livro> listaLivros) {
         this.listaLivros = listaLivros;
     }
+
+
 }

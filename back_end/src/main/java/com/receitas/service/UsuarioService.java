@@ -43,13 +43,13 @@ public class UsuarioService {
     }
 
     public UsuarioDTO listByEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email);
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 
-        if (usuario == null) {
+        if (usuario.isEmpty()) {
             throw new UserNotFoundExcetion("Usuário não encontrado");
         }
 
-        return new UsuarioDTO(usuario.getEmail(), usuario.getRole());
+        return new UsuarioDTO(usuario.get().getEmail(), usuario.get().getRole());
     }
 
 
@@ -57,8 +57,8 @@ public class UsuarioService {
     public UsuarioDTO save(AuthDTO authDTO) {
 
         //Validando se já existe esse usuário cadastrado
-        Usuario usuario = usuarioRepository.findByEmail(authDTO.email());
-        if (usuario != null) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(authDTO.email());
+        if (usuario.isPresent()) {
             throw new UserExitsException("Usuário já existe");
         }
 
