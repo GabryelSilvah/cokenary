@@ -2,6 +2,7 @@ package com.receitas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.receitas.dto.LivroCompletoDTO;
+import com.receitas.dto.LivroDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -53,11 +54,11 @@ public class Livro {
         this.fk_editor = editor_id;
     }
 
-    public Livro(LivroCompletoDTO livroCompletoDTO) {
-        this.tituloLivro = livroCompletoDTO.getTitulo_livro();
-        this.id_livro = livroCompletoDTO.getId_livro();
-        this.isbn = livroCompletoDTO.getIsbn();
-        this.fk_editor = livroCompletoDTO.getEditor();
+    public Livro(LivroDTO livroDTO) {
+        this.id_livro = livroDTO.getId_livro();
+        this.tituloLivro = livroDTO.getTitulo_livro();
+        this.isbn = livroDTO.getIsbn();
+        this.fk_editor = new Funcionario(livroDTO.getEditor().getId_func());
     }
 
     //Sets e gets

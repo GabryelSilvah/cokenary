@@ -3,7 +3,7 @@
     <Menu />
     <section class="container_exibir_livro">
 
-      <div class="page_livro" v-for="pagina in livroEncontrado.data.receitas_livro">
+      <div class="page_livro" v-for="pagina in livroEncontrado.data.publicacao_receitas_livro">
 
         <h1 class="titulo_livro" v-if="livroEncontrado.data">{{ livroEncontrado.data.titulo_livro }}</h1>
 

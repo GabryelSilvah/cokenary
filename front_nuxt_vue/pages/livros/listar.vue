@@ -65,12 +65,11 @@ const listaFuncionarios = await listarFuncionarios();
 
 
 const livroModel = ref({
-  id_livro: 0,
   titulo_livro: "",
-  isbn: 27494,
+  isbn: 344343,
   editor: { id_func: 0 },
-  composicao_receitas: [],
-  receitas_deletar: []
+  receitas_remover: [],
+  publicacao_receitas_livro: []
 });
 
 
@@ -91,7 +90,7 @@ async function abrirFormEdit(id_livro) {
   livroModel.value.id_livro = livroEncontrado.value.data.id_livro;
   livroModel.value.titulo_livro = livroEncontrado.value.data.titulo_livro;
   livroModel.value.editor.id_func = livroEncontrado.value.data.editor.id_func;
-  livroModel.value.composicao_receitas = livroEncontrado.value.data.receitas_livro;
+  livroModel.value.publicacao_receitas_livro = livroEncontrado.value.data.publicacao_receitas_livro;
 
 
   //Exibindo formulário
@@ -106,5 +105,6 @@ async function excluirLivro(id_livro) {
 
 
 }
+
 
 </script>

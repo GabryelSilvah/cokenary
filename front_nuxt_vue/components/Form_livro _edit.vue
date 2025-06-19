@@ -24,7 +24,7 @@
         <label for="">Adicione as receitas</label>
         <div class="container_itens_add" id="caixa_de_itens_salvas">
           <h2>Coleção de receitas do livro</h2>
-          <div class="container_composicao" v-for="composicao_livro in livroModel.composicao_receitas">
+          <div class="container_composicao" v-for="composicao_livro in livroModel.publicacao_receitas_livro">
             <p class="item_lista">{{ composicao_livro.nome_receita }} </p>
             <p class="item_lista">Chef: {{ composicao_livro.cozinheiro_id }} </p>
             <img src="../assets/icones/delete.png" class="img_delete_item"
@@ -79,18 +79,16 @@ defineProps(
 //Definindo ligação bilateral com inputs
 const receita_ref = defineModel("receita_ref", { default: 0 });
 const livroModel = defineModel("livroModel", {
-  default: {
-    id_livro: 0,
+  default:
+  {
     titulo_livro: "",
-    isbn: 27494,
+    isbn: 344343,
     editor: { id_func: 0 },
-    composicao_receitas: []
+    receitas_remover: [],
+    publicacao_receitas_livro: []
   }
 });
 
-{
-
-}
 
 
 //Lista de receitas que serão removidas do livro
@@ -102,11 +100,11 @@ function excluir_receita_livro(id_receita) {
 
   //Procurando index onde id_receita é igual o id_receita passado para exclusão
   //Se o valor for encontrado, deverá ser removida livroModel
-  let index = livroModel.value.composicao_receitas.findIndex(receita => receita.id_receita == id_receita)
+  let index = livroModel.value.publicacao_receitas_livro.findIndex(receita => receita.id_receita == id_receita)
 
   //Valor for menor que 0 é porque não foi encontrado
   if (index > -1) {
-    livroModel.value.composicao_receitas.splice(index, 1);
+    livroModel.value.publicacao_receitas_livro.splice(index, 1);
   }
 
   //Adicionando id_receita na lista de receitas a serem deletadas do vinculo com o livro
@@ -137,14 +135,14 @@ async function addReceitasNaLista() {
     cozinheiro_id: receitaEncontrada.value.data.cozinheiro_id
   };
 
-  livroModel.value.composicao_receitas.push(receitaAdicionada);
+  livroModel.value.publicacao_receitas_livro.push(receitaAdicionada);
 
 }
 
 
 //Atualizar informações do livro
 async function alterarLivro(id_livro) {
-  livroModel.value.receitas_deletar = listaReceitasExcluir;
+  livroModel.value.receitas_remover = listaReceitasExcluir;
   const livroAlterado = await alterarLivros(id_livro, livroModel.value);
   fecharForm();
 }

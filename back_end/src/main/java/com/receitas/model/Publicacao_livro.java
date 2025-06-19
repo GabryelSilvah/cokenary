@@ -1,5 +1,6 @@
 package com.receitas.model;
 
+import com.receitas.dto.Receita_all_infor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -26,6 +27,8 @@ public class Publicacao_livro {
     public Publicacao_livro(){
 
     }
+
+
 
     public Publicacao_livro(Livro fk_livro, Receita fk_receita) {
         this.fk_livro = fk_livro;

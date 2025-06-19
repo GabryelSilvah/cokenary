@@ -1,5 +1,6 @@
 package com.receitas.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.receitas.model.Cargo;
 import com.receitas.model.Restaurante;
 
@@ -10,16 +11,34 @@ public class FuncionarioSaidaDTO {
 
     private Long id;
     private String nome;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long rg;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Date dt_adm;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private float salario;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Cargo cargo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nome_cargo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String imagem_perfil;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Restaurante> listaRestaurante;
 
 
     //Construtores
+    public FuncionarioSaidaDTO() {
+    }
+
+    public FuncionarioSaidaDTO(Long id) {
+        this.id = id;
+    }
+
+    public FuncionarioSaidaDTO(Long id, String nome) {
+        this.id = id;
+        this.nome = nome;
+    }
 
     public FuncionarioSaidaDTO(Long id, String nome, Long rg, Date dt_adm, float salario, String nome_cargo, String imagem_perfil, List<Restaurante> listaRestaurante) {
         this.id = id;
@@ -43,11 +62,11 @@ public class FuncionarioSaidaDTO {
     }
 
     //Gets e sets
-    public Long getId() {
+    public Long getId_func() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId_func(Long id) {
         this.id = id;
     }
 

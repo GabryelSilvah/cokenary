@@ -61,14 +61,9 @@ public class Funcionario {
     public Funcionario() {
     }
 
-    public Funcionario(FuncionarioChegadaDTO funcionarioFullDTO) {
-        this.rg = funcionarioFullDTO.getRg();
-        this.nome = funcionarioFullDTO.getNome();
-        this.dt_adm = funcionarioFullDTO.getDt_adm();
-        this.cargo_id = funcionarioFullDTO.getCargo();
-        this.salario = funcionarioFullDTO.getSalario();
+    public Funcionario(Long id_func) {
+        this.id_func = id_func;
     }
-
 
     public Funcionario(Long rg, String nome, Date dt_adm, float salario, Cargo cargo_id) {
         this.rg = rg;
@@ -84,6 +79,27 @@ public class Funcionario {
         this.dt_adm = dt_adm;
         this.salario = salario;
     }
+
+    public Funcionario(Long id_func, Long rg, String nome, Date dt_adm, float salario, String imagem_perfil, Cargo cargo_id) {
+        this.id_func = id_func;
+        this.rg = rg;
+        this.nome = nome;
+        this.dt_adm = dt_adm;
+        this.salario = salario;
+        this.imagem_perfil = imagem_perfil;
+        this.cargo_id = cargo_id;
+    }
+
+    public Funcionario(FuncionarioChegadaDTO funcionarioFullDTO) {
+        this.rg = funcionarioFullDTO.getRg();
+        this.nome = funcionarioFullDTO.getNome();
+        this.dt_adm = funcionarioFullDTO.getDt_adm();
+        this.cargo_id = funcionarioFullDTO.getCargo();
+        this.salario = funcionarioFullDTO.getSalario();
+    }
+
+
+
 
     // Getters e setters
     public Long getId_func() {

@@ -144,14 +144,14 @@ export default {
         const cargosArray = Array.isArray(response)
           ? response
           : Array.isArray(response?.data)
-          ? response.data
-          : Object.values(response)[0];
+            ? response.data
+            : Object.values(response)[0];
 
         this.cargos = Array.isArray(cargosArray)
           ? cargosArray.map(cargo => ({
-              id_cargo: cargo.id_cargo || cargo.id,
-              nome: cargo.nome
-            }))
+            id_cargo: cargo.id_cargo || cargo.id,
+            nome: cargo.nome
+          }))
           : [];
       } catch (error) {
         console.error('Erro ao carregar cargos:', error);
@@ -213,20 +213,23 @@ export default {
           cargo: { id: parseInt(this.current.cargo_id) }
         };
 
+        console.log('Dados do funcionário a serem salvos:', funcionarioData);
+
         if (this.editing) {
           await funcionarioAlterar(this.current.id_func, funcionarioData);
+          console.log('Funcionário editado com sucesso!');
         } else {
           await funcionarioCadastrar(funcionarioData);
+          console.log('Funcionário adicionado com sucesso!');
         }
 
         await this.fetchFuncionarios();
         this.closeModal();
-
-        console.log('Funcionário salvo com sucesso!');
       } catch (error) {
         console.error('Erro ao salvar:', error.response?.data || error.message);
       }
-    },
+    }
+    ,
     confirmDelete(funcionario) {
       this.current = {
         ...funcionario,

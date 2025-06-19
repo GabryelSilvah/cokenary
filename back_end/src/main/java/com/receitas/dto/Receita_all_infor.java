@@ -17,6 +17,14 @@ public class Receita_all_infor {
     private List<Composicao_ReceitaDTO> composicao;
 
 
+    public Receita_all_infor() {
+    }
+
+    public Receita_all_infor(Long id_receita) {
+        this.id_receita = id_receita;
+    }
+
+
     public Receita_all_infor(Long id_receita, Long id_func, Long id_cat, String nome_receita, String data_criacao, String cozinheiro_id, String categoria_id, String modo_preparo) {
         this.id_receita = id_receita;
         this.id_func = id_func;

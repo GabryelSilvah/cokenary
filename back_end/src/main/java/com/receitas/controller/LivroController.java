@@ -32,7 +32,7 @@ public class LivroController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ResponseJson> cadastrarCompleto(@RequestBody LivroCompletoDTO livro) {
+    public ResponseEntity<ResponseJson> cadastrarCompleto(@RequestBody LivroDTO livro) {
         LivroDTO livroDTO = livroService.saveCompleto(livro);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Livro cadastrado com sucesso!", livroDTO));
     }
@@ -45,7 +45,7 @@ public class LivroController {
 
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody LivroFullDTO livro) {
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody LivroDTO livro) {
         LivroDTO livroDTO = livroService.updateCompleto(id, livro);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Livro alterado com sucesso!", livroDTO));
     }

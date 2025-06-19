@@ -284,10 +284,9 @@ public class ReceitaService {
 
     public Receita_all_infor listByIdAllInfor(Long id) {
 
-        System.out.println("Teste 00: ");
         //Buscando receita pelo ID
         Optional<Receita_all_infor> receitaEncontrada = receitaRepository.findByIdJoinDetails(id);
-        System.out.println("Teste 0: ");
+
 
         //Validando se algum receita foi encontrado
         if (receitaEncontrada.isEmpty()) {
@@ -297,8 +296,6 @@ public class ReceitaService {
         //Buscando lista de ingredientes da receita
         List<Composicao_ReceitaDTO> ingredientesEncontrados = composicaoReceitaRepository.findJoinAllDetails(id);
 
-        System.out.println("Teste 1: " + receitaEncontrada.get().getModo_preparo());
-        System.out.println("Teste 2: " + ingredientesEncontrados.get(0).getNome_ingred());
 
         return new Receita_all_infor(
                 receitaEncontrada.get().getId_receita(),

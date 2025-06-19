@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface Publicacao_livroRepository extends JpaRepository<Publicacao_livro, Long> {
 
     @NativeQuery(
-            "SELECT id_publicacao, fk_livro, fk_receita from publicacoes_livros\n" +
+            "SELECT id_publicacao, fk_livro, fk_receita\n" +
+                    "from publicacoes_livros\n" +
                     "INNER JOIN livros\n" +
                     "ON publicacoes_livros.fk_livro = livros.id_livro\n" +
                     "INNER JOIN receitas\n" +

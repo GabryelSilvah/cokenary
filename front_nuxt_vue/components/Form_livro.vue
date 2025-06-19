@@ -17,15 +17,15 @@
           <option :value="editor.id" v-for="editor in listaFuncionarios" :key="editor.id_func">
             {{ editor.nome }}
           </option>
-          
+
         </select>
 
 
         <label for="">Adicione as receitas</label>
         <div class="container_itens_add" id="caixa_de_itens_salvas">
           <h2>Coleção de receitas do livro</h2>
-          <div class="container_composicao" v-for="composicao_livro in livroModel.composicao_receitas">
-            <p>{{ composicao_livro.fk_receita.nome_receita }}</p>
+          <div class="container_composicao" v-for="composicao_livro in livroModel.publicacao_receitas_livro">
+            <p>{{ composicao_livro.nome_receita }}</p>
             <p>por: Gabriel </p>
           </div>
         </div>
@@ -72,23 +72,25 @@ defineProps(
 
 
 //Definindo ligação bilateral com inputs
-const receita_ref = ref("receita_ref",{default:0});
-const livroModel = ref({
-  titulo_livro: "",
-  isbn: 27494,
-  editor: { id_func: 0 },
-  composicao_receitas: []
+const receita_ref = ref("receita_ref", { default: 0 });
+const livroModel = defineModel("livroModel", {
+  default:
+  {
+    titulo_livro: "",
+    isbn: 344343,
+    editor: { id_func: 0 },
+    receitas_remover: [],
+    publicacao_receitas_livro: []
+  }
 });
 
 
-
+//Receber e enviar dados inseridos para a API (POST)
 async function cadastrarLivro() {
   const livroCadastrado = await cadastrarLivros(livroModel.value);
   fecharForm();
 
 }
-
-
 
 
 //Função para pegar receitas selecionadas e exibir no campo de formulário
@@ -100,16 +102,11 @@ async function addReceitasNaLista() {
 
   let composicao_receitas =
   {
-    fk_receita:
-    {
-      id_receita: receitaEncontrada.value.data.id_receita,
-      nome_receita: receitaEncontrada.value.data.nome_receita
-    }
+    id_receita: receitaEncontrada.value.data.id_receita,
+    nome_receita: receitaEncontrada.value.data.nome_receita
   };
 
-  livroModel.value.composicao_receitas.push(composicao_receitas);
-
-  console.log(JSON.stringify(livroModel.value.composicao_receitas))
+  livroModel.value.publicacao_receitas_livro.push(composicao_receitas);
 
 }
 
