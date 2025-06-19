@@ -2,14 +2,12 @@ package com.receitas.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.receitas.model.Funcionario;
-import com.receitas.model.Receita;
 
 import java.util.Date;
 
 public class AvaliacaoDTO {
 
-    private Long id;
+    private Long id_avaliacao;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private FuncionarioSaidaDTO degustador;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -28,7 +26,7 @@ public class AvaliacaoDTO {
     }
 
     public AvaliacaoDTO(Long id) {
-        this.id = id;
+        this.id_avaliacao = id;
     }
 
     //Construtor
@@ -44,14 +42,14 @@ public class AvaliacaoDTO {
     }
 
     public AvaliacaoDTO(Long id, FuncionarioSaidaDTO degustador, ReceitaFullDTO nome_receita, int nota_avaliacao) {
-        this.id = id;
+        this.id_avaliacao = id;
         this.degustador = degustador;
         this.receita = nome_receita;
         this.nota_avaliacao = nota_avaliacao;
     }
 
     public AvaliacaoDTO(Long id, FuncionarioSaidaDTO degustador, FuncionarioSaidaDTO cozinheiro, ReceitaFullDTO nome_receita, Date data_avaliada, int nota_avaliacao) {
-        this.id = id;
+        this.id_avaliacao = id;
         this.degustador = degustador;
         this.cozinheiro = cozinheiro;
         this.receita = nome_receita;
@@ -62,12 +60,12 @@ public class AvaliacaoDTO {
     //Gets e sets
 
 
-    public Long getId() {
-        return id;
+    public Long getId_avaliacao() {
+        return id_avaliacao;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId_avaliacao(Long id_avaliacao) {
+        this.id_avaliacao = id_avaliacao;
     }
 
     public FuncionarioSaidaDTO getDegustador() {
