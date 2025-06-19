@@ -1,5 +1,6 @@
 package com.receitas.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.receitas.model.Categoria;
 import com.receitas.model.Funcionario;
 import com.receitas.model.Receitas_and_ingredientes;
@@ -11,17 +12,17 @@ public class ReceitaFullDTO {
     private Long id_receita;
 
     private String nomeReceita;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String data_criacao;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Funcionario cozinheiro_id;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Categoria categoria_id;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String modo_preparo;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Receitas_and_ingredientes> ingredientes_id;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> ingredientes_removidos;
 
     //Construtores

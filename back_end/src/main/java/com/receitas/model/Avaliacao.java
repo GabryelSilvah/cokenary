@@ -24,7 +24,7 @@ public class Avaliacao {
     private Receita fk_receita;
 
     @Column(name = "data_avaliada")
-    @NotNull(message = "Data de criação não foi definida")
+    //@NotNull(message = "Data de criação não foi definida")
     private Date data_avaliada;
 
     @Column(name = "nota_avaliacao", length = 1)
@@ -40,6 +40,18 @@ public class Avaliacao {
     public Avaliacao(Long id) {
         this.id = id;
     }
+
+    public Avaliacao(int nota_avaliacao) {
+        this.nota_avaliacao = nota_avaliacao;
+    }
+
+    public Avaliacao( Funcionario fk_desgustador, Receita fk_nome_receita, Date data_avaliada, int nota_avaliacao) {
+        this.fk_degustador = fk_desgustador;
+        this.fk_receita = fk_nome_receita;
+        this.data_avaliada = data_avaliada;
+        this.nota_avaliacao = nota_avaliacao;
+    }
+
 
     public Avaliacao(Long id, Funcionario fk_desgustador, Receita fk_nome_receita, Date data_avaliada, int nota_avaliacao) {
         this.id = id;

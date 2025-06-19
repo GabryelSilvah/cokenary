@@ -1,17 +1,21 @@
 package com.receitas.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.receitas.model.Funcionario;
+import com.receitas.model.Receita;
+
 import java.util.Date;
 
 public class AvaliacaoDTO {
 
     private Long id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private FuncionarioSaidaDTO degustador;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private FuncionarioSaidaDTO cozinheiro;
 
-    private String degustador;
-
-    private String cozinheiro;
-
-    private String nome_receita;
+    private ReceitaFullDTO receita;
 
     private Date data_avaliada;
 
@@ -19,15 +23,41 @@ public class AvaliacaoDTO {
 
     //Construtores
 
-    public AvaliacaoDTO(Long id, String desgustador, String cozinherio, String nome_receita, Date data_avaliada, int nota_avaliacao) {
+
+    public AvaliacaoDTO() {
+    }
+
+    public AvaliacaoDTO(Long id) {
         this.id = id;
-        this.degustador = desgustador;
-        this.cozinheiro = cozinherio;
-        this.nome_receita = nome_receita;
+    }
+
+    //Construtor
+    public AvaliacaoDTO(int nota_avaliacao) {
+        this.nota_avaliacao = nota_avaliacao;
+    }
+
+    public AvaliacaoDTO(FuncionarioSaidaDTO degustador, ReceitaFullDTO receita, Date data_avaliada, int nota_avaliacao) {
+        this.degustador = degustador;
+        this.receita = receita;
         this.data_avaliada = data_avaliada;
         this.nota_avaliacao = nota_avaliacao;
     }
 
+    public AvaliacaoDTO(Long id, FuncionarioSaidaDTO degustador, ReceitaFullDTO nome_receita, int nota_avaliacao) {
+        this.id = id;
+        this.degustador = degustador;
+        this.receita = nome_receita;
+        this.nota_avaliacao = nota_avaliacao;
+    }
+
+    public AvaliacaoDTO(Long id, FuncionarioSaidaDTO degustador, FuncionarioSaidaDTO cozinheiro, ReceitaFullDTO nome_receita, Date data_avaliada, int nota_avaliacao) {
+        this.id = id;
+        this.degustador = degustador;
+        this.cozinheiro = cozinheiro;
+        this.receita = nome_receita;
+        this.data_avaliada = data_avaliada;
+        this.nota_avaliacao = nota_avaliacao;
+    }
 
     //Gets e sets
 
@@ -40,28 +70,28 @@ public class AvaliacaoDTO {
         this.id = id;
     }
 
-    public String getDegustador() {
+    public FuncionarioSaidaDTO getDegustador() {
         return degustador;
     }
 
-    public void setDegustador(String degustador) {
+    public void setDegustador(FuncionarioSaidaDTO degustador) {
         this.degustador = degustador;
     }
 
-    public String getCozinheiro() {
+    public FuncionarioSaidaDTO getCozinheiro() {
         return cozinheiro;
     }
 
-    public void setCozinheiro(String cozinheiro) {
+    public void setCozinheiro(FuncionarioSaidaDTO cozinheiro) {
         this.cozinheiro = cozinheiro;
     }
 
-    public String getNome_receita() {
-        return nome_receita;
+    public ReceitaFullDTO getReceita() {
+        return receita;
     }
 
-    public void setNome_receita(String nome_receita) {
-        this.nome_receita = nome_receita;
+    public void setReceita(ReceitaFullDTO receita) {
+        this.receita = receita;
     }
 
     public Date getData_avaliada() {

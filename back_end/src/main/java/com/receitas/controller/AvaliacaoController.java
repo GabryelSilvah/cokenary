@@ -31,7 +31,7 @@ public class AvaliacaoController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ResponseJson> cadastrar(@RequestBody Avaliacao avaliacao) {
+    public ResponseEntity<ResponseJson> cadastrar(@RequestBody AvaliacaoDTO avaliacao) {
         AvaliacaoDTO avaliacaoDTO = avaliacaoService.save(avaliacao);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.CREATED, "Avaliação cadastrada com sucesso!", avaliacaoDTO));
     }

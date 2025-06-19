@@ -65,6 +65,11 @@ public class Funcionario {
         this.id_func = id_func;
     }
 
+    public Funcionario(Long id_func, String nome) {
+        this.id_func = id_func;
+        this.nome = nome;
+    }
+
     public Funcionario(Long rg, String nome, Date dt_adm, float salario, Cargo cargo_id) {
         this.rg = rg;
         this.nome = nome;
