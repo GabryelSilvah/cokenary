@@ -30,6 +30,12 @@ public class AvaliacaoController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Avaliação encontrada com sucesso!", avaliacaoDTO));
     }
 
+    @GetMapping("/byDegustador/{id}")
+    public ResponseEntity<ResponseJson> buscar_pelo_degustador(@PathVariable("id") Long id) {
+        List<AvaliacaoDTO> avaliacaoDTO = avaliacaoService.listByAvaliador(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Avaliação encontrada com sucesso!", avaliacaoDTO));
+    }
+
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> cadastrar(@RequestBody AvaliacaoDTO avaliacao) {
         AvaliacaoDTO avaliacaoDTO = avaliacaoService.save(avaliacao);

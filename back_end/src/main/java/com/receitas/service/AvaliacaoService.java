@@ -83,6 +83,36 @@ public class AvaliacaoService {
         );
     }
 
+    public List<AvaliacaoDTO> listByAvaliador(Long id_avaliador) {
+
+        //Buscando avaliação com o nome passado
+        List<Avaliacao> avaliacaoEncontrada = avaliacaoRepository.findByDegustador(id_avaliador);
+
+        //Validando se nome da avaliação  existe
+        if (avaliacaoEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("A avaliação do avaliador de ID (" + id_avaliador + ") não foi encontrada");
+        }
+
+        List<AvaliacaoDTO> listaAvaliacaoDTO = new ArrayList<>();
+
+        for (int i = 0; i < avaliacaoEncontrada.size(); i++) {
+            listaAvaliacaoDTO.add(
+                    new AvaliacaoDTO(
+                            avaliacaoEncontrada.get(i).getId(),
+                            new FuncionarioSaidaDTO(avaliacaoEncontrada.get(i).getFk_degustador().getId_func(), avaliacaoEncontrada.get(i).getFk_degustador().getNome()),
+                            new FuncionarioSaidaDTO(avaliacaoEncontrada.get(i).getFk_receita().getCozinheiro_id().getId_func(), avaliacaoEncontrada.get(i).getFk_receita().getCozinheiro_id().getNome()),
+                            new ReceitaFullDTO(avaliacaoEncontrada.get(i).getFk_receita().getId_receita(), avaliacaoEncontrada.get(i).getFk_receita().getNomeReceita()),
+                            avaliacaoEncontrada.get(i).getData_avaliada(),
+                            avaliacaoEncontrada.get(i).getNota_avaliacao(),
+                            avaliacaoEncontrada.get(i).getData_alteracao()
+                    )
+           );
+        }
+
+        //Retornando avaliação no formato DTO
+        return listaAvaliacaoDTO;
+    }
+
     public AvaliacaoDTO save(AvaliacaoDTO avaliacaoDTO) {
 
         //Validando se já existe avaliação para essa receita feita por esse degustador
@@ -107,7 +137,7 @@ public class AvaliacaoService {
 
 
         //Validando se degustador já fez avaliação dessa receita
-        Optional<Avaliacao> avaliacaoEncontrada = avaliacaoRepository.findByDegustador(avaliacaoDTO.getDegustador().getId_func(), avaliacaoDTO.getReceita().getId_receita());
+        Optional<Avaliacao> avaliacaoEncontrada = avaliacaoRepository.findByDegustadorAndReceita(avaliacaoDTO.getDegustador().getId_func(), avaliacaoDTO.getReceita().getId_receita());
         if (avaliacaoEncontrada.isPresent()) {
             throw new RegistroNotFoundException("O degustador de ID (" + avaliacaoDTO.getDegustador().getId_func() + ") já avaliou a receita de ID(" + avaliacaoDTO.getReceita().getId_receita() + ")");
         }
