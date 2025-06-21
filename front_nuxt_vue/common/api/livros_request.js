@@ -1,8 +1,10 @@
+import Cookies from 'js-cookie';
 export { listarLivros, byIdLivros, byIdAllInfor, cadastrarLivros, alterarLivros, deletarLivros };
-
 const URL_BASE_API = "http://localhost:8081/livros";
 
-const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
+const authorization =  String(Cookies.get("token_auth"));
+
+
 
 
 /*

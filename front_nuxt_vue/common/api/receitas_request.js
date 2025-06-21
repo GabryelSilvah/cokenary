@@ -2,7 +2,9 @@ export { listarReceitas, byIdReceitas, byIdAllInfor, cadastrarReceitas, alterarR
 import Cookies from 'js-cookie';
 
 const URL_BASE_API = "http://localhost:8081/receitas";
-const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
+const authorization = String(Cookies.get("token_auth"));
+
+console.log(authorization);
 
 /*
 *Não altere, adicione ou retire nada da estrutura, 

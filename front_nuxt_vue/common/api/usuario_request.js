@@ -2,6 +2,9 @@ export { listarUser, byIdUser, cadastrarUser, alterarUser, deletarUser };
 
 const URL_BASE_API = "http://localhost:8081/user";
 
+const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
+
+
 /*
 *Não altere, adicione ou retire nada da estrutura, 
 *código ou quaisquer outra coisa desse arquivo sem permissão
@@ -10,7 +13,12 @@ const URL_BASE_API = "http://localhost:8081/user";
 //Listar
 async function listarUser() {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar");
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar", {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }
@@ -18,7 +26,12 @@ async function listarUser() {
 //Buscar pelo ID
 async function byIdUser(id_user) {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byId/" + id_user);
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byId/" + id_user, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }
@@ -28,7 +41,10 @@ async function cadastrarUser(corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/cadastrar",
     {
       method: "POST",
-      headers: { "Content-Type": "appliuserion/json" },
+      headers: {
+        "Content-Type": "appliuserion/json",
+        "Authorization": 'Bearer ' + authorization
+      },
       body: JSON.stringify(corpo_request)
     });
 
@@ -39,7 +55,10 @@ async function cadastrarUser(corpo_request) {
 async function alterarUser(id_user, corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/alterar/" + id_user, {
     method: "PUT",
-    headers: { "Content-Type": "appliuserion/json" },
+    headers: {
+      "Content-Type": "appliuserion/json",
+      "Authorization": 'Bearer ' + authorization
+    },
     body: JSON.stringify(corpo_request)
   });;
 
@@ -48,7 +67,12 @@ async function alterarUser(id_user, corpo_request) {
 
 //Deletar
 async function deletarUser(id_user) {
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/excluir/" + id_user);
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/excluir/" + id_user, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }

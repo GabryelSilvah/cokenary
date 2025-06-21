@@ -56,7 +56,7 @@ import { byIdLivros, deletarLivros, listarLivros } from '~/common/api/livros_req
 import { listarReceitas } from '~/common/api/receitas_request';
 import Form_livro_edit from '~/components/Form_livro _edit.vue';
 
-
+console.log(await listarLivros());
 
 let listaLivros = ref(await listarLivros());
 
