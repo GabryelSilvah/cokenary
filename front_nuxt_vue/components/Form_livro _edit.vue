@@ -64,7 +64,7 @@
 </style>
 
 <script lang="js" setup>
-import { alterarLivros } from '~/common/api/livros_request';
+import { alterarLivros, listarLivros } from '~/common/api/livros_request';
 import { byIdAllInfor } from '~/common/api/receitas_request';
 
 //Definindo dados que devem ser pré-carregados
@@ -75,6 +75,7 @@ defineProps(
   }
 );
 
+let listaLivros = ref();
 
 //Definindo ligação bilateral com inputs
 const receita_ref = defineModel("receita_ref", { default: 0 });
@@ -144,6 +145,7 @@ async function addReceitasNaLista() {
 async function alterarLivro(id_livro) {
   livroModel.value.receitas_remover = listaReceitasExcluir;
   const livroAlterado = await alterarLivros(id_livro, livroModel.value);
+    listaLivros.value = await listarLivros();
   fecharForm();
 }
 
@@ -151,6 +153,15 @@ async function alterarLivro(id_livro) {
 //Fechar formulário
 function fecharForm() {
   listaReceitasExcluir = [];
+  livroModel.value = {
+    titulo_livro: "",
+    isbn: 344343,
+    editor: { id_func: 0 },
+    receitas_remover: [],
+    publicacao_receitas_livro: []
+  };
+
+
   let container_form_cadastro = document.querySelector(".container_form_edit");
   container_form_cadastro.setAttribute("style", "display:none");
 }

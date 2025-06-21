@@ -24,13 +24,15 @@ public class UsuarioFullDTO {
     public UsuarioFullDTO() {
     }
 
+    public UsuarioFullDTO(Long id_usuario) {
+        this.id_usuario = id_usuario;
+    }
+
     public UsuarioFullDTO(String nome_usuario) {
         this.nome_usuario = nome_usuario;
     }
 
-    public UsuarioFullDTO(Long id_usuario) {
-        this.id_usuario = id_usuario;
-    }
+
 
     public UsuarioFullDTO(Long id_usuario, String nome_usuario) {
         this.id_usuario = id_usuario;

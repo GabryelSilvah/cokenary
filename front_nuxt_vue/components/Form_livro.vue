@@ -8,7 +8,7 @@
       <div class="sections">
 
         <label for="">Titulo do livro</label>
-        <input v-model="livroModel.titulo_livro" type="text" placeholder="Ex: Receitas Premium">
+        <input v-model="livroModel.titulo_livro" type="text" placeholder="Ex: Receitas Premium" required>
 
         <label for="">Criado por</label>
         <select name="criador_receita" id="" v-model="livroModel.editor.id_func">
@@ -20,19 +20,20 @@
 
         </select>
 
-
         <label for="">Adicione as receitas</label>
         <div class="container_itens_add" id="caixa_de_itens_salvas">
           <h2>Coleção de receitas do livro</h2>
           <div class="container_composicao" v-for="composicao_livro in livroModel.publicacao_receitas_livro">
-            <p>{{ composicao_livro.nome_receita }}</p>
-            <p>por: Gabriel </p>
+            <p class="item_lista">{{ composicao_livro.nome_receita }} </p>
+            <p class="item_lista">Chef: {{ composicao_livro.cozinheiro_id }} </p>
+            <img src="../assets/icones/delete.png" class="img_delete_item"
+              @click="excluir_receita_livro(composicao_livro.id_receita)">
           </div>
         </div>
 
 
-        <select name="receita_livro" id="" v-model="receita_ref">
-          <option value="0" selected>Selecione</option>
+        <select name="receita_livro" id="" v-model="receita_ref" :required="true">
+          <option value="0">Selecione</option>
           <option :value="receita.id_receita" v-for="receita in listaReceitas" :key="receita.id_receita">
             {{ receita.nome_receita }}
           </option>
@@ -59,7 +60,7 @@
 </style>
 
 <script lang="js" setup>
-import { cadastrarLivros } from '~/common/api/livros_request';
+import { cadastrarLivros, listarLivros } from '~/common/api/livros_request';
 import { byIdAllInfor } from '~/common/api/receitas_request';
 
 //Definindo dados que devem ser pré-carregados
@@ -70,9 +71,10 @@ defineProps(
   }
 );
 
+let listaLivros = ref();
 
 //Definindo ligação bilateral com inputs
-const receita_ref = ref("receita_ref", { default: 0 });
+const receita_ref = defineModel("receita_ref", { default: 0 });
 const livroModel = defineModel("livroModel", {
   default:
   {
@@ -89,7 +91,7 @@ const livroModel = defineModel("livroModel", {
 async function cadastrarLivro() {
   const livroCadastrado = await cadastrarLivros(livroModel.value);
   fecharForm();
-
+  listaLivros.value = await listarLivros();
 }
 
 
@@ -110,6 +112,19 @@ async function addReceitasNaLista() {
 
 }
 
+//Excluir receita do livro
+function excluir_receita_livro(id_receita) {
+
+  //Procurando index onde id_receita é igual o id_receita passado para exclusão
+  //Se o valor for encontrado, deverá ser removida livroModel
+  let index = livroModel.value.publicacao_receitas_livro.findIndex(receita => receita.id_receita == id_receita)
+
+  //Valor for menor que 0 é porque não foi encontrado
+  if (index > -1) {
+    livroModel.value.publicacao_receitas_livro.splice(index, 1);
+  }
+
+}
 
 //Fechar formulário
 function fecharForm() {

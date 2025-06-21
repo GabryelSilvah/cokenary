@@ -14,6 +14,7 @@ import com.receitas.repository.MetricasRepository;
 import com.receitas.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
@@ -68,6 +69,7 @@ public class PerfilService {
         );
     }
 
+    @Transactional
     public PerfilDTO updateName(Long id_funcionario, PerfilDTO perfilDTO) {
 
         //Validando se funcinário existe
@@ -84,7 +86,7 @@ public class PerfilService {
 
         //Validando se nome de usuário já existe
         Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(perfilDTO.getUsuario().getNome_usuario());
-        if (usuarioExistente.isPresent()) {
+        if (usuarioExistente.isPresent() && !(usuarioExistente.get().getFk_funcionario().getId_func().equals(id_funcionario))) {
             throw new RegistroExistsException("O nome de usuário (" + perfilDTO.getUsuario().getNome_usuario() + ") já existe");
         }
 
@@ -103,7 +105,7 @@ public class PerfilService {
         }
 
         return new PerfilDTO(
-                usuarioAlterado.getFk_funcionario().getId_func(),
+                usuarioAlterado.getId(),
                 new UsuarioFullDTO(usuarioAlterado.getId(), usuarioAlterado.getEmail()),
                 usuarioEncontrado.get().getFk_funcionario().getCargo().getNome(),
                 new Date(),

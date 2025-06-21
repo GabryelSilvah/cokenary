@@ -9,7 +9,8 @@
       </button>
     </div>
 
-    <FormLivro id="form" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data" />
+    <FormLivro id="form" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data"
+      v-model:livroModel="livroModel" />
 
     <Form_livro_edit id="form_edit" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data"
       v-model:livroModel="livroModel" />
@@ -57,7 +58,7 @@ import Form_livro_edit from '~/components/Form_livro _edit.vue';
 
 
 
-let listaLivros = await listarLivros();
+let listaLivros = ref(await listarLivros());
 
 const listaReceitas = await listarReceitas();
 

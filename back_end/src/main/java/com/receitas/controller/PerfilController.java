@@ -22,7 +22,7 @@ public class PerfilController {
     }
 
     @PutMapping("/alterar/{id_funcionario}")
-    public ResponseEntity<ResponseJson> alterar_nome_usuario(@PathVariable("id_funcionario") Long id_funcionario, PerfilDTO perfil) {
+    public ResponseEntity<ResponseJson> alterar_nome_usuario(@PathVariable("id_funcionario") Long id_funcionario,  @RequestBody PerfilDTO perfil) {
         PerfilDTO perfilDTO = perfilService.updateName(id_funcionario, perfil);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Perfil encontrado com sucesso!", perfilDTO));
     }

@@ -89,7 +89,7 @@ import Form_food_edit from '~/components/Form_food_edit.vue';
 
 
 //Request de receitas (recebendo lista de receitas)
-let listasReceitas = await listarReceitas();
+let listasReceitas = ref(await listarReceitas());
 
 
 //Request de categorias (recebendo lista de categorias de receitas)

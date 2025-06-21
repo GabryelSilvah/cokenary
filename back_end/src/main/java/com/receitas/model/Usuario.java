@@ -21,14 +21,11 @@ public class Usuario implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull(message = "Informe um email")
-    @NotEmpty
     private String email;
     @NotNull(message = "Informe uma senha")
-    @NotEmpty
     private String senha;
 
     @NotNull(message = "Informe uma Role")
-    @NotEmpty
     @ManyToOne
     @JoinColumn(name = "role")
     private Cargo role;

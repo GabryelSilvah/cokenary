@@ -125,6 +125,8 @@
 
 
 <script setup scoped lang="js">
+import { listarReceitas } from '~/common/api/receitas_request';
+
 
 const URL_BASE_API = "http://localhost:8081";
 
@@ -138,6 +140,8 @@ defineProps({
     medidas: Object
 });
 
+
+let listasReceitas = ref();
 
 
 
@@ -217,10 +221,11 @@ async function pegarDadosForm() {
         body: JSON.stringify(receitaModel.value)
     });
 
-    console.log(JSON.stringify(receitaModel.value));
-    console.log(ResponseAPI.value);
+
 
     fecharForm();
+
+    listasReceitas.value = await listarReceitas();
 }
 
 
