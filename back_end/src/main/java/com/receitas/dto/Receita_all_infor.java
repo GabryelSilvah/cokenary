@@ -1,6 +1,8 @@
 package com.receitas.dto;
 
 
+import javax.xml.crypto.Data;
+import java.util.Date;
 import java.util.List;
 
 public class Receita_all_infor {
@@ -9,7 +11,7 @@ public class Receita_all_infor {
     private Long id_func;
     private Long id_cat;
     private String nome_receita;
-    private String data_criacao;
+    private Date data_criacao;
     private String cozinheiro_id;
     private String categoria_id;
     private String modo_preparo;
@@ -25,7 +27,7 @@ public class Receita_all_infor {
     }
 
 
-    public Receita_all_infor(Long id_receita, Long id_func, Long id_cat, String nome_receita, String data_criacao, String cozinheiro_id, String categoria_id, String modo_preparo) {
+    public Receita_all_infor(Long id_receita, Long id_func, Long id_cat, String nome_receita, Date data_criacao, String cozinheiro_id, String categoria_id, String modo_preparo) {
         this.id_receita = id_receita;
         this.id_func = id_func;
         this.id_cat = id_cat;
@@ -36,7 +38,7 @@ public class Receita_all_infor {
         this.modo_preparo = modo_preparo;
     }
 
-    public Receita_all_infor(Long id_receita, Long id_func, Long id_cat, String nome_receita, String data_criacao, String cozinheiro_id, String categoria_id, String modo_preparo, List<Composicao_ReceitaDTO> composicao) {
+    public Receita_all_infor(Long id_receita, Long id_func, Long id_cat, String nome_receita, Date data_criacao, String cozinheiro_id, String categoria_id, String modo_preparo, List<Composicao_ReceitaDTO> composicao) {
         this.id_receita = id_receita;
         this.id_func = id_func;
         this.id_cat = id_cat;
@@ -80,11 +82,11 @@ public class Receita_all_infor {
         this.nome_receita = nome_receita;
     }
 
-    public String getData_criacao() {
+    public Date getData_criacao() {
         return data_criacao;
     }
 
-    public void setData_criacao(String data_criacao) {
+    public void setData_criacao(Date data_criacao) {
         this.data_criacao = data_criacao;
     }
 

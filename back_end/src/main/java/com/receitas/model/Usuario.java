@@ -52,9 +52,9 @@ public class Usuario implements UserDetails {
     }
 
     public Usuario(AuthDTO authDTO) {
-        this.email = authDTO.email();
-        this.senha = authDTO.senha();
-        this.role = authDTO.role();
+        this.email = authDTO.getEmail();
+        this.senha = authDTO.getSenha();
+        this.role = authDTO.getRole();
     }
 
     public Usuario(UsuarioDTO usuarioDTO) {

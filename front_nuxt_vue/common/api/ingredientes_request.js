@@ -1,6 +1,9 @@
 export { listarIngredientes, byIdIngredientes, cadastrarIngredientes, alterarIngredientes, deletarIngredientes };
 
 const URL_BASE_API = "http://localhost:8081/ingredientes";
+const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
+
+
 
 /*
 *Não altere, adicione ou retire nada da estrutura, 
@@ -10,7 +13,14 @@ const URL_BASE_API = "http://localhost:8081/ingredientes";
 //Listar
 async function listarIngredientes() {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar");
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": 'Bearer ' + authorization
+      }
+    }
+  );
 
   return responseAPI;
 }

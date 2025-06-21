@@ -57,16 +57,16 @@ public class UsuarioService {
     public UsuarioDTO save(AuthDTO authDTO) {
 
         //Validando se já existe esse usuário cadastrado
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(authDTO.email());
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(authDTO.getEmail());
         if (usuario.isPresent()) {
             throw new UserExitsException("Usuário já existe");
         }
 
         //Criando hash da senha
-        var senhaCripto = criptografar.encode(authDTO.senha());
+        var senhaCripto = criptografar.encode(authDTO.getSenha());
 
         //Convertendo class dto em class model, depois savalndo usuário na base de dados
-        Usuario model = new Usuario(authDTO.email(), senhaCripto, authDTO.role());
+        Usuario model = new Usuario(authDTO.getEmail(), senhaCripto, authDTO.getRole());
         Usuario modelResponse = usuarioRepository.save(model);
 
         //Retornando informações do usuário salvo na base de dados

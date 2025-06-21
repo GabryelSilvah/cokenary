@@ -9,10 +9,10 @@ const URL_BASE_API = "http://localhost:8081/auth";
 
 //Autenticar
 async function autenticar_user(corpo_request) {
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/cadastrar",
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API,
     {
       method: "POST",
-      headers: { "Content-Type": "appliuserion/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(corpo_request)
     });
 

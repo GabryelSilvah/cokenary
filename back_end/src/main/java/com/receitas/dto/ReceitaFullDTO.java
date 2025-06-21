@@ -5,6 +5,7 @@ import com.receitas.model.Categoria;
 import com.receitas.model.Funcionario;
 import com.receitas.model.Receitas_and_ingredientes;
 
+import java.util.Date;
 import java.util.List;
 
 public class ReceitaFullDTO {
@@ -13,7 +14,7 @@ public class ReceitaFullDTO {
 
     private String nomeReceita;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String data_criacao;
+    private Date data_criacao;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Funcionario cozinheiro_id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -40,7 +41,7 @@ public class ReceitaFullDTO {
         this.nomeReceita = nomeReceita;
     }
 
-    public ReceitaFullDTO(Long id_receita, String nomeReceita, String data_criacao, Funcionario cozinheiro_id, Categoria categoria_id, String modo_preparo, List<Receitas_and_ingredientes> ingredientes_id) {
+    public ReceitaFullDTO(Long id_receita, String nomeReceita, Date data_criacao, Funcionario cozinheiro_id, Categoria categoria_id, String modo_preparo, List<Receitas_and_ingredientes> ingredientes_id) {
         this.id_receita = id_receita;
         this.nomeReceita = nomeReceita;
         this.data_criacao = data_criacao;
@@ -50,7 +51,7 @@ public class ReceitaFullDTO {
         this.ingredientes_id = ingredientes_id;
     }
 
-    public ReceitaFullDTO(Long id_receita, String nomeReceita, String data_criacao, Funcionario cozinheiro_id, Categoria categoria_id, String modo_preparo, List<Receitas_and_ingredientes> ingredientes_id, List<Long> ingredientes_removidos) {
+    public ReceitaFullDTO(Long id_receita, String nomeReceita, Date data_criacao, Funcionario cozinheiro_id, Categoria categoria_id, String modo_preparo, List<Receitas_and_ingredientes> ingredientes_id, List<Long> ingredientes_removidos) {
         this.id_receita = id_receita;
         this.nomeReceita = nomeReceita;
         this.data_criacao = data_criacao;
@@ -61,7 +62,7 @@ public class ReceitaFullDTO {
         this.ingredientes_removidos = ingredientes_removidos;
     }
 
-    public ReceitaFullDTO(String nomeReceita, String data_criacao, Funcionario cozinheiro_id, Categoria categoria_id, String modo_preparo, List<Receitas_and_ingredientes> ingredientes_id, List<Long> ingredientes_removidos) {
+    public ReceitaFullDTO(String nomeReceita, Date data_criacao, Funcionario cozinheiro_id, Categoria categoria_id, String modo_preparo, List<Receitas_and_ingredientes> ingredientes_id, List<Long> ingredientes_removidos) {
         this.nomeReceita = nomeReceita;
         this.data_criacao = data_criacao;
         this.cozinheiro_id = cozinheiro_id;
@@ -90,11 +91,11 @@ public class ReceitaFullDTO {
         this.nomeReceita = nomeReceita;
     }
 
-    public String getData_criacao() {
+    public Date getData_criacao() {
         return data_criacao;
     }
 
-    public void setData_criacao(String data_criacao) {
+    public void setData_criacao(Date data_criacao) {
         this.data_criacao = data_criacao;
     }
 

@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ReceitaService {
@@ -118,6 +115,7 @@ public class ReceitaService {
         }
 
         //Salvando receita
+        receitaRecebida.setData_criacao(new Date());
         Receita receitaSalva = receitaRepository.save(receitaRecebida);
 
         //Salvando ingredientes

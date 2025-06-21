@@ -2,6 +2,9 @@ export { listarLivros, byIdLivros, byIdAllInfor, cadastrarLivros, alterarLivros,
 
 const URL_BASE_API = "http://localhost:8081/livros";
 
+const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
+
+
 /*
 *Não altere, adicione ou retire nada da estrutura, 
 *código ou quaisquer outra coisa desse arquivo sem permissão
@@ -10,7 +13,12 @@ const URL_BASE_API = "http://localhost:8081/livros";
 //Listar
 async function listarLivros() {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar");
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar", {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }
@@ -19,7 +27,12 @@ async function listarLivros() {
 //Buscar pelo ID
 async function byIdLivros(id_livro) {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byId/" + id_livro);
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byId/" + id_livro, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }
@@ -27,7 +40,12 @@ async function byIdLivros(id_livro) {
 //Buscar informações detalhadas
 async function byIdAllInfor(id_livro) {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byIdAllInfor/" + id_livro);
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byIdAllInfor/" + id_livro, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }
@@ -37,7 +55,10 @@ async function cadastrarLivros(corpo_request) {
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/cadastrar",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": 'Bearer ' + authorization
+      },
       body: JSON.stringify(corpo_request)
     });
 

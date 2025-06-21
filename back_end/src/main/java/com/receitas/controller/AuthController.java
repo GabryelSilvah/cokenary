@@ -33,7 +33,7 @@ public class AuthController {
     private ResponseEntity<?> autenticar(@RequestBody AuthDTO authDTO) {
 
         //Validadando email e senha do usuário inserido
-        var userNamePass = new UsernamePasswordAuthenticationToken(authDTO.email(), authDTO.senha());
+        var userNamePass = new UsernamePasswordAuthenticationToken(authDTO.getEmail(), authDTO.getSenha());
         Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
         //Pegando dados do usuário autenticado

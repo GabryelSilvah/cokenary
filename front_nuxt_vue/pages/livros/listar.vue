@@ -9,15 +9,15 @@
       </button>
     </div>
 
-    <FormLivro id="form" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data"
-      v-model:livroModel="livroModel" />
+    <FormLivro id="form" v-if="listaFuncionarios && listaReceitas"  :lista-receitas="listaReceitas.data"
+      :lista-funcionarios="listaFuncionarios.data" v-model:livroModel="livroModel" />
 
     <Form_livro_edit id="form_edit" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data"
       v-model:livroModel="livroModel" />
 
-    <section class="container_livros">
+    <section class="container_livros" v-if="listaLivros">
 
-      <div class="livro" v-for="livro in listaLivros.data">
+      <div class="livro" v-if="listaLivros" v-for="livro in listaLivros.data">
 
         <div class="container_img_livro">
 

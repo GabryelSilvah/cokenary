@@ -3,13 +3,16 @@
   <Menu />
   <div>
 
+    <FormAvaliacao id="formCadastro" :listaReceitas="listaReceitas.data" />
+    <FormAvaliacaoEdit id="formEdit" :listaReceitas="listaReceitas.data" v-model:avaliacaoModel="avaliacaoModel" />
+
     <section class="container_opcoes">
-      <button type="button" class="btn_nova_avaliacao">Nova Avaliação</button>
+      <button type="button" class="btn_nova_avaliacao" @click="abrirForm">Nova Avaliação</button>
     </section>
 
     <section class="container_avaliacao">
 
-      <div class="avaliacao" v-for="avaliacao in listaDegustadores.data">
+      <div class="avaliacao" v-for="avaliacao in listarAvaliacoes.data">
         <h2 class="nome_receita">{{ avaliacao.receita.nomeReceita }}</h2>
 
         <div class="container_detalhes">
@@ -19,12 +22,13 @@
         </div>
 
         <div class="nota_avalicao">
-          <p><span class="span_nota">Nota:</span>9/10</p>
+          <p><span class="span_nota">Nota:</span>{{ avaliacao.nota_avaliacao }}/10</p>
         </div>
 
 
         <div class="container_btn">
-          <button type="button" class="btn" id="editar">Reavaliar</button>
+          <button type="button" class="btn" id="editar"
+            @click="abrirFormEdit(avaliacao.id_avaliacao)">Reavaliar</button>
           <button type="button" class="btn" id="excluir"
             @click="excluirAvaliacao(avaliacao.id_avaliacao)">Excluir</button>
         </div>
@@ -42,19 +46,64 @@
 
 //
 <script lang="ts" setup>
-import { byIdDegustador, deletarAvaliacao } from '~/common/api/avaliacao_request';
+import { byIdAvaliacao, byIdDegustador, deletarAvaliacao } from '~/common/api/avaliacao_request';
+import { listarReceitas } from '~/common/api/receitas_request';
 
 
 const id_degustador = ref(4);
 
-let listaDegustadores = await byIdDegustador(id_degustador.value);
-
-console.log(listaDegustadores.value);
 
 
-async function excluirAvaliacao(id_avalicao) {
-  const responseAPI = await deletarAvaliacao(id_avalicao);
-  listaDegustadores.value = await byIdDegustador(3);
+let listarAvaliacoes = ref(await byIdDegustador(id_degustador.value));
+
+
+
+const listaReceitas = await listarReceitas();
+
+
+
+//Modelo avaliaçoes
+const avaliacaoModel = ref({
+  id_avaliacao: 0,
+  degustador: { id_func: 4 },
+  receita: { id_receita: 0, nomeReceita: "" },
+  data_avaliada: "2025-05-31",
+  nota_avaliacao: 0
+});
+
+
+
+//
+async function abrirFormEdit(id_avaliacao) {
+
+
+  const avaliacaoEncontrada = await byIdAvaliacao(id_avaliacao);
+
+
+  avaliacaoModel.value.id_avaliacao = avaliacaoEncontrada.value.data.id_avaliacao;
+  avaliacaoModel.value.degustador.id_func = avaliacaoEncontrada.value.data.degustador.id_func;
+  avaliacaoModel.value.receita.id_receita = avaliacaoEncontrada.value.data.receita.id_receita;
+  avaliacaoModel.value.receita.nomeReceita = avaliacaoEncontrada.value.data.receita.nomeReceita;
+  avaliacaoModel.value.data_avaliada = avaliacaoEncontrada.value.data.data_avaliada;
+  avaliacaoModel.value.nota_avaliacao = avaliacaoEncontrada.value.data.nota_avaliacao;
+
+  //Exibindo formulário
+  let form = document.querySelector("#formEdit");
+  form.setAttribute("style", "display:flex");
+}
+
+
+async function excluirAvaliacao(id_avaliacao) {
+  const responseAPI = await deletarAvaliacao(id_avaliacao);
+  listarAvaliacoes = await byIdDegustador(id_degustador.value);
+}
+
+
+//Abrir formulário de cadastrar avaliação
+async function abrirForm() {
+  //Exibindo formulário
+  let form = document.querySelector("#formCadastro");
+  form.setAttribute("style", "display:flex");
 }
 
 </script>

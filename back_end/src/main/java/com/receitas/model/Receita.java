@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import javax.xml.crypto.Data;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,7 +27,7 @@ public class Receita {
     @Column(name = "data_criacao", nullable = false)
     @Temporal(TemporalType.DATE)
     @NotNull(message = "Data de criação da receita não foi definida")
-    private String data_criacao;
+    private Date data_criacao;
 
     //Nome do cozinheiro
     @ManyToOne
@@ -66,7 +68,7 @@ public class Receita {
     public Receita(
             Long id_receita,
             String nomeReceita,
-            String data_criacao,
+            Date data_criacao,
             Funcionario cozinheiro_id,
             Categoria categoria_id,
             String modo_preparo,
@@ -98,11 +100,11 @@ public class Receita {
         this.nomeReceita = nomeReceita;
     }
 
-    public String getData_criacao() {
+    public Date getData_criacao() {
         return data_criacao;
     }
 
-    public void setData_criacao(String data_criacao) {
+    public void setData_criacao(Date data_criacao) {
         this.data_criacao = data_criacao;
     }
 

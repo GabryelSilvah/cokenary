@@ -40,10 +40,11 @@ public class FilterSecurity {
                         .requestMatchers(HttpMethod.GET, "/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Todas as outras rotas exigem autenticação
-                        .anyRequest().permitAll() // Única chamada anyRequest()
+                        .anyRequest().authenticated() // Única chamada anyRequest()
                 )
                 .addFilterBefore(filterToken, UsernamePasswordAuthenticationFilter.class)
                 .build();
