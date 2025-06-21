@@ -14,4 +14,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     Optional<Restaurante> findByNome(String nome);
 
     boolean existsByNome(String nome);
+
+    @NativeQuery("SELECT count(id_restaurante) FROM restaurantes;")
+    int countRegistro();
 }

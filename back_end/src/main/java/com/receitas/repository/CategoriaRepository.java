@@ -10,4 +10,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     @NativeQuery("SELECT * FROM categorias WHERE nome_categoria = :name")
     Optional<Categoria> findByName(String name);
+
+    @NativeQuery("SELECT count(id_cat) FROM categorias;")
+    int countRegistro();
 }

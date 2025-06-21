@@ -9,7 +9,6 @@ public class PainelDTO {
     private int numero_ingrediente;
     private int numero_categoria;
     private int numero_livro;
-
     private int numero_avalicao;
 
     //Construtor

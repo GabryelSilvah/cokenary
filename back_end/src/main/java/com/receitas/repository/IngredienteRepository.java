@@ -11,4 +11,7 @@ public interface IngredienteRepository extends JpaRepository<Ingrediente, Long> 
 
     @NativeQuery("SELECT * FROM ingredientes WHERE nome = :name")
     Optional<Ingrediente> findByName(String name);
+
+    @NativeQuery("SELECT count(id_ingred) FROM ingredientes;")
+    int countRegistro();
 }

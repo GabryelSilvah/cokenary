@@ -45,5 +45,6 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
             "WHERE id_receita = :id")
     Optional<Receita_all_infor> findByIdJoinDetails(Long id);
 
-
+    @NativeQuery("SELECT count(id_receita) FROM receitas;")
+    int countRegistro();
 }

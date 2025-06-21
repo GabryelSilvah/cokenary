@@ -31,4 +31,7 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
                     "WHERE cargos.nome = :nome_cargo;"
     )
     List<Funcionario> findByNomeCargo(String nome_cargo);
+
+    @NativeQuery("SELECT count(id_func) FROM funcionarios;")
+    int countRegistro();
 }
