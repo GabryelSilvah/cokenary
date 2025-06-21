@@ -103,13 +103,23 @@ export default {
   },
   methods: {
     async carregarCategorias() {
-      const data = await categoriaListar();
-      if (data) {
-        this.categorias = data;
-      } else {
-        this.categorias = [];
-      }
-    },
+  try {
+    const response = await categoriaListar();
+    
+    // Caso retorne um objeto com a lista dentro de data (ex: { data: [...] })
+    const categoriasArray = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+      ? response.data
+      : [];
+
+    this.categorias = categoriasArray;
+  } catch (error) {
+    console.error('Erro ao carregar categorias:', error);
+    this.categorias = [];
+  }
+}
+,
     editCategoria(categoria) {
       this.currentCategoria = { ...categoria };
       this.editingCategoria = true;

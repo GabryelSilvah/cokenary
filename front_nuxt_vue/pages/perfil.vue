@@ -1,22 +1,27 @@
 <template>
-
-  <Menu/>
+  <Menu />
   <div class="profile-container">
     <div class="profile-header">
       <h1>Meu Perfil</h1>
       <p>Gerencie suas informações pessoais</p>
     </div>
 
-    <div class="profile-content">
+    <div v-if="loading" class="loading">Carregando perfil...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+
+    <div v-else class="profile-content">
       <div class="profile-sidebar">
         <div class="profile-summary">
           <div class="profile-avatar">
-            <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Foto de perfil">
+            <img
+              :src="perfil.foto_usuario || 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
+              alt="Foto de perfil">
           </div>
-          <h2>Marcos Souza</h2>
-          <p class="profile-role">Chef de Cozinha</p>
-          <p>membro desde março 2022</p>
-          <button class="change-photo-btn">Alterar Foto</button>
+          <h2>{{ perfil.usuario.nome_usuario }}</h2>
+          <p class="profile-role">{{ perfil.cargo_usuario }}</p>
+          <p>membro desde {{ formatDate(perfil.data_admisao) }}</p>
+          <button class="change-photo-btn" @click="openPhotoUpload">Alterar Foto</button>
+          <input type="file" ref="photoInput" style="display: none" accept="image/*" @change="handlePhotoUpload">
         </div>
 
         <nav class="profile-menu">
@@ -29,38 +34,166 @@
 
       <div class="profile-details">
         <section class="personal-info">
-  <h2>Dados do Funcionário</h2>
-  <p>Veja as informações relacionadas ao seu trabalho</p>
+          <h2>Dados do Funcionário</h2>
+          <p>Veja as informações relacionadas ao seu trabalho</p>
 
-  <div class="info-grid">
-    <div class="info-item">
-      <label>Quantidade de Receitas</label>
-      <div class="info-value">35</div> <!-- Substitua pelo valor real com variável se desejar -->
-    </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Quantidade de Receitas</label>
+              <div class="info-value">{{ perfil.numero_receitas_feitas }}</div>
+            </div>
 
-    <div class="info-item">
-      <label>Restaurante</label>
-      <div class="info-value">Restaurante Sabor do Chef</div> <!-- Substitua por variável dinâmica se quiser -->
-    </div>
+            <div class="info-item">
+              <label>Restaurante</label>
+              <div class="info-value">Restaurante Sabor do Chef</div>
+            </div>
 
-    <div class="info-item">
-      <label>Cargo</label>
-      <div class="info-value">Chef de Cozinha</div>
-    </div>
+            <div class="info-item">
+              <label>Cargo</label>
+              <div class="info-value">{{ perfil.cargo_usuario }}</div>
+            </div>
 
-    <div class="info-item">
-      <label>Membro desde</label>
-      <div class="info-value">Março 2022</div>
-    </div>
-  </div>
-</section>
+            <div class="info-item">
+              <label>Membro desde</label>
+              <div class="info-value">{{ formatDate(perfil.data_admisao) }}</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="edit-section" v-if="editing">
+          <h2>Editar Informações</h2>
+          <form @submit.prevent="saveChanges">
+            <div class="form-group">
+              <label for="username">Nome de Usuário</label>
+              <input type="text" id="username" v-model="editForm.nome_usuario" required>
+            </div>
+
+            <div class="form-group">
+              <label for="role">Cargo</label>
+              <input type="text" id="role" v-model="editForm.cargo_usuario" required>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" @click="cancelEdit">Cancelar</button>
+              <button type="submit">Salvar Alterações</button>
+            </div>
+          </form>
+        </section>
+
+        <button v-else class="edit-btn" @click="startEditing">Editar Perfil</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getPerfilById, updatePerfil } from '~/assets/js/request_api_perfil';
+
 export default {
+  data() {
+    return {
+      perfil: {
+        nome_usuario: '',
+        cargo_usuario: '',
+        data_admisao: '',
+        foto_usuario: '',
+        numero_receitas_feitas: 0,
+        numero_livros_publicados: 0,
+        media_avaliacoes: 0
+      },
+      loading: true,
+      error: null,
+      editing: false,
+      editForm: {
+        nome_usuario: '',
+        cargo_usuario: '',
+        foto_usuario: null
+      }
+    }
+  },
+  async mounted() {
+    await this.fetchPerfil();
+  },
+  methods: {
+    async fetchPerfil() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const perfilData = await getPerfilById(4); // trocar pelo ID real
+        this.perfil = perfilData;
+      } catch (error) {
+        this.error = 'Erro ao carregar perfil: ' + error.message;
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    },
+    startEditing() {
+      this.editForm = {
+        nome_usuario: this.perfil.nome_usuario,
+        cargo_usuario: this.perfil.cargo_usuario,
+        foto_usuario: null
+      };
+      this.editing = true;
+    },
+    cancelEdit() {
+      this.editing = false;
+    },
+    async saveChanges() {
+      try {
+        this.loading = true;
+
+        const updatedPerfil = await updatePerfil(this.perfil.id_funcionario, this.editForm);
+
+        this.perfil.usuario.nome_usuario = updatedPerfil.usuario.nome_usuario;
+        this.perfil.cargo_usuario = updatedPerfil.cargo_usuario;
+        this.perfil.foto_usuario = updatedPerfil.foto_usuario;
+
+        this.editing = false;
+      } catch (error) {
+        this.error = 'Erro ao atualizar perfil: ' + error.message;
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    openPhotoUpload() {
+      this.$refs.photoInput.click();
+    },
+    async handlePhotoUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      this.loading = true;
+      const updatedPerfil = await updatePerfil(this.perfil.id_funcionario, {
+        ...this.editForm,
+        foto_usuario: reader.result
+      });
+
+      this.perfil.foto_usuario = updatedPerfil.foto_usuario;
+    } catch (error) {
+      this.error = 'Erro ao atualizar foto: ' + error.message;
+    } finally {
+      this.loading = false;
+      event.target.value = '';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+  },
   head() {
     return {
       title: 'Meu Perfil'
@@ -71,4 +204,71 @@ export default {
 
 <style>
 @import url("~/assets/css/perfil.css");
+
+.loading,
+.error {
+  padding: 20px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.error {
+  color: #ff3333;
+}
+
+.edit-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-actions button:first-child {
+  background: #ddd;
+}
+
+.form-actions button:last-child {
+  background: #4CAF50;
+  color: white;
+}
+
+.edit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 </style>

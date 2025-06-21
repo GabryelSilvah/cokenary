@@ -7,7 +7,7 @@
 
         <section class="banner_page">
             <img src="public/image/banner_page.png" alt="">
-            <h1 class="name_page">Best Food</h1>
+            <h1 class="name_page">Cooknary</h1>
         </section>
 
         <h2 class="topico_section">Foods Recentes</h2>

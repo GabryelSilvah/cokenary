@@ -6,9 +6,7 @@
       <h1>Funcionários</h1>
       <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-input" />
 
-      <button @click="openAdd" class="add-button">
-        Adicionar Funcionário
-      </button>
+      <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
 
       <table class="employee-table">
         <thead>
@@ -18,6 +16,7 @@
             <th>RG</th>
             <th>Admissão</th>
             <th>Cargo</th>
+            <th>Restaurante</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -28,6 +27,7 @@
             <td>{{ f.rg }}</td>
             <td>{{ formatDate(f.dt_adm) }}</td>
             <td>{{ f.cargo?.nome || f.cargo || 'N/A' }}</td>
+            <td>{{ f.restaurante?.nome || 'N/A' }}</td>
             <td>
               <button @click="edit(f)" class="edit-button">Editar</button>
               <button @click="confirmDelete(f)" class="delete-button">Excluir</button>
@@ -50,7 +50,8 @@
             <input v-model="current.salario" type="number" step="0.01" required />
 
             <label>RG:</label>
-            <input v-model="current.rg" type="number" required />
+            <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
+              required />
 
             <label>Data de Admissão:</label>
             <input v-model="current.dt_adm" type="date" required />
@@ -62,6 +63,24 @@
                 {{ cargo.nome }}
               </option>
             </select>
+
+            <label>Restaurante:</label>
+            <select v-model="current.idRestaurante" required>
+              <option disabled value="">Selecione um restaurante</option>
+              <option v-for="restaurante in restaurantes" :key="restaurante.idRestaurante"
+                :value="restaurante.idRestaurante">
+                {{ restaurante.nome }}
+              </option>
+            </select>
+
+            <label>Usuário:</label>
+            <input v-model="current.username" type="text" :required="!editing" />
+
+            <label>Senha:</label>
+            <input v-model="current.password" type="password" :required="!editing" />
+
+            <label>Confirmar Senha:</label>
+            <input v-model="current.confirmPassword" type="password" :required="!editing" />
 
             <div class="modal-actions">
               <button @click="save" class="save-button">Salvar</button>
@@ -95,19 +114,25 @@ import {
 } from '~/assets/api_funcionario/funcionario.js';
 
 import { cargoListar } from '~/assets/js/request_api_cargo.js';
+import { listarRestaurantes } from '~/assets/js/request_api_restaurante.js';
 
 export default {
   data() {
     return {
       funcionarios: [],
       cargos: [],
+      restaurantes: [],
       current: {
         id_func: null,
         nome: '',
         salario: 0,
         rg: null,
         dt_adm: '',
-        cargo_id: ''
+        cargo_id: '',
+        idRestaurante: '',
+        username: '',
+        password: '',
+        confirmPassword: ''
       },
       editing: false,
       showAddModal: false,
@@ -127,6 +152,7 @@ export default {
   async created() {
     await this.fetchFuncionarios();
     await this.fetchCargos();
+    await this.fetchRestaurantes();
   },
   methods: {
     async fetchFuncionarios() {
@@ -158,6 +184,15 @@ export default {
         this.cargos = [];
       }
     },
+    async fetchRestaurantes() {
+      try {
+        const response = await listarRestaurantes();
+        this.restaurantes = Array.isArray(response) ? response : response.data || [];
+      } catch (error) {
+        console.error('Erro ao carregar restaurantes:', error);
+        this.restaurantes = [];
+      }
+    },
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
@@ -172,15 +207,20 @@ export default {
       this.showAddModal = true;
     },
     edit(funcionario) {
-      // 🔍 Encontrar o cargo correto pelo ID (funciona com id ou id_cargo)
       const cargoId = funcionario.cargo?.id || funcionario.cargo?.id_cargo || '';
+      const restauranteId = funcionario.restaurante?.id || funcionario.restaurante?.idRestaurante || '';
+
       this.current = {
         id_func: funcionario.id_func || funcionario.id,
         nome: funcionario.nome,
         salario: funcionario.salario,
         rg: funcionario.rg,
         dt_adm: funcionario.dt_adm ? new Date(funcionario.dt_adm).toISOString().split('T')[0] : '',
-        cargo_id: cargoId
+        cargo_id: cargoId,
+        idRestaurante: restauranteId,
+        username: '', // não trazemos a senha e username na edição por segurança
+        password: '',
+        confirmPassword: ''
       };
 
       this.editing = true;
@@ -193,6 +233,9 @@ export default {
       if (!this.current.rg) erros.push('RG é obrigatório!');
       if (!this.current.dt_adm) erros.push('Data de admissão é obrigatória!');
       if (!this.current.cargo_id) erros.push('Selecione um cargo!');
+      if (!this.current.idRestaurante) erros.push('Selecione um restaurante!');
+      if (!this.editing && !this.current.username) erros.push('Usuário é obrigatório!');
+      if (!this.editing && !this.current.password) erros.push('Senha é obrigatória!');
 
       if (erros.length) {
         console.warn('Validação falhou:', erros.join(', '));
@@ -210,26 +253,27 @@ export default {
           salario: parseFloat(this.current.salario),
           rg: this.current.rg.toString(),
           dt_adm: this.formatDateForAPI(this.current.dt_adm),
-          cargo: { id: parseInt(this.current.cargo_id) }
+          cargo: { id: parseInt(this.current.cargo_id) },
+          restaurante: { id: parseInt(this.current.idRestaurante) }
         };
 
-        console.log('Dados do funcionário a serem salvos:', funcionarioData);
+        if (!this.editing) {
+          funcionarioData.username = this.current.username;
+          funcionarioData.password = this.current.password;
+        }
 
         if (this.editing) {
           await funcionarioAlterar(this.current.id_func, funcionarioData);
-          console.log('Funcionário editado com sucesso!');
         } else {
           await funcionarioCadastrar(funcionarioData);
-          console.log('Funcionário adicionado com sucesso!');
         }
 
         await this.fetchFuncionarios();
         this.closeModal();
       } catch (error) {
-        console.error('Erro ao salvar:', error.response?.data || error.message);
+        console.error('Erro ao salvar funcionário:', error.response?.data || error.message);
       }
-    }
-    ,
+    },
     confirmDelete(funcionario) {
       this.current = {
         ...funcionario,
@@ -258,14 +302,18 @@ export default {
         salario: 0,
         rg: null,
         dt_adm: '',
-        cargo_id: ''
+        cargo_id: '',
+        idRestaurante: '',
+        username: '',
+        password: ''
       };
     }
   }
 };
 </script>
 
-
 <style scoped>
 @import url("~/assets/css/funcionario.css");
+
+
 </style>

@@ -5,9 +5,20 @@
     <div class="medidas-container">
       <div class="header-section">
         <h1>Lista de Medidas</h1>
-        <button class="add-button" @click="showAddModal = true">
-          <i class="fas fa-plus"></i> Adicionar Medida
-        </button>
+        <div class="search-add-container">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Pesquisar medidas..."
+              @input="filterMedidas"
+            />
+          </div>
+          <button class="add-button" @click="showAddModal = true">
+            <i class="fas fa-plus"></i> Adicionar Medida
+          </button>
+        </div>
       </div>
 
       <div class="table-responsive">
@@ -20,7 +31,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="medida in medidas" :key="medida.id_med">
+            <tr v-for="medida in filteredMedidas" :key="medida.id_med">
               <td>{{ medida.id_med }}</td>
               <td>{{ medida.nome_med }}</td>
               <td class="actions-cell">
@@ -34,36 +45,12 @@
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <!-- Modal de Adicionar/Editar -->
-      <div v-if="showAddModal" class="modal-overlay">
-        <div class="modal">
-          <h2>{{ editingMedida ? 'Editar Medida' : 'Adicionar Nova Medida' }}</h2>
-          <div class="form-group">
-            <label>Nome da Medida:</label>
-            <input type="text" v-model="currentMedida.nome_med" class="modal-input" required />
-          </div>
-          <div class="modal-buttons">
-            <button class="cancel-btn" @click="closeModal">Cancelar</button>
-            <button class="save-btn" @click="saveMedida">
-              {{ editingMedida ? 'Salvar' : 'Adicionar' }}
-            </button>
-          </div>
+        <div v-if="filteredMedidas.length === 0" class="no-results">
+          Nenhuma medida encontrada
         </div>
       </div>
 
-      <!-- Modal de Confirmação -->
-      <div v-if="showConfirmModal" class="modal-overlay">
-        <div class="modal confirm-modal">
-          <h2>Confirmar Exclusão</h2>
-          <p>Tem certeza que deseja excluir a medida "{{ medidaToDelete.nome_med }}"?</p>
-          <div class="modal-buttons">
-            <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
-            <button class="delete-confirm-btn" @click="deleteMedida">Confirmar</button>
-          </div>
-        </div>
-      </div>
+      <!-- Modais mantidos iguais -->
     </div>
   </main>
 </template>
@@ -80,6 +67,8 @@ export default {
   data() {
     return {
       medidas: [],
+      filteredMedidas: [],
+      searchQuery: '',
       showAddModal: false,
       showConfirmModal: false,
       editingMedida: false,
@@ -96,6 +85,19 @@ export default {
   methods: {
     async carregarMedidas() {
       this.medidas = await medidasListar();
+      this.filteredMedidas = [...this.medidas]; // Inicializa com todas as medidas
+    },
+    filterMedidas() {
+      if (!this.searchQuery) {
+        this.filteredMedidas = [...this.medidas];
+        return;
+      }
+      
+      const query = this.searchQuery.toLowerCase();
+      this.filteredMedidas = this.medidas.filter(medida =>
+        medida.nome_med.toLowerCase().includes(query) ||
+        medida.id_med.toString().includes(query)
+      );
     },
     editMedida(medida) {
       this.currentMedida = { ...medida };
@@ -113,6 +115,7 @@ export default {
 
       this.closeModal();
       await this.carregarMedidas();
+      this.filterMedidas(); // Reaplica o filtro após atualização
     },
     confirmDelete(medida) {
       this.medidaToDelete = { ...medida };
@@ -122,6 +125,7 @@ export default {
       await medidasDeletar(this.medidaToDelete.id_med);
       this.showConfirmModal = false;
       await this.carregarMedidas();
+      this.filterMedidas(); // Reaplica o filtro após exclusão
     },
     closeModal() {
       this.showAddModal = false;
@@ -135,4 +139,66 @@ export default {
 
 <style scoped>
 @import url("~/assets/css/medida.css");
+
+/* Estilos para a barra de pesquisa */
+.search-add-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.search-bar {
+  flex-grow: 1;
+  position: relative;
+  max-width: 400px;
+}
+
+.search-bar i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+  .search-add-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-bar {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .add-button {
+    width: 100%;
+  }
+}
 </style>

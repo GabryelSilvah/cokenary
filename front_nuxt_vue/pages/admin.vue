@@ -1,4 +1,7 @@
 <template>
+
+
+
   <div class="admin-panel">
     <!-- Sidebar -->
     <div class="sidebar">

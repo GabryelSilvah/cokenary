@@ -10,6 +10,14 @@
         </button>
       </div>
 
+      <!-- Barra de Pesquisa -->
+      <input
+        v-model="searchTerm"
+        type="text"
+        placeholder="Buscar cargo pelo nome..."
+        class="search-bar"
+      />
+
       <div class="table-responsive">
         <table class="cargos-table">
           <thead>
@@ -20,7 +28,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="cargo in cargos" :key="cargo.id">
+            <tr v-for="cargo in cargosFiltrados" :key="cargo.id">
               <td>{{ cargo.id }}</td>
               <td>{{ cargo.nome }}</td>
               <td class="actions-cell">
@@ -85,6 +93,7 @@ export default {
   data() {
     return {
       cargos: [],
+      searchTerm: '', // Campo da barra de busca
       showAddModal: false,
       showConfirmModal: false,
       editingCargo: false,
@@ -96,6 +105,15 @@ export default {
       loading: false,
       error: null
     };
+  },
+  computed: {
+    cargosFiltrados() {
+      if (!this.searchTerm.trim()) return this.cargos;
+      const termo = this.searchTerm.toLowerCase();
+      return this.cargos.filter(cargo =>
+        cargo.nome.toLowerCase().includes(termo)
+      );
+    }
   },
   async mounted() {
     await this.loadCargos();
@@ -186,4 +204,15 @@ export default {
 
 <style scoped>
 @import url("~/assets/css/cargo.css");
+
+.search-bar {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 300px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: block;
+}
 </style>
