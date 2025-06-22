@@ -1,7 +1,6 @@
 <template>
   <Menu />
   <main>
-
     <section v-if="role_usuario == 'administrador'">
       <div class="container">
         <h1>Funcionários</h1>
@@ -51,8 +50,7 @@
               <input v-model="current.salario" type="number" step="0.01" required />
 
               <label>RG:</label>
-              <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
-                required />
+              <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }" required />
 
               <label>Data de Admissão:</label>
               <input v-model="current.dt_adm" type="date" required />
@@ -75,13 +73,10 @@
               </select>
 
               <label>Usuário:</label>
-              <input v-model="current.username" type="text" :required="!editing" />
+              <input v-model="current.nome_usuario" type="text" :required="!editing" />
 
               <label>Senha:</label>
-              <input v-model="current.password" type="password" :required="!editing" />
-
-              <label>Confirmar Senha:</label>
-              <input v-model="current.confirmPassword" type="password" :required="!editing" />
+              <input v-model="current.senha_usuarios" type="password" :required="!editing" />
 
               <div class="modal-actions">
                 <button @click="save" class="save-button">Salvar</button>
@@ -104,7 +99,6 @@
         </div>
       </div>
     </section>
-
 
     <!-- Mensagem de bloqueio do usuário -->
     <div v-else class="mensagem_acesso">
@@ -138,9 +132,8 @@ export default {
         dt_adm: '',
         cargo_id: '',
         idRestaurante: '',
-        username: '',
-        password: '',
-        confirmPassword: ''
+        nome_usuario: '',
+        senha_usuarios: ''
       },
       editing: false,
       showAddModal: false,
@@ -227,9 +220,8 @@ export default {
         dt_adm: funcionario.dt_adm ? new Date(funcionario.dt_adm).toISOString().split('T')[0] : '',
         cargo_id: cargoId,
         idRestaurante: restauranteId,
-        username: '', // não trazemos a senha e username na edição por segurança
-        password: '',
-        confirmPassword: ''
+        nome_usuario: '', // não trazemos na edição por segurança
+        senha_usuarios: ''
       };
 
       this.editing = true;
@@ -243,46 +235,48 @@ export default {
       if (!this.current.dt_adm) erros.push('Data de admissão é obrigatória!');
       if (!this.current.cargo_id) erros.push('Selecione um cargo!');
       if (!this.current.idRestaurante) erros.push('Selecione um restaurante!');
-      if (!this.editing && !this.current.username) erros.push('Usuário é obrigatório!');
-      if (!this.editing && !this.current.password) erros.push('Senha é obrigatória!');
+      if (!this.editing && !this.current.nome_usuario) erros.push('Usuário é obrigatório!');
+      if (!this.editing && !this.current.senha_usuarios) erros.push('Senha é obrigatória!');
 
       if (erros.length) {
-        console.warn('Validação falhou:', erros.join(', '));
+        alert(erros.join('\n'));
         return false;
       }
 
       return true;
     },
     async save() {
-      try {
-        if (!this.validateForm()) return;
+  try {
+    if (!this.validateForm()) return;
 
-        const funcionarioData = {
-          nome: this.current.nome.trim(),
-          salario: parseFloat(this.current.salario),
-          rg: this.current.rg.toString(),
-          dt_adm: this.formatDateForAPI(this.current.dt_adm),
-          cargo: { id: parseInt(this.current.cargo_id) },
-          restaurante: { id: parseInt(this.current.idRestaurante) }
-        };
+    const funcionarioData = {
+      nome: this.current.nome.trim(),
+      rg: this.current.rg.toString(),
+      dt_adm: this.formatDateForAPI(this.current.dt_adm),
+      salario: parseFloat(this.current.salario),
+      cargo: {  // Agora enviamos um objeto Cargo completo
+        id: this.current.cargo_id
+      },
+      idRestaurante: parseInt(this.current.idRestaurante),
+      nome_usuario: this.current.nome_usuario,
+      senha_usuarios: this.current.senha_usuarios
+    };
 
-        if (!this.editing) {
-          funcionarioData.username = this.current.username;
-          funcionarioData.password = this.current.password;
-        }
+    if (this.editing) {
+      await funcionarioAlterar(this.current.id_func, funcionarioData);
+      alert('Funcionário atualizado com sucesso!');
+    } else {
+      await funcionarioCadastrar(funcionarioData);
+      alert('Funcionário cadastrado com sucesso!');
+    }
 
-        if (this.editing) {
-          await funcionarioAlterar(this.current.id_func, funcionarioData);
-        } else {
-          await funcionarioCadastrar(funcionarioData);
-        }
-
-        await this.fetchFuncionarios();
-        this.closeModal();
-      } catch (error) {
-        console.error('Erro ao salvar funcionário:', error.response?.data || error.message);
-      }
-    },
+    await this.fetchFuncionarios();
+    this.closeModal();
+  } catch (error) {
+    console.error('Erro:', error);
+    alert(error.message || 'Ocorreu um erro ao salvar o funcionário');
+  }
+},
     confirmDelete(funcionario) {
       this.current = {
         ...funcionario,
@@ -297,6 +291,7 @@ export default {
         this.closeModal();
       } catch (error) {
         console.error('Erro ao excluir funcionário:', error);
+        alert('Erro ao excluir funcionário: ' + error.message);
       }
     },
     closeModal() {
@@ -312,8 +307,7 @@ export default {
         rg: null,
         dt_adm: '',
         cargo_id: '',
-        imagem_perfil: "",
-        listaRestaurante: [{ idRestaurante: 1 }],
+        idRestaurante: '',
         nome_usuario: '',
         senha_usuarios: ''
       };
