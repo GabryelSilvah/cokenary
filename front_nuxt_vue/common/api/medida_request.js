@@ -1,7 +1,9 @@
 export { listarMedidas, byIdMedidas, cadastrarMedida, alterarMedida, deletarMedida };
+import Cookies from 'js-cookie';
+const authorization = Cookies.get("token_auth");
+
 
 const URL_BASE_API = "http://localhost:8081/receitas/medida";
-const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
 
 /*
 *Não altere, adicione ou retire nada da estrutura, 

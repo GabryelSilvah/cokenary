@@ -100,12 +100,12 @@ async function addReceitasNaLista() {
 
   //Buscando receita escolhida
   const receitaEncontrada = await byIdAllInfor(receita_ref.value);
-
+  console.log("Teste livro: " + JSON.stringify(receitaEncontrada));
 
   let composicao_receitas =
   {
-    id_receita: receitaEncontrada.value.data.id_receita,
-    nome_receita: receitaEncontrada.value.data.nome_receita
+    id_receita: receitaEncontrada.id_receita,
+    nome_receita: receitaEncontrada.nome_receita
   };
 
   livroModel.value.publicacao_receitas_livro.push(composicao_receitas);

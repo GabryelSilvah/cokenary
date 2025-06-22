@@ -7,10 +7,13 @@ public class ResponseToken {
     private String token;
     private String email;
 
-    public ResponseToken(int status, String token, String email){
+    private String cargo_usuario;
+
+    public ResponseToken(int status, String token, String email, String cargo_usuario){
         this.status = status;
         this.token = token;
         this.email = email;
+        this.cargo_usuario = cargo_usuario;
     }
 
     public int getStatus() {
@@ -37,4 +40,11 @@ public class ResponseToken {
         this.email = email;
     }
 
+    public String getCargo_usuario() {
+        return cargo_usuario;
+    }
+
+    public void setCargo_usuario(String cargo_usuario) {
+        this.cargo_usuario = cargo_usuario;
+    }
 }

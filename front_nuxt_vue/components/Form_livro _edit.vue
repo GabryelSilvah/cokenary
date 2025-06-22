@@ -121,7 +121,7 @@ async function addReceitasNaLista() {
   //Encontrar ID na lista de receitas a serem excluidas
   //Se o ID for encontrado na lista, deverá ser removido
   //Após removido, a receita selecionada será adicionada na lista de cadastro do livro
-  let index = listaReceitasExcluir.indexOf(receitaEncontrada.value.data.id_receita);
+  let index = listaReceitasExcluir.indexOf(receitaEncontrada.id_receita);
 
   //Valor for menor que 0 é porque não foi encontrado na (listaReceitasExcluir)
   if (index > -1) {
@@ -131,9 +131,9 @@ async function addReceitasNaLista() {
 
   //Adicionando receita no Objeto livroModel
   let receitaAdicionada = {
-    id_receita: receitaEncontrada.value.data.id_receita,
-    nome_receita: receitaEncontrada.value.data.nome_receita,
-    cozinheiro_id: receitaEncontrada.value.data.cozinheiro_id
+    id_receita: receitaEncontrada.id_receita,
+    nome_receita: receitaEncontrada.nome_receita,
+    cozinheiro_id: receitaEncontrada.cozinheiro_id
   };
 
   livroModel.value.publicacao_receitas_livro.push(receitaAdicionada);

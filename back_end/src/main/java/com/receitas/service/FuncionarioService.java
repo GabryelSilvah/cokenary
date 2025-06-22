@@ -3,17 +3,17 @@ package com.receitas.service;
 import com.receitas.dto.FuncionarioDTO;
 import com.receitas.dto.FuncionarioChegadaDTO;
 import com.receitas.dto.FuncionarioSaidaDTO;
+import com.receitas.dto.Funcionario_usuarioDTO;
 import com.receitas.exception.BadRequestException;
 import com.receitas.exception.RegistroExistsException;
 import com.receitas.exception.RegistroNotFoundException;
-import com.receitas.model.Cargo;
-import com.receitas.model.Funcionario;
-import com.receitas.model.Referencia;
-import com.receitas.model.Restaurante;
+import com.receitas.model.*;
 import com.receitas.repository.CargoRepository;
 import com.receitas.repository.FuncionarioRepository;
 import com.receitas.repository.ReferenciaRepository;
+import com.receitas.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +32,12 @@ public class FuncionarioService {
 
     @Autowired
     private ReferenciaRepository referenciaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder criptografia;
 
     public List<FuncionarioDTO> listAll() {
 
@@ -84,6 +90,7 @@ public class FuncionarioService {
                 referenciaEncontrada
         );
     }
+
     public List<FuncionarioSaidaDTO> listByCargo(String nome_cargo) {
 
         //Buscando funcionário pelo ID
@@ -96,8 +103,8 @@ public class FuncionarioService {
 
         List<FuncionarioSaidaDTO> listaFuncionarios = new ArrayList<>();
 
-        for(int i = 0; i <funcionariosEncontrados.size();i++){
-            listaFuncionarios.add( new FuncionarioSaidaDTO(
+        for (int i = 0; i < funcionariosEncontrados.size(); i++) {
+            listaFuncionarios.add(new FuncionarioSaidaDTO(
                     funcionariosEncontrados.get(i).getId_func(),
                     funcionariosEncontrados.get(i).getNome(),
                     funcionariosEncontrados.get(i).getRg(),
@@ -111,7 +118,7 @@ public class FuncionarioService {
         return listaFuncionarios;
     }
 
-    public FuncionarioDTO save(Funcionario funcionario) {
+    public FuncionarioDTO save(Funcionario_usuarioDTO funcionario) {
 
         //Validando se já existe um funcionário com esse nome
         Funcionario funcionarioEncontrado = funcioRepository.findByNome(funcionario.getNome());
@@ -135,8 +142,17 @@ public class FuncionarioService {
             throw new BadRequestException("O número de rg deve possuir entre 7 e 9 dígitos, sem caracteres especiais. Foram informados (" + rgString.length() + ") dígitos");
         }
 
+
         //Cadastrando funcionário no sistema
-        Funcionario funcionarioSalvo = funcioRepository.save(funcionario);
+        Funcionario novoFuncionario = new Funcionario(funcionario);
+        Funcionario funcionarioSalvo = funcioRepository.save(novoFuncionario);
+
+
+        //Cadastrando usuário
+        String senhaSegura = criptografia.encode(funcionario.getSenha_usuarios());
+        funcionario.setSenha_usuarios(senhaSegura);
+        Usuario novoUsuario = new Usuario(funcionario,funcionarioSalvo.getId_func());
+        usuarioRepository.save(novoUsuario);
 
 
         //Transformando em DTO
@@ -153,7 +169,6 @@ public class FuncionarioService {
 
     @Transactional
     public FuncionarioDTO saveFull(FuncionarioChegadaDTO funcionario) {
-
 
 
         //Validando se já existe um funcionário com esse nome

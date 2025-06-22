@@ -2,7 +2,7 @@
 
     <Menu />
 
-    <main>
+    <main v-if="role_usuario == 'cozinheiro'">
         <section class="container_topico">
             <h2 class="titulo_topico">Receitas</h2>
 
@@ -20,6 +20,12 @@
         </form>
 
         <section class="container_food">
+
+            <div>
+
+
+            </div>
+
             <div class="foods" v-if="listasReceitas" v-for="receita in listasReceitas.data" :key="receita.id_receita"
                 @remove="removerCardReita(receita.id_receita)">
                 <img src="public/image/lamen.jpg">
@@ -70,21 +76,31 @@
             v-model:composicao_ref="composicao_ref" v-model:receitaModel="receitaModel" />
 
     </main>
+
+    <div v-else class="mensagem_acesso">
+        Seu nível de acesso não é compatível com essa funcionalidade...
+    </div>
 </template>
 
 
 <style scoped>
 @import url("~/assets/css/food.css");
+@import url("~/assets/css/acesso_role.css");
 </style>
 
 
-<script setup scoped lang="js">
+<script setup lang="js">
 import { listarCategorias } from '~/common/api/categorias_request';
 import { byNomeCargoFuncionarios } from '~/common/api/funcionarios_request';
 import { listarIngredientes } from '~/common/api/ingredientes_request';
 import { listarMedidas } from '~/common/api/medida_request';
-import { deletarReceitas, listarReceitas, byIdAllInfor } from '~/common/api/receitas_request';
+import { deletarReceitas, byIdAllInfor, listarReceitas } from '~/common/api/receitas_request';
 import Form_food_edit from '~/components/Form_food_edit.vue';
+import Cookies from 'js-cookie';
+import { useCookie } from '#app'
+
+
+const role_usuario = Cookies.get("cargo_user");
 
 
 
@@ -134,7 +150,7 @@ function abrirForm() {
         modo_preparo: "",
         ingredientes_id: []
     };
-    
+
     //Exibindo formulário
     let form = document.querySelector("#form");
     form.setAttribute("style", "display:flex");
@@ -201,12 +217,14 @@ async function abrirFormEdit(dados_receita) {
 }
 
 
-
 //Função usada para excluir receita atravé do evento de click no button
 async function excluir_receita(id_receita) {
     //Request de receitas (recebendo lista de receitas)
     const receitaExcluida = await deletarReceitas(id_receita);
     listasReceitas = await listarReceitas();
 }
+
+
+
 
 </script>

@@ -2,6 +2,7 @@ package com.receitas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.receitas.dto.FuncionarioChegadaDTO;
+import com.receitas.dto.Funcionario_usuarioDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -110,6 +111,14 @@ public class Funcionario {
     }
 
 
+    public Funcionario(Funcionario_usuarioDTO funcionarioUsuarioDTO) {
+        this.rg = funcionarioUsuarioDTO.getRg();
+        this.nome = funcionarioUsuarioDTO.getNome();
+        this.dt_adm = funcionarioUsuarioDTO.getDt_adm();
+        this.salario = funcionarioUsuarioDTO.getSalario();
+        this.imagem_perfil = funcionarioUsuarioDTO.getImagem_perfil();
+        this.cargo_id = funcionarioUsuarioDTO.getCargo();
+    }
 
 
     // Getters e setters

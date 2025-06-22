@@ -1,19 +1,16 @@
-export { listarReceitas, byIdReceitas, byIdAllInfor, cadastrarReceitas, alterarReceitas, deletarReceitas };
+export { byIdReceitas, listarReceitas, byIdAllInfor, cadastrarReceitas, alterarReceitas, deletarReceitas };
+import nuxtStorage from 'nuxt-storage';
 import Cookies from 'js-cookie';
 
+
 const URL_BASE_API = "http://localhost:8081/receitas";
-const authorization = String(Cookies.get("token_auth"));
 
-console.log(authorization);
 
-/*
-*Não altere, adicione ou retire nada da estrutura, 
-*código ou quaisquer outra coisa desse arquivo sem permissão
-*/
+const authorization = Cookies.get("token_auth");
+
 
 //Listar
 async function listarReceitas() {
-
   const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar", {
     headers: {
       "Content-Type": "application/json",
@@ -24,14 +21,23 @@ async function listarReceitas() {
   return responseAPI;
 }
 
+
 //Buscar pelo ID
 async function byIdReceitas(id_receita) {
+  const { data: responseAPI, error: errorAPI } = await $fetch(URL_BASE_API + "/byId/" + id_receita, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
+
+  return responseAPI;
 }
 
 //Buscar informações detalhadas
 async function byIdAllInfor(id_receita) {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byIdAllInfor/" + id_receita, {
+  const { data: responseAPI, error: errorAPI } = await $fetch(URL_BASE_API + "/byIdAllInfor/" + id_receita, {
     headers: {
       "Content-Type": "application/json",
       "Authorization": 'Bearer ' + authorization

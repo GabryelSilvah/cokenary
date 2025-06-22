@@ -1,0 +1,142 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+main {
+  position: relative;
+}
+
+.cargos-container {
+  margin-top: 100px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: absolute;
+  right: 0;
+}
+
+.search-bar {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 300px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: block;
+}
+
+.add-button {
+  color: #fff;
+  background-color: #01b670;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.table-responsive {}
+
+table {
+  width: 50vw;
+  color: black;
+}
+
+table th {
+  background-color: rgb(32, 32, 32);
+  color: rgb(255, 255, 255);
+  padding: 10px;
+  font-size: 1rem;
+  font-family: sans-serif;
+}
+
+table tr td {
+  padding: 10px;
+  text-align: center;
+  font-size: 1rem;
+
+}
+
+table tr:nth-child(odd) {
+  background: #dfe3e6;
+}
+
+table td button {
+  background-color: #ffd500;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+table td .delete-btn {
+  background-color: #ff1900;
+  color: #fff;
+}
+
+/* Form */
+.modal-overlay {
+
+  z-index: 999;
+}
+
+.modal {
+  width: 400px;
+  height: fit-content;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 2px 2px 20px rgb(216, 216, 216);
+  padding: 10px;
+
+}
+
+.modal .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal input {
+  width: 100%;
+  border-radius: 5px;
+  font-size: 1rem;
+  border: 1.5px solid black;
+  padding: 5px;
+  color: #000;
+}
+
+.modal h2 {
+  font-size: 1.2rem;
+  color: #000;
+  font-family: sans-serif;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+
+.modal label {
+  font-size: 1.2rem;
+  color: #000;
+  font-family: sans-serif;
+}
+
+.modal-buttons button {
+  background-color: #005eeb;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.modal-buttons .cancel-btn {
+  background-color: #ff0909;
+}

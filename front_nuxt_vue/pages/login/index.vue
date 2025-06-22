@@ -38,10 +38,10 @@ const loginModel = defineModel("loginModel", {
   }
 })
 
-
-async function autenticar(){
+async function autenticar() {
   const respostaAPI = await autenticar_user(loginModel.value);
-  Cookies.set("token_auth",respostaAPI.value.data.token)
+  Cookies.set("token_auth", respostaAPI.value.data.token);
+  Cookies.set("cargo_user", respostaAPI.value.data.cargo_usuario);
 }
 
 </script>

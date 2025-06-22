@@ -13,8 +13,7 @@ async function autenticar_user(corpo_request) {
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": 'Bearer ' + authorization
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(corpo_request)
     });

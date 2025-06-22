@@ -88,34 +88,6 @@
                 <button type="submit">Salvar alterações</button>
 
             </div>
-
-
-            <!--
-                Funcionalidade para adicionar se ainda houver prazo
-
-                <div class="sections">
-                <h2 class="topico">Detalhes e valores nutricionais</h2>
-                <label for="">Tempo de preparo:</label>
-                <input type="text">
-
-                <label for="">Tempo de cozimento:</label>
-                <input type="text">
-
-                <label for="">Calorias:</label>
-                <input type="text">
-
-                <label for="">Carboidratos:</label>
-                <input type="text">
-
-
-                <label for="">Proteínas:</label>
-                <input type="text">
-
-                <label for="">Gorduras:</label>
-                <input type="text">
-
-
-            </div>-->
         </form>
 
     </section>
@@ -224,10 +196,8 @@ async function addIngredienteNaLista() {
     composicao_ref.value.porcoes = porcao_ref;
 
 
-
     //Adicionando ingredientes em (receitaModel)
     receitaModel.value.ingredientes_id.push(composicao_ref.value);
-    console.log(JSON.stringify(   receitaModel.value.ingredientes_id));
 }
 
 //Função que recebe os dados após o envio dos dados do formulario e adiciona no objeto receitaModel
@@ -235,14 +205,11 @@ async function addIngredienteNaLista() {
 async function pegarDadosForm(id_receita) {
     receitaModel.value.ingredientes_removidos = listaComposicaoIngredExcluir;
     receitaModel.value.data_criacao = "2025-05-03";
-    console.log(JSON.stringify(receitaModel.value))
     //Enviando dados para API
     let responseAPI = await alterarReceitas(id_receita, receitaModel.value);
 
     fecharForm();
 }
-
-
 
 
 //Fechar formulário

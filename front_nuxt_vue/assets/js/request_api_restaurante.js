@@ -1,16 +1,28 @@
+import Cookies from 'js-cookie';
+
 const API_BASE_URL = 'http://localhost:8081/restaurantes';
+
+function getAuthorization() {
+  return Cookies.get('token_auth'); // Nome do cookie onde o token JWT está armazenado
+}
 
 /**
  * Função para listar todos os restaurantes
  * @returns {Promise<Array>} Lista de restaurantes
  */
 export const listarRestaurantes = async () => {
+  const authorization = getAuthorization();
+
   try {
-    const response = await fetch(`${API_BASE_URL}/listar`);
+    const response = await fetch(`${API_BASE_URL}/listar`, {
+      headers: {
+        "Authorization": 'Bearer ' + authorization
+      },
+    });
     const data = await response.json();
     
     if (response.ok) {
-      return data.data; // Retorna a lista de restaurantes
+      return data.data;
     } else {
       throw new Error(data.message || 'Erro ao listar restaurantes');
     }
@@ -26,12 +38,18 @@ export const listarRestaurantes = async () => {
  * @returns {Promise<Object>} Dados do restaurante
  */
 export const buscarRestaurantePorId = async (id) => {
+  const authorization = getAuthorization();
+
   try {
-    const response = await fetch(`${API_BASE_URL}/byId/${id}`);
+    const response = await fetch(`${API_BASE_URL}/byId/${id}`, {
+      headers: {
+        "Authorization": 'Bearer ' + authorization
+      },
+    });
     const data = await response.json();
     
     if (response.ok) {
-      return data.data; // Retorna os dados do restaurante
+      return data.data;
     } else {
       throw new Error(data.message || 'Restaurante não encontrado');
     }
@@ -47,11 +65,14 @@ export const buscarRestaurantePorId = async (id) => {
  * @returns {Promise<Object>} Dados do restaurante cadastrado
  */
 export const cadastrarRestaurante = async (restaurante) => {
+  const authorization = getAuthorization();
+
   try {
     const response = await fetch(`${API_BASE_URL}/cadastrar`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "Authorization": 'Bearer ' + authorization
       },
       body: JSON.stringify(restaurante),
     });
@@ -59,7 +80,7 @@ export const cadastrarRestaurante = async (restaurante) => {
     const data = await response.json();
     
     if (response.ok) {
-      return data.data; // Retorna os dados do restaurante cadastrado
+      return data.data;
     } else {
       throw new Error(data.message || 'Erro ao cadastrar restaurante');
     }
@@ -76,11 +97,14 @@ export const cadastrarRestaurante = async (restaurante) => {
  * @returns {Promise<Object>} Dados do restaurante atualizado
  */
 export const alterarRestaurante = async (id, restaurante) => {
+  const authorization = getAuthorization();
+
   try {
     const response = await fetch(`${API_BASE_URL}/alterar/${id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "Authorization": 'Bearer ' + authorization
       },
       body: JSON.stringify(restaurante),
     });
@@ -88,7 +112,7 @@ export const alterarRestaurante = async (id, restaurante) => {
     const data = await response.json();
     
     if (response.ok) {
-      return data.data; // Retorna os dados do restaurante atualizado
+      return data.data;
     } else {
       throw new Error(data.message || 'Erro ao alterar restaurante');
     }
@@ -104,15 +128,20 @@ export const alterarRestaurante = async (id, restaurante) => {
  * @returns {Promise<boolean>} True se a exclusão foi bem-sucedida
  */
 export const excluirRestaurante = async (id) => {
+  const authorization = getAuthorization();
+
   try {
     const response = await fetch(`${API_BASE_URL}/excluir/${id}`, {
       method: 'DELETE',
+      headers: {
+        "Authorization": 'Bearer ' + authorization
+      },
     });
     
     const data = await response.json();
     
     if (response.ok) {
-      return true; // Retorna true se a exclusão foi bem-sucedida
+      return true;
     } else {
       throw new Error(data.message || 'Erro ao excluir restaurante');
     }
@@ -121,4 +150,3 @@ export const excluirRestaurante = async (id) => {
     throw error;
   }
 };
-

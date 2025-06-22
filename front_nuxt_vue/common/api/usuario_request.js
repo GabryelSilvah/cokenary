@@ -1,8 +1,10 @@
 export { listarUser, byIdUser, cadastrarUser, alterarUser, deletarUser };
+import Cookies from 'js-cookie';
+const authorization = Cookies.get("token_auth");
+
 
 const URL_BASE_API = "http://localhost:8081/user";
 
-const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGktY29va2VuYXJ5Iiwic3ViIjoiZ2FicmllbEZpdjkiLCJleHAiOjE3NTA1NjU5MDN9.V7LL-QyIGC1B7ZSpFvU4OyXcnt1YDJK6amr5ERrlF3Y";
 
 
 /*

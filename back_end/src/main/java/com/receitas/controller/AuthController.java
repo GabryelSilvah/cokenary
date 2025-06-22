@@ -7,6 +7,7 @@ import com.receitas.dto.UsuarioDTO;
 import com.receitas.model.Usuario;
 import com.receitas.service.In_tokeJWT;
 import com.receitas.service.TokenService;
+import com.receitas.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class AuthController {
     @Autowired
     private In_tokeJWT authService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @PostMapping("/auth")
     private ResponseEntity<?> autenticar(@RequestBody AuthDTO authDTO) {
 
@@ -36,9 +40,12 @@ public class AuthController {
         var userNamePass = new UsernamePasswordAuthenticationToken(authDTO.getEmail(), authDTO.getSenha());
         Authentication autenticate = gerenciadorAuth.authenticate(userNamePass);
 
+        //Buscando cargo/role do usuário
+        String cargoUsuario = usuarioService.listByCargo(authDTO.getEmail());
+
         //Pegando dados do usuário autenticado
         var usuario = (Usuario) autenticate.getPrincipal();
-        ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail());
+        ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail(),cargoUsuario);
 
         //Gerando Token
         return ResponseJson.build(
@@ -48,7 +55,6 @@ public class AuthController {
         );
 
     }
-
 
 
 }

@@ -1,13 +1,16 @@
 package com.receitas.model;
 
 import com.receitas.dto.AuthDTO;
+import com.receitas.dto.Funcionario_usuarioDTO;
 import com.receitas.dto.UsuarioDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 import java.util.Collection;
@@ -17,6 +20,7 @@ import java.util.List;
 @Entity
 @Table(name = "usuarios")
 public class Usuario implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,7 +40,7 @@ public class Usuario implements UserDetails {
 
 
     //Construtores
-    public Usuario(){
+    public Usuario() {
 
     }
 
@@ -62,7 +66,12 @@ public class Usuario implements UserDetails {
         this.role = usuarioDTO.role();
     }
 
-
+    public Usuario(Funcionario_usuarioDTO funcionarioUsuarioDTO, Long id_funcionarios) {
+        this.email = funcionarioUsuarioDTO.getNome_usuario();
+        this.senha = funcionarioUsuarioDTO.getSenha_usuarios();
+        this.role = funcionarioUsuarioDTO.getCargo();
+        this.fk_funcionario = new Funcionario(id_funcionarios);
+    }
 
     //Gets e Sets
     public Long getId() {

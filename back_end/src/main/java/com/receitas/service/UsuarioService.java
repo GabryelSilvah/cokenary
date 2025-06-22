@@ -3,6 +3,7 @@ package com.receitas.service;
 
 import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
+import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.exception.UserExitsException;
 import com.receitas.exception.UserNotFoundExcetion;
 import com.receitas.model.Usuario;
@@ -119,5 +120,14 @@ public class UsuarioService {
 
     }
 
+
+    public String listByCargo(String nome_usuario) {
+        Optional<String> nomeCargoEncontrado = usuarioRepository.findByCargo(nome_usuario);
+        if (nomeCargoEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Nenhum cargo encontrado para o usuário (" + nome_usuario + ")");
+        }
+
+        return nomeCargoEncontrado.get();
+    }
 }
 

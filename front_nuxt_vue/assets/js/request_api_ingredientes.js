@@ -1,109 +1,80 @@
-//Request de receitas (recebendo lista de receitas)
-export { ingredientesListar, ingredientesById, ingredientesCadastrar, ingredientesAlterar, ingredientesDeletar };
+import Cookies from 'js-cookie';
 
-//Endereço padrão da API (Spring Boot)
 const URL_BASE_API = "http://localhost:8081";
 
-// Função auxiliar para tratamento de erros
-const handleApiError = (error) => {
-  console.error('API Error:', error);
-  throw new Error(error.value?.message || 'Erro na comunicação com o servidor');
-};
-
-//Listar todos
-async function ingredientesListar() {
-    try {
-      const { data: responseAPI, error: errosIngredientes } = 
-        await useFetch(URL_BASE_API + "/ingredientes/listar");
-      
-      if (errosIngredientes.value) {
-        throw errosIngredientes.value;
-      }
-      
-      // Adicione este log para verificar a estrutura
-      console.log('Dados recebidos:', responseAPI.value);
-      
-      return {
-        data: responseAPI.value.data, // ou responseAPI.value se a estrutura for diferente
-        status: responseAPI.status
-      };
-    } catch (error) {
-      console.error('Erro na requisição:', error);
-      throw error;
-    }
+function getAuthHeaders() {
+  const token = Cookies.get('token_auth');
+  if (!token) {
+    console.error('Token não encontrado');
+    throw new Error('Autenticação necessária');
   }
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + token
+  };
+}
 
-// Buscar por ID
-async function ingredientesById(id_ingredientes) {
+async function handleResponse(response) {
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error || `Erro HTTP: ${response.status}`);
+  }
+  return response.json();
+}
+
+// Listar ingredientes
+export async function ingredientesListar() {
   try {
-    const { data: responseAPI, error: errosIngredientes } = 
-      await useFetch(URL_BASE_API + "/ingredientes/byId/" + id_ingredientes);
-    
-    if (errosIngredientes.value) {
-      throw errosIngredientes.value;
-    }
-    
-    return responseAPI.value.data;
+    const response = await fetch(`${URL_BASE_API}/ingredientes/listar`, {
+      headers: getAuthHeaders()
+    });
+    return await handleResponse(response);
   } catch (error) {
-    handleApiError(error);
+    console.error('Erro ao listar ingredientes:', error);
+    throw error;
   }
 }
 
-//Cadastrar
-async function ingredientesCadastrar(corpo_request) {
+// Cadastrar ingrediente
+export async function ingredientesCadastrar(dados) {
   try {
-    const { data: responseAPI, error: errosIngredientes } =
-      await useFetch(URL_BASE_API + "/ingredientes/cadastrar", {
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        body: JSON.stringify(corpo_request)
-      });
-    
-    if (errosIngredientes.value) {
-      throw errosIngredientes.value;
-    }
-    
-    return responseAPI.value.data;
+    const response = await fetch(`${URL_BASE_API}/ingredientes/cadastrar`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(dados)
+    });
+    return await handleResponse(response);
   } catch (error) {
-    handleApiError(error);
+    console.error('Erro ao cadastrar ingrediente:', error);
+    throw error;
   }
 }
 
-// Atualizar
-async function ingredientesAlterar(id_ingredientes, corpo_request) {
+// Atualizar ingrediente
+export async function ingredientesAlterar(id, dados) {
   try {
-    const { data: responseAPI, error: errosIngredientes } =
-      await useFetch(URL_BASE_API + "/ingredientes/alterar/" + id_ingredientes, {
-        headers: { "Content-Type": "application/json" },
-        method: "PUT",
-        body: JSON.stringify(corpo_request)
-      });
-    
-    if (errosIngredientes.value) {
-      throw errosIngredientes.value;
-    }
-    
-    return responseAPI.value.data;
+    const response = await fetch(`${URL_BASE_API}/ingredientes/alterar/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(dados)
+    });
+    return await handleResponse(response);
   } catch (error) {
-    handleApiError(error);
+    console.error(`Erro ao atualizar ingrediente ${id}:`, error);
+    throw error;
   }
 }
 
-// Deletar
-async function ingredientesDeletar(id_ingredientes) {
+// Deletar ingrediente
+export async function ingredientesDeletar(id) {
   try {
-    const { data: responseAPI, error: errosIngredientes } =
-      await useFetch(URL_BASE_API + "/ingredientes/excluir/" + id_ingredientes, {
-        headers: { "Content-Type": "application/json" },
-        method: "DELETE"
-      });
-    
-    if (errosIngredientes.value) {
-      throw errosIngredientes.value;
-    }
-    
-    return responseAPI.value.data;
+    const response = await fetch(`${URL_BASE_API}/ingredientes/excluir/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return await handleResponse(response);
   } catch (error) {
-    handleApiError(error);
+    console.error(`Erro ao deletar ingrediente ${id}:`, error);
+    throw error;
   }
 }

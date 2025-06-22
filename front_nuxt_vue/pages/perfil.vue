@@ -202,7 +202,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import url("~/assets/css/perfil.css");
 
 .loading,

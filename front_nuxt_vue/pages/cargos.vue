@@ -1,84 +1,90 @@
 <template>
+  <Menu />
+
   <main>
-    <Menu />
+    <section v-if="role_usuario == 'administrador'">
+      <div class="cargos-container">
+        <div class="header-section">
+          <h1>Lista de Cargos</h1>
+          <button class="add-button" @click="showAddModal = true">
+            <i class="fas fa-plus"></i> Adicionar Cargo
+          </button>
+        </div>
+        <input v-model="searchTerm" type="text" placeholder="Buscar cargo pelo nome..." class="search-bar" />
 
-    <div class="cargos-container">
-      <div class="header-section">
-        <h1>Lista de Cargos</h1>
-        <button class="add-button" @click="showAddModal = true">
-          <i class="fas fa-plus"></i> Adicionar Cargo
-        </button>
-      </div>
+        <!-- Barra de Pesquisa -->
 
-      <!-- Barra de Pesquisa -->
-      <input
-        v-model="searchTerm"
-        type="text"
-        placeholder="Buscar cargo pelo nome..."
-        class="search-bar"
-      />
+        
+        <div class="table-responsive">
+          <table class="cargos-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome do Cargo</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="cargo in cargosFiltrados" :key="cargo.id">
+                <td>{{ cargo.id }}</td>
+                <td>{{ cargo.nome }}</td>
+                <td class="actions-cell">
+                  <button class="edit-btn" @click="editCargo(cargo)">
+                    <i class="fas fa-edit"></i> Editar
+                  </button>
+                </td>
+                <td>
+                  <button class="delete-btn" @click="confirmDelete(cargo)">
+                    <i class="fas fa-trash"></i> Excluir
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <div class="table-responsive">
-        <table class="cargos-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome do Cargo</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="cargo in cargosFiltrados" :key="cargo.id">
-              <td>{{ cargo.id }}</td>
-              <td>{{ cargo.nome }}</td>
-              <td class="actions-cell">
-                <button class="edit-btn" @click="editCargo(cargo)">
-                  <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="delete-btn" @click="confirmDelete(cargo)">
-                  <i class="fas fa-trash"></i> Excluir
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <!-- Modal de Adicionar/Editar -->
-      <div v-if="showAddModal" class="modal-overlay">
-        <div class="modal">
-          <h2>{{ editingCargo ? 'Editar Cargo' : 'Adicionar Novo Cargo' }}</h2>
-          <div class="form-group">
-            <label>Nome do Cargo:</label>
-            <input
-              type="text"
-              v-model="currentCargo.nome"
-              placeholder="Digite o nome do cargo"
-              class="modal-input"
-            />
+        <!-- Modal de Adicionar/Editar -->
+        <div v-if="showAddModal" class="modal-overlay">
+          <div class="modal">
+            <h2>{{ editingCargo ? 'Editar Cargo' : 'Adicionar Novo Cargo' }}</h2>
+            <div class="form-group">
+              <label>Nome do Cargo:</label>
+              <input type="text" v-model="currentCargo.nome" placeholder="Digite o nome do cargo" class="modal-input" />
+            </div>
+            <div class="modal-buttons">
+              <button class="cancel-btn" @click="closeModal">Cancelar</button>
+              <button class="save-btn" @click="saveCargo">
+                {{ editingCargo ? 'Salvar' : 'Adicionar' }}
+              </button>
+            </div>
           </div>
-          <div class="modal-buttons">
-            <button class="cancel-btn" @click="closeModal">Cancelar</button>
-            <button class="save-btn" @click="saveCargo">
-              {{ editingCargo ? 'Salvar' : 'Adicionar' }}
-            </button>
+        </div>
+
+        <!-- Modal de Confirmação -->
+        <div v-if="showConfirmModal" class="modal-overlay">
+          <div class="modal confirm-modal">
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja excluir o cargo "{{ cargoToDelete.nome }}"?</p>
+            <div class="modal-buttons">
+              <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
+              <button class="delete-confirm-btn" @click="deleteCargo">Confirmar</button>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Modal de Confirmação -->
-      <div v-if="showConfirmModal" class="modal-overlay">
-        <div class="modal confirm-modal">
-          <h2>Confirmar Exclusão</h2>
-          <p>Tem certeza que deseja excluir o cargo "{{ cargoToDelete.nome }}"?</p>
-          <div class="modal-buttons">
-            <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
-            <button class="delete-confirm-btn" @click="deleteCargo">Confirmar</button>
-          </div>
-        </div>
-      </div>
+
+    <!-- Mensagem de bloqueio do usuário -->
+    <div v-else class="mensagem_acesso">
+      Seu nível de acesso não é compatível com essa funcionalidade...
     </div>
   </main>
+
+
+
 </template>
 
 <script>
@@ -88,6 +94,7 @@ import {
   cargoAlterar,
   cargoDeletar
 } from '~/assets/js/request_api_cargo.js';
+import Cookies from 'js-cookie';
 
 export default {
   data() {
@@ -103,7 +110,8 @@ export default {
       },
       cargoToDelete: {},
       loading: false,
-      error: null
+      error: null,
+      role_usuario: Cookies.get("cargo_user")
     };
   },
   computed: {
@@ -204,15 +212,7 @@ export default {
 
 <style scoped>
 @import url("~/assets/css/cargo.css");
+@import url("~/assets/css/acesso_role.css");
 
-.search-bar {
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
-  width: 100%;
-  max-width: 300px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: block;
-}
+
 </style>

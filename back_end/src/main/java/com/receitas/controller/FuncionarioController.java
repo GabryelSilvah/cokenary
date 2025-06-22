@@ -4,6 +4,7 @@ import com.receitas.config.ResponseJson;
 import com.receitas.dto.FuncionarioDTO;
 import com.receitas.dto.FuncionarioChegadaDTO;
 import com.receitas.dto.FuncionarioSaidaDTO;
+import com.receitas.dto.Funcionario_usuarioDTO;
 import com.receitas.model.Funcionario;
 import com.receitas.service.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class FuncionarioController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ResponseJson> cadastrar(@RequestBody Funcionario funcionario) {
+    public ResponseEntity<ResponseJson> cadastrar(@RequestBody Funcionario_usuarioDTO funcionario) {
         FuncionarioDTO funcionarioDTO = funcionarioService.save(funcionario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario cadastrado com sucesso!", funcionarioDTO));
     }

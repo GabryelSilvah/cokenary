@@ -1,6 +1,6 @@
 <template>
-  <main>
-    <Menu />
+  <Menu />
+  <main v-if="role_usuario == 'cozinheiro'">
 
     <div class="container_btn_opcoes">
       <button id="btn_add_food" @click="abrirForm">
@@ -9,7 +9,7 @@
       </button>
     </div>
 
-    <FormLivro id="form" v-if="listaFuncionarios && listaReceitas"  :lista-receitas="listaReceitas.data"
+    <FormLivro id="form" v-if="listaFuncionarios && listaReceitas" :lista-receitas="listaReceitas.data"
       :lista-funcionarios="listaFuncionarios.data" v-model:livroModel="livroModel" />
 
     <Form_livro_edit id="form_edit" :lista-receitas="listaReceitas.data" :lista-funcionarios="listaFuncionarios.data"
@@ -40,12 +40,17 @@
     </section>
 
   </main>
+
+  <div v-else class="mensagem_acesso">
+    Seu nível de acesso não é compatível com essa funcionalidade...
+  </div>
 </template>
 
 
 //Estilização, sendo importada da pasta assets, css
 <style scoped>
 @import url("~/assets/css/livros/listarLivros.css");
+@import url("~/assets/css/acesso_role.css");
 </style>
 
 
@@ -55,8 +60,9 @@ import { listarFuncionarios } from '~/common/api/funcionarios_request';
 import { byIdLivros, deletarLivros, listarLivros } from '~/common/api/livros_request';
 import { listarReceitas } from '~/common/api/receitas_request';
 import Form_livro_edit from '~/components/Form_livro _edit.vue';
+import Cookies from 'js-cookie';
 
-console.log(await listarLivros());
+const role_usuario = Cookies.get("cargo_user");
 
 let listaLivros = ref(await listarLivros());
 

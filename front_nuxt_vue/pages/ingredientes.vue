@@ -1,66 +1,72 @@
 <template>
   <Menu />
-
-  <div class="ingredientes-container">
-    <div class="header-section">
-      <h1>Lista de Ingredientes</h1>
-      <div class="search-add-container">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Pesquisar ingredientes..."
-            @input="filterIngredientes"
-          />
+  <main>
+    <section v-if="role_usuario == 'administrador'">
+      <div class="ingredientes-container">
+        <div class="header-section">
+          <h1>Lista de Ingredientes</h1>
+          <div class="search-add-container">
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..."
+                @input="filterIngredientes" />
+            </div>
+            <button class="add-button" @click="showAddModal = true">
+              <i class="fas fa-plus"></i> Adicionar Ingrediente
+            </button>
+          </div>
         </div>
-        <button class="add-button" @click="showAddModal = true">
-          <i class="fas fa-plus"></i> Adicionar Ingrediente
-        </button>
-      </div>
-    </div>
 
-    <div v-if="loading" class="loading-message">
-      <i class="fas fa-spinner fa-spin"></i> Carregando ingredientes...
-    </div>
-    <div v-else-if="error" class="error-message">
-      <i class="fas fa-exclamation-triangle"></i> {{ error }}
-    </div>
-    <div v-else class="table-responsive">
-      <table class="ingredientes-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nome do Ingrediente</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="ingrediente in filteredIngredientes" :key="ingrediente.id_ingred">
-            <td>{{ ingrediente.id_ingred }}</td>
-            <td>{{ ingrediente.nome }}</td>
-            <td class="actions-cell">
-              <button class="edit-btn" @click="editIngrediente(ingrediente)">
-                <i class="fas fa-edit"></i> Editar
-              </button>
-              <button class="delete-btn" @click="confirmDelete(ingrediente)">
-                <i class="fas fa-trash"></i> Excluir
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-if="filteredIngredientes.length === 0 && !loading" class="no-results">
-        Nenhum ingrediente encontrado
-      </div>
-    </div>
+        <div v-if="loading" class="loading-message">
+          <i class="fas fa-spinner fa-spin"></i> Carregando ingredientes...
+        </div>
+        <div v-else-if="error" class="error-message">
+          <i class="fas fa-exclamation-triangle"></i> {{ error }}
+        </div>
+        <div v-else class="table-responsive">
+          <table class="ingredientes-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome do Ingrediente</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="ingrediente in filteredIngredientes" :key="ingrediente.id_ingred">
+                <td>{{ ingrediente.id_ingred }}</td>
+                <td>{{ ingrediente.nome }}</td>
+                <td class="actions-cell">
+                  <button class="edit-btn" @click="editIngrediente(ingrediente)">
+                    <i class="fas fa-edit"></i> Editar
+                  </button>
+                  <button class="delete-btn" @click="confirmDelete(ingrediente)">
+                    <i class="fas fa-trash"></i> Excluir
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="filteredIngredientes.length === 0 && !loading" class="no-results">
+            Nenhum ingrediente encontrado
+          </div>
+        </div>
 
-    <!-- Modais mantidos iguais -->
-  </div>
+        <!-- Modais mantidos iguais -->
+      </div>
+    </section>
+
+    <!-- Mensagem de bloqueio do usuário -->
+    <div v-else class="mensagem_acesso">
+      Seu nível de acesso não é compatível com essa funcionalidade...
+    </div>
+  </main>
 </template>
 
 <script>
 import { ingredientesListar, ingredientesCadastrar, ingredientesAlterar, ingredientesDeletar } from '~/assets/js/request_api_ingredientes.js';
+import Cookies from 'js-cookie';
+
 
 export default {
   data() {
@@ -79,7 +85,8 @@ export default {
       loading: false,
       saving: false,
       deleting: false,
-      error: null
+      error: null,
+      role_usuario: Cookies.get("cargo_user")
     }
   },
   async created() {
@@ -105,7 +112,7 @@ export default {
         this.filteredIngredientes = [...this.ingredientes];
         return;
       }
-      
+
       const query = this.searchQuery.toLowerCase();
       this.filteredIngredientes = this.ingredientes.filter(ingrediente =>
         ingrediente.nome.toLowerCase().includes(query) ||
@@ -155,9 +162,9 @@ export default {
       try {
         this.deleting = true;
         this.error = null;
-        
+
         await ingredientesDeletar(this.ingredienteToDelete.id_ingred);
-        
+
         await this.loadIngredientes();
         this.filterIngredientes(); // Reaplica o filtro após excluir
         this.showConfirmModal = false;
@@ -181,6 +188,7 @@ export default {
 
 <style scoped>
 @import url("~/assets/css/ingrediente.css");
+@import url("~/assets/css/acesso_role.css");
 
 /* Estilos para a barra de pesquisa */
 .search-add-container {
@@ -227,7 +235,8 @@ export default {
   font-style: italic;
 }
 
-.loading-message, .error-message {
+.loading-message,
+.error-message {
   padding: 1rem;
   text-align: center;
   margin: 1rem 0;
@@ -254,12 +263,12 @@ button:disabled {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-bar {
     max-width: 100%;
     margin-bottom: 10px;
   }
-  
+
   .add-button {
     width: 100%;
   }

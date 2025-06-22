@@ -1,106 +1,114 @@
 <template>
+  <Menu />
   <main>
-    <Menu />
 
-    <div class="container">
-      <h1>Funcionários</h1>
-      <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-input" />
+    <section v-if="role_usuario == 'administrador'">
+      <div class="container">
+        <h1>Funcionários</h1>
+        <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-input" />
 
-      <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
+        <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
 
-      <table class="employee-table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Salário</th>
-            <th>RG</th>
-            <th>Admissão</th>
-            <th>Cargo</th>
-            <th>Restaurante</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="f in filteredFuncionarios" :key="f.id">
-            <td>{{ f.nome }}</td>
-            <td>R$ {{ f.salario.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</td>
-            <td>{{ f.rg }}</td>
-            <td>{{ formatDate(f.dt_adm) }}</td>
-            <td>{{ f.cargo?.nome || f.cargo || 'N/A' }}</td>
-            <td>{{ f.restaurante?.nome || 'N/A' }}</td>
-            <td>
-              <button @click="edit(f)" class="edit-button">Editar</button>
-              <button @click="confirmDelete(f)" class="delete-button">Excluir</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="employee-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Salário</th>
+              <th>RG</th>
+              <th>Admissão</th>
+              <th>Cargo</th>
+              <th>Restaurante</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="f in filteredFuncionarios" :key="f.id">
+              <td>{{ f.nome }}</td>
+              <td>R$ {{ f.salario.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</td>
+              <td>{{ f.rg }}</td>
+              <td>{{ formatDate(f.dt_adm) }}</td>
+              <td>{{ f.cargo?.nome || f.cargo || 'N/A' }}</td>
+              <td>{{ f.restaurante?.nome || 'N/A' }}</td>
+              <td>
+                <button @click="edit(f)" class="edit-button">Editar</button>
+                <button @click="confirmDelete(f)" class="delete-button">Excluir</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <!-- Modais -->
-      <div v-if="renderModals">
-        <!-- Modal Adicionar/Editar -->
-        <div v-if="showAddModal" class="modal-overlay">
-          <div class="modal">
-            <h2>{{ editing ? 'Editar Funcionário' : 'Adicionar Funcionário' }}</h2>
+        <!-- Modais -->
+        <div v-if="renderModals">
+          <!-- Modal Adicionar/Editar -->
+          <div v-if="showAddModal" class="modal-overlay">
+            <div class="modal">
+              <h2>{{ editing ? 'Editar Funcionário' : 'Adicionar Funcionário' }}</h2>
 
-            <label>Nome:</label>
-            <input v-model="current.nome" type="text" required />
+              <label>Nome:</label>
+              <input v-model="current.nome" type="text" required />
 
-            <label>Salário:</label>
-            <input v-model="current.salario" type="number" step="0.01" required />
+              <label>Salário:</label>
+              <input v-model="current.salario" type="number" step="0.01" required />
 
-            <label>RG:</label>
-            <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
-              required />
+              <label>RG:</label>
+              <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
+                required />
 
-            <label>Data de Admissão:</label>
-            <input v-model="current.dt_adm" type="date" required />
+              <label>Data de Admissão:</label>
+              <input v-model="current.dt_adm" type="date" required />
 
-            <label>Cargo:</label>
-            <select v-model="current.cargo_id" required>
-              <option disabled value="">Selecione um cargo</option>
-              <option v-for="cargo in cargos" :key="cargo.id_cargo" :value="cargo.id_cargo">
-                {{ cargo.nome }}
-              </option>
-            </select>
+              <label>Cargo:</label>
+              <select v-model="current.cargo_id" required>
+                <option disabled value="">Selecione um cargo</option>
+                <option v-for="cargo in cargos" :key="cargo.id_cargo" :value="cargo.id_cargo">
+                  {{ cargo.nome }}
+                </option>
+              </select>
 
-            <label>Restaurante:</label>
-            <select v-model="current.idRestaurante" required>
-              <option disabled value="">Selecione um restaurante</option>
-              <option v-for="restaurante in restaurantes" :key="restaurante.idRestaurante"
-                :value="restaurante.idRestaurante">
-                {{ restaurante.nome }}
-              </option>
-            </select>
+              <label>Restaurante:</label>
+              <select v-model="current.idRestaurante" required>
+                <option disabled value="">Selecione um restaurante</option>
+                <option v-for="restaurante in restaurantes" :key="restaurante.idRestaurante"
+                  :value="restaurante.idRestaurante">
+                  {{ restaurante.nome }}
+                </option>
+              </select>
 
-            <label>Usuário:</label>
-            <input v-model="current.username" type="text" :required="!editing" />
+              <label>Usuário:</label>
+              <input v-model="current.username" type="text" :required="!editing" />
 
-            <label>Senha:</label>
-            <input v-model="current.password" type="password" :required="!editing" />
+              <label>Senha:</label>
+              <input v-model="current.password" type="password" :required="!editing" />
 
-            <label>Confirmar Senha:</label>
-            <input v-model="current.confirmPassword" type="password" :required="!editing" />
+              <label>Confirmar Senha:</label>
+              <input v-model="current.confirmPassword" type="password" :required="!editing" />
 
-            <div class="modal-actions">
-              <button @click="save" class="save-button">Salvar</button>
-              <button @click="closeModal" class="cancel-button">Cancelar</button>
+              <div class="modal-actions">
+                <button @click="save" class="save-button">Salvar</button>
+                <button @click="closeModal" class="cancel-button">Cancelar</button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Modal de Confirmação -->
-        <div v-if="showConfirmModal" class="modal-overlay">
-          <div class="modal">
-            <h2>Confirmar Exclusão</h2>
-            <p>Deseja realmente excluir o funcionário <strong>{{ current.nome }}</strong>?</p>
-            <div class="modal-actions">
-              <button @click="deleteNow" class="delete-button">Excluir</button>
-              <button @click="closeModal" class="cancel-button">Cancelar</button>
+          <!-- Modal de Confirmação -->
+          <div v-if="showConfirmModal" class="modal-overlay">
+            <div class="modal">
+              <h2>Confirmar Exclusão</h2>
+              <p>Deseja realmente excluir o funcionário <strong>{{ current.nome }}</strong>?</p>
+              <div class="modal-actions">
+                <button @click="deleteNow" class="delete-button">Excluir</button>
+                <button @click="closeModal" class="cancel-button">Cancelar</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- Mensagem de bloqueio do usuário -->
+    <div v-else class="mensagem_acesso">
+      Seu nível de acesso não é compatível com essa funcionalidade...
     </div>
   </main>
 </template>
@@ -112,7 +120,7 @@ import {
   funcionarioAlterar,
   funcionarioDeletar
 } from '~/assets/api_funcionario/funcionario.js';
-
+import Cookies from 'js-cookie';
 import { cargoListar } from '~/assets/js/request_api_cargo.js';
 import { listarRestaurantes } from '~/assets/js/request_api_restaurante.js';
 
@@ -138,7 +146,8 @@ export default {
       showAddModal: false,
       showConfirmModal: false,
       search: '',
-      renderModals: true
+      renderModals: true,
+      role_usuario: Cookies.get("cargo_user")
     };
   },
   computed: {
@@ -303,9 +312,10 @@ export default {
         rg: null,
         dt_adm: '',
         cargo_id: '',
-        idRestaurante: '',
-        username: '',
-        password: ''
+        imagem_perfil: "",
+        listaRestaurante: [{ idRestaurante: 1 }],
+        nome_usuario: '',
+        senha_usuarios: ''
       };
     }
   }
@@ -314,6 +324,5 @@ export default {
 
 <style scoped>
 @import url("~/assets/css/funcionario.css");
-
-
+@import url("~/assets/css/acesso_role.css");
 </style>
