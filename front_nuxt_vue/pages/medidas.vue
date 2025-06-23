@@ -3,18 +3,15 @@
 
   <main>
     <section v-if="role_usuario == 'administrador'">
-      <div class="medidas-container">
+      <div class="container-crud">
         <div class="header-section">
           <h1>Lista de Medidas</h1>
-          <div class="search-add-container">
-            <div class="search-bar">
-              <i class="fas fa-search"></i>
-              <input type="text" v-model="searchQuery" placeholder="Pesquisar medidas..." @input="filterMedidas" />
-            </div>
-            <button class="add-button" @click="openAddModal">
-              <i class="fas fa-plus"></i> Adicionar Medida
-            </button>
-          </div>
+          <input type="text" v-model="searchQuery" placeholder="Pesquisar medidas..." @input="filterMedidas"
+            class="search-bar" />
+
+          <button class="add-button" @click="openAddModal">
+            <i class="fas fa-plus"></i> Adicionar Medida
+          </button>
         </div>
 
         <div class="table-responsive">
@@ -25,7 +22,8 @@
               <tr>
                 <th>ID</th>
                 <th>Nome da Medida</th>
-                <th>Ações</th>
+                <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
             <tbody>
@@ -36,6 +34,8 @@
                   <button class="edit-btn" @click="editMedida(medida)">
                     <i class="fas fa-edit"></i> Editar
                   </button>
+                </td>
+                <td>
                   <button class="delete-btn" @click="confirmDelete(medida)">
                     <i class="fas fa-trash"></i> Excluir
                   </button>
@@ -201,7 +201,7 @@ export default {
 </script>
 
 <style scoped>
-@import url("~/assets/css/medida.css");
+@import url("~/assets/css/tabelas.css");
 @import url("~/assets/css/acesso_role.css");
 
 .search-add-container {

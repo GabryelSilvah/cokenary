@@ -3,16 +3,17 @@
 
   <main>
     <section v-if="role_usuario == 'administrador'">
-      <div class="cargos-container">
+      <div class="container-crud">
         <div class="header-section">
           <h1>Lista de Cargos</h1>
+          <input v-model="searchTerm" type="text" placeholder="Buscar cargo pelo nome..." class="search-bar" />
           <button class="add-button" @click="showAddModal = true">
             <i class="fas fa-plus"></i> Adicionar Cargo
           </button>
         </div>
-        <input v-model="searchTerm" type="text" placeholder="Buscar cargo pelo nome..." class="search-bar" />
 
         <!-- Barra de Pesquisa -->
+
 
         
         <div class="table-responsive">
@@ -86,6 +87,13 @@
 
 
 </template>
+
+
+<style scoped>
+@import url("~/assets/css/tabelas.css");
+@import url("~/assets/css/acesso_role.css");
+</style>
+
 
 <script>
 import {
@@ -210,9 +218,3 @@ export default {
 };
 </script>
 
-<style scoped>
-@import url("~/assets/css/cargo.css");
-@import url("~/assets/css/acesso_role.css");
-
-
-</style>

@@ -5,9 +5,10 @@
   <main>
 
     <section v-if="role_usuario == 'administrador'">
-      <div class="restaurantes-container">
+      <div class="container-crud">
         <div class="header-section">
           <h1>Lista de Restaurantes</h1>
+          <input type="text" placeholder="Buscar cargo pelo nome..." class="search-bar" />
           <button class="add-button" @click="showAddModal = true">
             <i class="fas fa-plus"></i> Adicionar Restaurante
           </button>
@@ -21,7 +22,8 @@
                 <th>Nome</th>
                 <th>Contato</th>
                 <th>Telefone</th>
-                <th>Ações</th>
+                <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
             <tbody>
@@ -34,6 +36,8 @@
                   <button class="edit-btn" @click="editRestaurante(restaurante)">
                     <i class="fas fa-edit"></i> Editar
                   </button>
+                </td>
+                <td>
                   <button class="delete-btn" @click="confirmDelete(restaurante)">
                     <i class="fas fa-trash"></i> Excluir
                   </button>
@@ -174,6 +178,6 @@ export default {
 </script>
 
 <style scoped>
-@import url("~/assets/css/restaurante.css");
+@import url("~/assets/css/tabelas.css");
 @import url("~/assets/css/acesso_role.css");
 </style>

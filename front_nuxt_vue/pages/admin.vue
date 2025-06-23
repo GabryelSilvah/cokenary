@@ -52,7 +52,7 @@
               <div class="stat-icon"><i class="fas fa-store"></i></div>
               <div class="stat-info">
                 <h3>Restaurantes</h3>
-                <div class="stat-value">{{ painelData.numero_restaurante }}</div>
+                <div class="statvalue-">{{ painelData.numero_restaurante }}</div>
                 <a href="/restaurantes" class="stat-link">Ver todos <i class="fas fa-arrow-right"></i></a>
               </div>
             </div>
@@ -166,6 +166,11 @@
   </div>
 </template>
 
+<style scoped>
+@import url("~/assets/css/acesso_role.css");
+@import url("~/assets/css/admin.css");
+</style>
+
 <script>
 
 import { getPainelNumeros } from '~/assets/js/request_api_adm.js';
@@ -205,14 +210,3 @@ export default {
 }
 </script>
 
-<style>
-@import url("~/assets/css/acesso_role.css");
-@import url("~/assets/css/admin.css");
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #4a4a4a;
-  margin: 4px 0;
-}
-</style>

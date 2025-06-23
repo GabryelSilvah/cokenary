@@ -29,11 +29,18 @@
   box-sizing: border-box;
 }
 
-body {
+main {
   font-family: 'Inter', sans-serif;
-  background-color: #f5f7fa;
+  background-color: #ececec;
   color: var(--dark-color);
   line-height: 1.6;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4a4a4a;
+  margin: 4px 0;
 }
 
 /* Layout Principal */
@@ -45,15 +52,16 @@ body {
 
 /* Sidebar */
 .sidebar {
-  width: var(--sidebar-width);
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-text);
+  width: 280px;
+  background-color: #00a193;
+  border-right: 3px solid black;
+  color: #ffffff;
   padding: 1.5rem 1rem;
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .sidebar-header {
@@ -70,7 +78,7 @@ body {
 
 .sidebar .subtitle {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgb(255, 255, 255);
   line-height: 1.4;
 }
 
@@ -83,25 +91,26 @@ body {
 }
 
 .sidebar nav ul li a {
-  color: var(--sidebar-text);
+  color: #ffffff;
   text-decoration: none;
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   font-size: 0.95rem;
   font-weight: 500;
 }
 
 .sidebar nav ul li a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.812);
+  color: #000;
 }
 
 .sidebar nav ul li a.active {
-  background-color: var(--sidebar-active);
-  color: white;
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+  background-color: #e4b600;
+  color: rgb(0, 0, 0);
+  box-shadow: 2px 2px 20px rgba(55, 55, 55, 0.662);
 }
 
 .sidebar nav ul li a i {
@@ -146,11 +155,11 @@ body {
   background-color: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--card-shadow);
-  transition: var(--transition);
+  box-shadow: 2px 2px 20px rgb(194, 194, 194);
+  transition: 0.6s;
   display: flex;
   align-items: center;
-  border-left: 4px solid var(--primary-color);
+  border: 2px solid rgb(0, 167, 164);
 }
 
 .stat-card:hover {
@@ -181,7 +190,7 @@ body {
 .stat-card .stat-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--dark-color);
+  color:#00ad71;
   margin: 0.5rem 0;
 }
 

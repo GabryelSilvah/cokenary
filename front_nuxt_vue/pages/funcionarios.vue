@@ -2,11 +2,12 @@
   <Menu />
   <main>
     <section v-if="role_usuario == 'administrador'">
-      <div class="container">
-        <h1>Funcionários</h1>
-        <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-input" />
-
-        <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
+      <div class="container container-crud">
+        <div class="header-section">
+          <h1>Funcionários</h1>
+          <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-bar" />
+          <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
+        </div>
 
         <table class="employee-table">
           <thead>
@@ -17,7 +18,8 @@
               <th>Admissão</th>
               <th>Cargo</th>
               <th>Restaurante</th>
-              <th>Ações</th>
+              <th>Editar</th>
+              <th>Excluir</th>
             </tr>
           </thead>
           <tbody>
@@ -29,8 +31,10 @@
               <td>{{ f.cargo?.nome || f.cargo || 'N/A' }}</td>
               <td>{{ f.restaurante?.nome || 'N/A' }}</td>
               <td>
-                <button @click="edit(f)" class="edit-button">Editar</button>
-                <button @click="confirmDelete(f)" class="delete-button">Excluir</button>
+                <button @click="edit(f)" class="edit-button edit-btn">Editar</button>
+              </td>
+              <td>
+                <button @click="confirmDelete(f)" class="delete-button delete-btn">Excluir</button>
               </td>
             </tr>
           </tbody>
@@ -44,13 +48,14 @@
               <h2>{{ editing ? 'Editar Funcionário' : 'Adicionar Funcionário' }}</h2>
 
               <label>Nome:</label>
-              <input v-model="current.nome" type="text" required />
+              <input v-model="current.nome" type="text" required placeholder="Digite o nome completo..."/>
 
               <label>Salário:</label>
               <input v-model="current.salario" type="number" step="0.01" required />
 
               <label>RG:</label>
-              <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }" required />
+              <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
+                required placeholder="Digite sem traços e pontos..."/>
 
               <label>Data de Admissão:</label>
               <input v-model="current.dt_adm" type="date" required />
@@ -73,10 +78,10 @@
               </select>
 
               <label>Usuário:</label>
-              <input v-model="current.nome_usuario" type="text" :required="!editing" />
+              <input v-model="current.nome_usuario" type="text" :required="!editing" placeholder="Digite o nome para login..." />
 
               <label>Senha:</label>
-              <input v-model="current.senha_usuarios" type="password" :required="!editing" />
+              <input v-model="current.senha_usuarios" type="password" :required="!editing" placeholder="Crie a senha do usuário para login..."/>
 
               <div class="modal-actions">
                 <button @click="save" class="save-button">Salvar</button>
@@ -246,37 +251,37 @@ export default {
       return true;
     },
     async save() {
-  try {
-    if (!this.validateForm()) return;
+      try {
+        if (!this.validateForm()) return;
 
-    const funcionarioData = {
-      nome: this.current.nome.trim(),
-      rg: this.current.rg.toString(),
-      dt_adm: this.formatDateForAPI(this.current.dt_adm),
-      salario: parseFloat(this.current.salario),
-      cargo: {  // Agora enviamos um objeto Cargo completo
-        id: this.current.cargo_id
-      },
-      idRestaurante: parseInt(this.current.idRestaurante),
-      nome_usuario: this.current.nome_usuario,
-      senha_usuarios: this.current.senha_usuarios
-    };
+        const funcionarioData = {
+          nome: this.current.nome.trim(),
+          rg: this.current.rg.toString(),
+          dt_adm: this.formatDateForAPI(this.current.dt_adm),
+          salario: parseFloat(this.current.salario),
+          cargo: {  // Agora enviamos um objeto Cargo completo
+            id: this.current.cargo_id
+          },
+          idRestaurante: parseInt(this.current.idRestaurante),
+          nome_usuario: this.current.nome_usuario,
+          senha_usuarios: this.current.senha_usuarios
+        };
 
-    if (this.editing) {
-      await funcionarioAlterar(this.current.id_func, funcionarioData);
-      alert('Funcionário atualizado com sucesso!');
-    } else {
-      await funcionarioCadastrar(funcionarioData);
-      alert('Funcionário cadastrado com sucesso!');
-    }
+        if (this.editing) {
+          await funcionarioAlterar(this.current.id_func, funcionarioData);
+          alert('Funcionário atualizado com sucesso!');
+        } else {
+          await funcionarioCadastrar(funcionarioData);
+          alert('Funcionário cadastrado com sucesso!');
+        }
 
-    await this.fetchFuncionarios();
-    this.closeModal();
-  } catch (error) {
-    console.error('Erro:', error);
-    alert(error.message || 'Ocorreu um erro ao salvar o funcionário');
-  }
-},
+        await this.fetchFuncionarios();
+        this.closeModal();
+      } catch (error) {
+        console.error('Erro:', error);
+        alert(error.message || 'Ocorreu um erro ao salvar o funcionário');
+      }
+    },
     confirmDelete(funcionario) {
       this.current = {
         ...funcionario,
@@ -317,6 +322,6 @@ export default {
 </script>
 
 <style scoped>
-@import url("~/assets/css/funcionario.css");
+@import url("~/assets/css/tabelas.css");
 @import url("~/assets/css/acesso_role.css");
 </style>

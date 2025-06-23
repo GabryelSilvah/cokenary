@@ -2,19 +2,15 @@
   <Menu />
   <main>
     <section v-if="role_usuario == 'administrador'">
-      <div class="ingredientes-container">
+      <div class="container-crud">
         <div class="header-section">
           <h1>Lista de Ingredientes</h1>
-          <div class="search-add-container">
-            <div class="search-bar">
-              <i class="fas fa-search"></i>
-              <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..."
-                @input="filterIngredientes" />
-            </div>
-            <button class="add-button" @click="showAddModal = true">
-              <i class="fas fa-plus"></i> Adicionar Ingrediente
-            </button>
-          </div>
+          <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..." @input="filterIngredientes"
+            class="search-bar" />
+          <button class="add-button" @click="showAddModal = true">
+            <i class="fas fa-plus"></i> Adicionar Ingrediente
+          </button>
+
         </div>
 
         <div v-if="loading" class="loading-message">
@@ -29,7 +25,8 @@
               <tr>
                 <th>ID</th>
                 <th>Nome do Ingrediente</th>
-                <th>Ações</th>
+                <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
             <tbody>
@@ -40,6 +37,8 @@
                   <button class="edit-btn" @click="editIngrediente(ingrediente)">
                     <i class="fas fa-edit"></i> Editar
                   </button>
+                </td>
+                <td>
                   <button class="delete-btn" @click="confirmDelete(ingrediente)">
                     <i class="fas fa-trash"></i> Excluir
                   </button>
@@ -187,7 +186,7 @@ export default {
 </script>
 
 <style scoped>
-@import url("~/assets/css/ingrediente.css");
+@import url("~/assets/css/tabelas.css");
 @import url("~/assets/css/acesso_role.css");
 
 /* Estilos para a barra de pesquisa */

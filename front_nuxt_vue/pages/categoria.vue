@@ -1,15 +1,19 @@
 <template>
 
   <Menu />
+
   <main>
     <section v-if="role_usuario == 'administrador'">
-      <div class="categorias-container">
+      <div class="container-crud">
         <div class="header-section">
           <h1>Lista de Categorias</h1>
+          <input v-model="searchTerm" type="text" placeholder="Buscar cargo pelo nome..." class="search-bar" />
           <button class="add-button" @click="showAddModal = true">
             <i class="fas fa-plus"></i> Adicionar Categoria
           </button>
         </div>
+
+        <!-- Barra de Pesquisa -->
 
         <div class="table-responsive">
           <table class="categorias-table">
@@ -17,7 +21,8 @@
               <tr>
                 <th>ID</th>
                 <th>Nome da Categoria</th>
-                <th>Ações</th>
+                <th>Editar</th>
+                <th>Excluir</th>
               </tr>
             </thead>
             <tbody>
@@ -28,6 +33,8 @@
                   <button class="edit-btn" @click="editCategoria(categoria)">
                     <i class="fas fa-edit"></i> Editar
                   </button>
+                </td>
+                <td>
                   <button class="delete-btn" @click="confirmDelete(categoria)">
                     <i class="fas fa-trash"></i> Excluir
                   </button>
@@ -77,7 +84,7 @@
 </template>
 
 <style scoped>
-@import url("~/assets/css/categoria.css");
+@import url("~/assets/css/tabelas.css");
 @import url("~/assets/css/acesso_role.css");
 </style>
 
