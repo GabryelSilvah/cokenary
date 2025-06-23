@@ -5,13 +5,13 @@
       <div class="container-crud">
         <div class="header-section">
           <h1>Lista de Ingredientes</h1>
-          <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..." @input="filterIngredientes"
-            class="search-bar" />
+          <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..."
+            @input="filterIngredientes"  class="search-bar"/>
           <button class="add-button" @click="showAddModal = true">
             <i class="fas fa-plus"></i> Adicionar Ingrediente
           </button>
-
         </div>
+
 
         <div v-if="loading" class="loading-message">
           <i class="fas fa-spinner fa-spin"></i> Carregando ingredientes...
@@ -51,7 +51,42 @@
           </div>
         </div>
 
-        <!-- Modais mantidos iguais -->
+
+        <!-- Modal de Adição/Edição -->
+        <div v-if="showAddModal" class="modal-overlay">
+          <div class="modal">
+            <h2>{{ editingIngrediente ? 'Editar Ingrediente' : 'Adicionar Ingrediente' }}</h2>
+            <div class="form-group">
+              <label>Nome do Ingrediente:</label>
+              <input type="text" v-model="currentIngrediente.nome" placeholder="Digite o nome do ingrediente"
+                class="modal-input" />
+            </div>
+            <div v-if="error" class="error-message">{{ error }}</div>
+            <div class="modal-buttons">
+              <button class="cancel-btn" @click="closeModal">Cancelar</button>
+              <button class="save-btn" @click="saveIngrediente" :disabled="saving">
+                {{ saving ? 'Salvando...' : (editingIngrediente ? 'Salvar' : 'Adicionar') }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <div v-if="showConfirmModal" class="modal-overlay">
+          <div class="modal confirm-modal">
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja excluir o ingrediente "{{ ingredienteToDelete.nome }}"?</p>
+            <div v-if="error" class="error-message">{{ error }}</div>
+            <div class="modal-buttons">
+              <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
+              <button class="delete-confirm-btn" @click="deleteIngrediente" :disabled="deleting">
+                {{ deleting ? 'Excluindo...' : 'Confirmar' }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Fim dos modais -->
+
       </div>
     </section>
 
@@ -61,6 +96,11 @@
     </div>
   </main>
 </template>
+
+<style scoped>
+@import url("~/assets/css/tabelas.css");
+@import url("~/assets/css/acesso_role.css");
+</style>
 
 <script>
 import { ingredientesListar, ingredientesCadastrar, ingredientesAlterar, ingredientesDeletar } from '~/assets/js/request_api_ingredientes.js';
@@ -185,91 +225,3 @@ export default {
 }
 </script>
 
-<style scoped>
-@import url("~/assets/css/tabelas.css");
-@import url("~/assets/css/acesso_role.css");
-
-/* Estilos para a barra de pesquisa */
-.search-add-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 15px;
-}
-
-.search-bar {
-  flex-grow: 1;
-  position: relative;
-  max-width: 400px;
-}
-
-.search-bar i {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 10px 15px 10px 40px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-
-.no-results {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-style: italic;
-}
-
-.loading-message,
-.error-message {
-  padding: 1rem;
-  text-align: center;
-  margin: 1rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.error-message {
-  color: #ff4444;
-  background-color: #ffebee;
-  border-radius: 4px;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Ajuste para mobile */
-@media (max-width: 768px) {
-  .search-add-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-bar {
-    max-width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .add-button {
-    width: 100%;
-  }
-}
-</style>

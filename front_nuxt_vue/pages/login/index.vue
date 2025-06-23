@@ -38,10 +38,46 @@ const loginModel = defineModel("loginModel", {
   }
 })
 
+
 async function autenticar() {
-  const respostaAPI = await autenticar_user(loginModel.value);
-  Cookies.set("token_auth", respostaAPI.value.data.token);
-  Cookies.set("cargo_user", respostaAPI.value.data.cargo_usuario);
+  if (loginModel.value.email != "" && loginModel.value.senha != "") {
+    
+    const respostaAPI = await autenticar_user(loginModel.value);
+
+
+    if (!respostaAPI.value) {
+      alert("Erro, usuário ou senha errados");
+    }
+
+
+    Cookies.set("token_auth", respostaAPI.value.data.token ?? "");
+    Cookies.set("id_user", respostaAPI.value.data.id_funcionario ?? "");
+    Cookies.set("cargo_user", respostaAPI.value.data.cargo_usuario ?? "");
+    
+    switch (Cookies.get("cargo_user")) {
+      case "administrador":
+        window.location = "/admin";
+        break;
+      case "cozinheiro":
+        window.location = "/food";
+        break;
+      case "degustador":
+        window.location = "/avaliacao/listar";
+        break;
+      case "editor":
+        window.location = "/livros/listar";
+        break;
+      default:
+        window.location = "/login";
+        break;
+    }
+
+  } else {
+    alert("Preencha todos os campos");
+  }
+
+
+
 }
 
 </script>

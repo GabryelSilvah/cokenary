@@ -29,9 +29,9 @@
               <NuxtLink :to="{ path: '/funcionarios' }"><i class="fas fa-users"></i> Funcionários</NuxtLink>
             </li>
             <li>
-              <NuxtLink :to="{ path: '/perfil' }"><i class="fas fa-user"></i>Meu Perfil</NuxtLink>
+              <NuxtLink :to="{ path: '/perfil_adm' }"><i class="fas fa-user"></i>Meu Perfil</NuxtLink>
             </li>
-            <li class="logout-link"><a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            <li class="logout-link"><a href="#"><i class="fas fa-sign-out-alt" @click="logout"></i> Sair</a></li>
           </ul>
         </nav>
       </div>
@@ -52,7 +52,7 @@
               <div class="stat-icon"><i class="fas fa-store"></i></div>
               <div class="stat-info">
                 <h3>Restaurantes</h3>
-                <div class="statvalue-">{{ painelData.numero_restaurante }}</div>
+                <div class="stat-value">{{ painelData.numero_restaurante }}</div>
                 <a href="/restaurantes" class="stat-link">Ver todos <i class="fas fa-arrow-right"></i></a>
               </div>
             </div>
@@ -206,7 +206,15 @@ export default {
       // Você pode definir valores padrão ou mostrar uma mensagem de erro na UI
       // this.painelData = { ...this.painelData, error: true }; 
     }
-  }
+
+  },
+  // methods: {
+  //   logout() {
+  //     Cookies.remove("token_auth");
+  //     Cookies.remove("id_user");
+  //     Cookies.remove("cargo_user");
+  //     window.location = "/login";
+  //   }
+  // }
 }
 </script>
-

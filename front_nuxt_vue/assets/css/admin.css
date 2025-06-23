@@ -31,7 +31,7 @@
 
 main {
   font-family: 'Inter', sans-serif;
-  background-color: #ececec;
+  background-color: #ffffff;
   color: var(--dark-color);
   line-height: 1.6;
 }
@@ -53,7 +53,8 @@ main {
 /* Sidebar */
 .sidebar {
   width: 280px;
-  background-color: #00a193;
+  background: linear-gradient(120deg, rgb(0, 130, 196), rgb(0, 35, 175));
+  /* background-color: #018b7f; */
   border-right: 3px solid black;
   color: #ffffff;
   padding: 1.5rem 1rem;
@@ -108,7 +109,7 @@ main {
 }
 
 .sidebar nav ul li a.active {
-  background-color: #e4b600;
+  background-color: #ffffff;
   color: rgb(0, 0, 0);
   box-shadow: 2px 2px 20px rgba(55, 55, 55, 0.662);
 }
@@ -141,7 +142,7 @@ main {
 .content-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-}
+} 
 
 /* Cards de Estatísticas */
 .stats-container {
@@ -152,14 +153,15 @@ main {
 }
 
 .stat-card {
-  background-color: white;
+ background: linear-gradient(120deg, rgba(0, 131, 196, 0.567), rgba(0, 87, 175, 0.563));
+  color: #000000;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 2px 2px 20px rgb(194, 194, 194);
   transition: 0.6s;
   display: flex;
   align-items: center;
-  border: 2px solid rgb(0, 167, 164);
+  border: 3px solid rgb(32, 32, 32);
 }
 
 .stat-card:hover {
@@ -190,7 +192,7 @@ main {
 .stat-card .stat-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color:#00ad71;
+  color:#000000;
   margin: 0.5rem 0;
 }
 

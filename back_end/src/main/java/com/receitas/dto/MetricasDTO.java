@@ -31,6 +31,13 @@ public class MetricasDTO {
         this.fk_funcionario = fk_funcionario;
     }
 
+    public MetricasDTO(int quantidade_receitas, int quantidade_livros, double media_avaliacoes, FuncionarioSaidaDTO fk_funcionario) {
+        this.quantidade_receitas = quantidade_receitas;
+        this.quantidade_livros = quantidade_livros;
+        this.media_avaliacoes = media_avaliacoes;
+        this.fk_funcionario = fk_funcionario;
+    }
+
     public MetricasDTO(Long id_metrica, int quantidade_receitas, int quantidade_livros, double media_avaliacoes, FuncionarioSaidaDTO fk_funcionario) {
         this.id_metrica = id_metrica;
         this.quantidade_receitas = quantidade_receitas;

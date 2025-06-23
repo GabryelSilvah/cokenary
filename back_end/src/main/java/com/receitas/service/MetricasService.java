@@ -7,8 +7,10 @@ import com.receitas.model.Funcionario;
 import com.receitas.model.Metricas;
 import com.receitas.repository.FuncionarioRepository;
 import com.receitas.repository.MetricasRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class MetricasService {
         List<Metricas> metricasEncontradas = metricasRepository.findAll();
         List<MetricasDTO> listaMetricasDTO = new ArrayList<>();
 
-        for(int i = 0; i < metricasEncontradas.size(); i++) {
+        for (int i = 0; i < metricasEncontradas.size(); i++) {
 
             listaMetricasDTO.add(new MetricasDTO(
                     metricasEncontradas.get(i).getId_metrica(),
@@ -109,7 +111,7 @@ public class MetricasService {
         );
     }
 
-    public Boolean delete(Long id_metrica){
+    public Boolean delete(Long id_metrica) {
 
         //Validando se metrica existe
         Optional<Metricas> metricaEncontrada = metricasRepository.findById(id_metrica);
@@ -119,6 +121,12 @@ public class MetricasService {
 
         metricasRepository.deleteById(id_metrica);
 
+        return true;
+    }
+
+
+    public Boolean deleteByFuncionario(Long fk_funcionario) {
+        metricasRepository.deleteByFkFuncionario(fk_funcionario);
         return true;
     }
 }

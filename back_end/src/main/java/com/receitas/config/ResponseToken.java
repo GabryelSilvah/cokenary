@@ -9,11 +9,14 @@ public class ResponseToken {
 
     private String cargo_usuario;
 
-    public ResponseToken(int status, String token, String email, String cargo_usuario){
+    private Long id_funcionario;
+
+    public ResponseToken(int status, String token, String email, String cargo_usuario, Long id_funcionario){
         this.status = status;
         this.token = token;
         this.email = email;
         this.cargo_usuario = cargo_usuario;
+        this.id_funcionario = id_funcionario;
     }
 
     public int getStatus() {
@@ -46,5 +49,13 @@ public class ResponseToken {
 
     public void setCargo_usuario(String cargo_usuario) {
         this.cargo_usuario = cargo_usuario;
+    }
+
+    public Long getId_funcionario() {
+        return id_funcionario;
+    }
+
+    public void setId_funcionario(Long id_funcionario) {
+        this.id_funcionario = id_funcionario;
     }
 }

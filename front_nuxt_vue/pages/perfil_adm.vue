@@ -1,5 +1,4 @@
 <template>
-  <Menu />
   <div class="profile-container">
     <div class="profile-header">
       <h1>Meu Perfil</h1>
@@ -13,8 +12,7 @@
       <div class="profile-sidebar">
         <div class="profile-summary">
           <div class="profile-avatar">
-            <img src="../assets/icones/perfil.png"
-              :src="perfil.foto_usuario || 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
+            <img src="../assets/icones/perfil.png" :src="perfil.foto_usuario || '../assets/icones/perfil.png'"
               alt="Foto de perfil">
           </div>
           <h2>{{ perfil.usuario.nome_usuario }}</h2>

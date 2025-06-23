@@ -8,6 +8,7 @@ import com.receitas.exception.UserExitsException;
 import com.receitas.exception.UserNotFoundExcetion;
 import com.receitas.model.Usuario;
 import com.receitas.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -118,6 +119,11 @@ public class UsuarioService {
         usuarioRepository.delete(usuario.get());
         return true;
 
+    }
+
+    public Boolean deleteByFuncionario(Long fk_funcionario) {
+        usuarioRepository.deleteByFk_funcionario(fk_funcionario);
+        return true;
     }
 
 

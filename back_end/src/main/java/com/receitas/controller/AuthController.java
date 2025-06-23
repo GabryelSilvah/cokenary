@@ -5,6 +5,7 @@ import com.receitas.config.ResponseToken;
 import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
 import com.receitas.model.Usuario;
+import com.receitas.repository.UsuarioRepository;
 import com.receitas.service.In_tokeJWT;
 import com.receitas.service.TokenService;
 import com.receitas.service.UsuarioService;
@@ -33,6 +34,9 @@ public class AuthController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @PostMapping("/auth")
     private ResponseEntity<?> autenticar(@RequestBody AuthDTO authDTO) {
 
@@ -43,9 +47,12 @@ public class AuthController {
         //Buscando cargo/role do usuário
         String cargoUsuario = usuarioService.listByCargo(authDTO.getEmail());
 
+        //Buscando fk/ID do funcionário
+        Long fk_funcionarioEncontrado = usuarioRepository.findByFkFuncionario(authDTO.getEmail());
+
         //Pegando dados do usuário autenticado
         var usuario = (Usuario) autenticate.getPrincipal();
-        ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail(),cargoUsuario);
+        ResponseToken responseToken = new ResponseToken(HttpStatus.OK.value(), tokenService.createToken(usuario), usuario.getEmail(), cargoUsuario, fk_funcionarioEncontrado);
 
         //Gerando Token
         return ResponseJson.build(

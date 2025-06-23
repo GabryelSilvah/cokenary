@@ -1,24 +1,19 @@
 package com.receitas.service;
 
-import com.receitas.dto.FuncionarioDTO;
-import com.receitas.dto.FuncionarioChegadaDTO;
-import com.receitas.dto.FuncionarioSaidaDTO;
-import com.receitas.dto.Funcionario_usuarioDTO;
+import com.receitas.dto.*;
 import com.receitas.exception.BadRequestException;
 import com.receitas.exception.RegistroExistsException;
 import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.*;
-import com.receitas.repository.CargoRepository;
-import com.receitas.repository.FuncionarioRepository;
-import com.receitas.repository.ReferenciaRepository;
-import com.receitas.repository.UsuarioRepository;
+import com.receitas.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +32,16 @@ public class FuncionarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
     private PasswordEncoder criptografia;
+
+    @Autowired
+    private MetricasService metricasService;
+
+    @Autowired
+    private MetricasRepository metricasRepository;
 
     public List<FuncionarioDTO> listAll() {
 
@@ -118,6 +122,7 @@ public class FuncionarioService {
         return listaFuncionarios;
     }
 
+    @Transactional
     public FuncionarioDTO save(Funcionario_usuarioDTO funcionario) {
 
         //Validando se já existe um funcionário com esse nome
@@ -128,6 +133,7 @@ public class FuncionarioService {
 
         //Buscando cargo
         Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
+
 
         //Validando se cargo existe
         if (cargoEncontrado.isEmpty()) {
@@ -151,8 +157,13 @@ public class FuncionarioService {
         //Cadastrando usuário
         String senhaSegura = criptografia.encode(funcionario.getSenha_usuarios());
         funcionario.setSenha_usuarios(senhaSegura);
-        Usuario novoUsuario = new Usuario(funcionario,funcionarioSalvo.getId_func());
+        Usuario novoUsuario = new Usuario(funcionario, funcionarioSalvo.getId_func());
         usuarioRepository.save(novoUsuario);
+
+
+        //Cadastrando metricas
+        MetricasDTO novaMetricaDTO = new MetricasDTO(0, 0, 0, new FuncionarioSaidaDTO(funcionarioSalvo.getId_func()));
+        MetricasDTO metricaSalva = metricasService.save(novaMetricaDTO);
 
 
         //Transformando em DTO
@@ -198,7 +209,7 @@ public class FuncionarioService {
 
         //Cadastrando referência de restaurante associado ao funcionário
         for (int i = 0; i < funcionario.getListaRestaurante().size(); i++) {
-            Referencia novaReferencia = new Referencia(funcionarioSalvo, funcionario.getListaRestaurante().get(i), null, null);
+            Referencia novaReferencia = new Referencia(funcionarioSalvo, funcionario.getListaRestaurante().get(i), new Date(), null);
             referenciaRepository.save(novaReferencia);
         }
 
@@ -259,6 +270,7 @@ public class FuncionarioService {
 
     }
 
+    @Transactional
     public Boolean delete(Long id) {
 
         //Verificando se funcionário existe
@@ -266,6 +278,13 @@ public class FuncionarioService {
         if (funcionarioEncontrado.isEmpty()) {
             throw new RegistroNotFoundException("Falha, funcionário com ID (" + id + ") não foi encontrado");
         }
+
+        //Excluindo metricas de funcionário
+        metricasService.deleteByFuncionario(id);
+
+        //Excluindo acesso de usuário do funcionário
+        usuarioService.deleteByFuncionario(id);
+
 
         //Excluindo fuuncionário
         funcioRepository.delete(funcionarioEncontrado.get());
