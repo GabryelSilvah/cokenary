@@ -30,13 +30,16 @@ export async function funcionarioCadastrar(funcionario) {
     const payload = {
       nome: funcionario.nome,
       rg: funcionario.rg,
-      dt_adm: funcionario.dt_adm,
       salario: funcionario.salario,
       cargo: funcionario.cargo,  // Já vem como objeto {id: x} do componente
-      idRestaurante: funcionario.idRestaurante,
+      imagem_perfil: null,
+      listaRestaurante: funcionario.listaRestaurante,
       nome_usuario: funcionario.nome_usuario,
-      senha_usuarios: funcionario.senha_usuarios
+      senha_usuarios: funcionario.senha_usuarios,
+      statusFunc: funcionario.statusFunc == 1 ? true : false
     };
+
+    console.log("Payload: " + JSON.stringify(payload));
 
     const response = await fetch(`${API_URL}/cadastrar`, {
       method: 'POST',
@@ -61,12 +64,10 @@ export async function funcionarioAlterar(id, funcionario) {
   try {
     const payload = {
       nome: funcionario.nome,
-      rg: funcionario.rg,
-      dt_adm: funcionario.dt_adm,
       salario: funcionario.salario,
-      cargo: funcionario.cargo,
-      idRestaurante: funcionario.idRestaurante
-      // Não incluímos usuário/senha na alteração por padrão
+      cargo: funcionario.cargo,  // Já vem como objeto {id: x} do componente
+      listaRestaurante: funcionario.listaRestaurante,
+      statusFunc: funcionario.statusFunc == 1 ? true : false
     };
 
     const response = await fetch(`${API_URL}/alterar/${id}`, {

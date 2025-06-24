@@ -3,6 +3,7 @@ package com.receitas.repository;
 import com.receitas.model.Referencia;
 import com.receitas.model.Restaurante;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +33,8 @@ public interface ReferenciaRepository extends JpaRepository<Referencia, Long> {
     )
 
     List<Restaurante> findByFuncionario(Long id);
+
+    @Modifying
+    @NativeQuery("DELETE FROM referencias WHERE referencias.funcionario_id = :fk_funcionario;")
+    void deleteByFuncionario(Long fk_funcionario);
 }

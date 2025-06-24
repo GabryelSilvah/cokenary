@@ -23,7 +23,7 @@ main {
 }
 
 .container-crud {
-  width: 60vw;
+  width: 90%;
   margin: 100px 0;
   position: relative;
   display: flex;
@@ -32,7 +32,7 @@ main {
 }
 
 .header-section {
-  width: 100%;
+  width: 60%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -71,8 +71,7 @@ main {
 .table-responsive {}
 
 .container-crud table {
-  min-width: 60vw;
-  max-width: 90vw;
+  min-width: 50vw;
   color: black;
 }
 

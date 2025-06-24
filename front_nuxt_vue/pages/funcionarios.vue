@@ -22,6 +22,7 @@
                 <th>Admissão</th>
                 <th>Cargo</th>
                 <th>Restaurante</th>
+                <th>Status</th>
                 <th>Editar</th>
                 <th>Excluir</th>
               </tr>
@@ -34,6 +35,9 @@
                 <td>{{ formatDate(f.dt_adm) }}</td>
                 <td>{{ f.cargo.nome || f.cargo || 'N/A' }}</td>
                 <td>{{ f.listaRestaurante[0]?.nome || 'N/A' }}</td>
+                <td>
+                  {{ f.statusFunc ? 'Ativo': 'Inativo'}}
+                </td>
                 <td>
                   <button @click="edit(f)" class="edit-button edit-btn">Editar</button>
                 </td>
@@ -71,7 +75,7 @@
 
                 <label>Restaurante:</label>
                 <select v-model="current.idRestaurante" required>
-                  <option disabled value="">Selecione um restaurante</option>
+                  <option disabled value="0">Selecione um restaurante</option>
                   <option v-for="restaurante in restaurantes" :key="restaurante.idRestaurante"
                     :value="restaurante.idRestaurante">
                     {{ restaurante.nome }}
@@ -80,8 +84,7 @@
 
                 <label>Status:</label>
                 <select v-model="current.statusFunc" required>
-                  <option disabled value="">Selecione o status</option>
-                  <option value="1">Ativo</option>
+                  <option value="1" selected>Ativo</option>
                   <option value="0">Inativo</option>
                 </select>
 
@@ -145,11 +148,11 @@ export default {
         nome: '',
         salario: 0,
         rg: null,
-        cargo_id: '',
+        cargo_id: 0,
         idRestaurante: 0,
         nome_usuario: '',
         senha_usuarios: '',
-        statusFunc: null
+        statusFunc: 1
       },
       editing: false,
       showAddModal: false,
@@ -264,6 +267,8 @@ export default {
       try {
         if (!this.validateForm()) return;
 
+        console.log("Testando restaurante" + this.current.idRestaurante)
+
         const funcionarioData = {
           nome: this.current.nome.trim(),
           rg: this.current.rg.toString(),
@@ -271,9 +276,11 @@ export default {
           cargo: {  // Agora enviamos um objeto Cargo completo
             id: this.current.cargo_id
           },
-          listaRestaurante: {
-            idRestaurante: this.current.idRestaurante
-          },
+          listaRestaurante: [
+            {
+              idRestaurante: this.current.idRestaurante
+            }
+          ],
           nome_usuario: this.current.nome_usuario,
           senha_usuarios: this.current.senha_usuarios,
           statusFunc: this.current.statusFunc

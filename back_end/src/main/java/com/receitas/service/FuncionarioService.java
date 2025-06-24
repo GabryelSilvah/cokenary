@@ -44,6 +44,9 @@ public class FuncionarioService {
     @Autowired
     private MetricasRepository metricasRepository;
 
+    @Autowired
+    private RestauranteRepository restauranteRepository;
+
 
     public List<Funcionario_usuarioDTO> listAll() {
 
@@ -274,46 +277,73 @@ public class FuncionarioService {
         );
     }
 
-    public FuncionarioDTO update(Long id, Funcionario funcionario) {
-
-        //Buscando funcionário
-        Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
+    public Funcionario_usuarioDTO update(Long id, Funcionario_usuarioDTO funcionario) {
 
         //Validando se foi encontrado algum funcionário com o ID informado
+        Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
         if (funcionarioEncontrado.isEmpty()) {
             throw new RegistroNotFoundException("Falha, funcionário com (" + id + ") não foi encontrado");
         }
 
-        //Buscando cargo
-        Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
-
-
         //Validando se cargo existe
+        Optional<Cargo> cargoEncontrado = cargoRepository.findById(funcionario.getCargo().getId());
         if (cargoEncontrado.isEmpty()) {
             throw new RegistroNotFoundException("Falha, o cargo com ID (" + funcionario.getCargo().getId() + ") não foi informado");
         }
 
+
+        //Validando se restaurante existe
+        for (int i = 0; i < funcionario.getListaRestaurante().size(); i++) {
+            Optional<Referencia> restauranteEncontrado = referenciaRepository.findById(funcionario.getListaRestaurante().get(i).getIdRestaurante());
+            if (restauranteEncontrado.isEmpty()) {
+                throw new RegistroNotFoundException("Restaurande de ID (" + funcionario.getListaRestaurante().get(i).getIdRestaurante() + ") não foi encontrado");
+            }
+        }
+
+
         //Setando informações no funcionário encontrado
         Funcionario funcionarioInsert = funcionarioEncontrado.get();
         funcionarioInsert.setNome(funcionario.getNome());
-        funcionarioInsert.setRg(funcionario.getRg());
-        funcionarioInsert.setDt_adm(funcionario.getDt_adm());
         funcionarioInsert.setSalario(funcionario.getSalario());
         funcionarioInsert.setCargo(funcionario.getCargo());
+        funcionarioInsert.setStatusFunc(funcionario.getStatusFunc());
 
         //Salvando no banco as alterações
         Funcionario funcionarioAlterado = funcioRepository.save(funcionarioInsert);
 
 
-        //Convertendo em DTO para enviar na request
-        return new FuncionarioDTO(
+        //Setando restaurante encontrado
+        List<Referencia> referenciaEncontrada = referenciaRepository.findByFuncionarioId(id);
+        for (int i = 0; i < referenciaEncontrada.size(); i++) {
+            referenciaEncontrada.get(i).setRestauranteId(funcionario.getListaRestaurante().get(0));
+            referenciaRepository.save(referenciaEncontrada.get(i));
+        }
+
+
+        //Buscamndo usuário
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByFuncionario(funcionarioAlterado.getId_func());
+        if (usuarioEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Nenhum usuário encontrado para esse funcionário");
+        }
+
+
+        //Buscando restarantes
+        List<Restaurante> restaurantesEncontrados = referenciaRepository.findByFuncionario(funcionarioAlterado.getId_func());
+
+
+        //Transformando em DTO
+        return new Funcionario_usuarioDTO(
                 funcionarioAlterado.getId_func(),
                 funcionarioAlterado.getNome(),
                 funcionarioAlterado.getRg(),
                 funcionarioAlterado.getDt_adm(),
                 funcionarioAlterado.getSalario(),
-                cargoEncontrado.get().getNome(),
-                funcionarioAlterado.getImagem_perfil()
+                cargoEncontrado.get(),
+                funcionarioAlterado.getImagem_perfil(),
+                restaurantesEncontrados,
+                usuarioEncontrado.get().getEmail(),
+                funcionarioAlterado.getStatusFunc(),
+                funcionarioAlterado.getData_update()
         );
 
     }
@@ -328,13 +358,15 @@ public class FuncionarioService {
         }
 
         //Excluindo acesso de usuário do funcionário
-        //boolean respU = usuarioService.deleteByFuncionario(id);
         usuarioRepository.deleteByFk_funcionario(id);
 
 
         //Excluindo metricas de funcionário
-        //boolean respM = metricasService.deleteByFuncionario(id);
         metricasRepository.deleteByFkFuncionario(id);
+
+
+        //Excluindo referência de funcionario com restaurante
+        referenciaRepository.deleteByFuncionario(id);
 
 
         //Excluindo fuuncionário

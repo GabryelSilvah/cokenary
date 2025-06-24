@@ -53,8 +53,8 @@ public class FuncionarioController {
     }
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Funcionario funcionario) {
-        FuncionarioDTO funcionarioDTO = funcionarioService.update(id, funcionario);
+    public ResponseEntity<ResponseJson> alterar(@PathVariable("id") Long id, @RequestBody Funcionario_usuarioDTO funcionario) {
+        Funcionario_usuarioDTO funcionarioDTO = funcionarioService.update(id, funcionario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario alterado com sucesso!", funcionarioDTO));
     }
 
