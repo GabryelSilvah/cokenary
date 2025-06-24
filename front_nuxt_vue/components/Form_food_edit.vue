@@ -26,13 +26,8 @@
 
 
                 <label for="">Cozinheiro:</label>
-                <select name="cozinheiro" id="" v-model="receitaModel.cozinheiro_id.id_func" required>
-                    <option value="0">Selecione</option>
-                    <option v-if="funcionarios" v-for="cozinheiro in funcionarios.data" :key="cozinheiro.id_func"
-                        :value="cozinheiro.id">
-                        {{ cozinheiro.nome }}
-                    </option>
-                </select>
+                <input type="text" :value="receitaModel.cozinheiro_id.nome">
+
 
 
                 <label for="">Ingredientes:</label>
@@ -98,7 +93,7 @@
 import { byIdIngredientes } from '~/common/api/ingredientes_request';
 import { byIdMedidas } from '~/common/api/medida_request';
 import { alterarReceitas, cadastrarReceitas } from '~/common/api/receitas_request';
-
+import Cookies from 'js-cookie';
 
 const URL_BASE_API = "http://localhost:8081";
 
@@ -131,8 +126,7 @@ const receitaModel = defineModel("receitaModel", {
 const ingredientes_ref = defineModel("ingredientes_ref");
 const medida_ref = defineModel("medida_ref", { default: 0 });
 const porcao_ref = defineModel("porcao_ref", { default: 1 });
-
-const composicao_ref = defineModel("composicao_ref");
+//const composicao_ref = defineModel("composicao_ref", { default: {} });
 
 
 //Lista e ingredientes/medidas a serem excluidos da receita
@@ -145,9 +139,13 @@ function excluir_composicao_ingred(id_ingrediente) {
     //Se o valor for encontrado, deverá ser removida livroModel
     let index = receitaModel.value.ingredientes_id.findIndex(composicao => composicao.ingrediente_id.id_ingred == id_ingrediente)
 
-    //Valor for menor que 0 é porque não foi encontrado
-    if (index > -1) {
-        receitaModel.value.ingredientes_id.splice(index, 1);
+    if (receitaModel.value.ingredientes_id.length == 1) {
+        alert("Você não pode excluir todos os ingredientes")
+    } else {
+        //Valor for menor que 0 é porque não foi encontrado
+        if (index > -1) {
+            receitaModel.value.ingredientes_id.splice(index, 1);
+        }
     }
 
     //Adicionando id_receita na lista de receitas a serem deletadas do vinculo com o livro
@@ -163,41 +161,67 @@ function excluir_composicao_ingred(id_ingrediente) {
 //Posteriomente, pegar esse objeto (ingredientesModel) e adiciona no objeto receitaModel, dentro do array de ingredientes_id
 async function addIngredienteNaLista() {
 
-    //Buscando medida pelo ID
-    const medidaEncontrada = await byIdMedidas(medida_ref.value);
+    let erro = 0;
 
-    //Buscando ingrediente pelo ID
-    const ingredienteEncontrado = await byIdIngredientes(ingredientes_ref.value);
-
-
-    composicao_ref.value = {
-        ingrediente_id: { id_ingred: 0, nome_ingred: "" },
-        porcoes: 1,
-        medida_id: { id_med: 0, nome_med: "" }
-    };
-
-    //Encontrar ID na lista de receitas a serem excluidas
-    //Se o ID for encontrado na lista, deverá ser removido
-    //Após removido, a receita selecionada será adicionada na lista de cadastro do livro
-    let index = listaComposicaoIngredExcluir.indexOf(ingredienteEncontrado.value.data.id_ingred);
-
-
-    //Valor for menor que 0 é porque não foi encontrado na (listaReceitasExcluir)
-    if (index > -1) {
-        listaComposicaoIngredExcluir.splice(index, 1);
+    if (ingredientes_ref.value == 0) {
+        alert("Informe o ingrediente antes");
+        erro++;
     }
 
 
-    //Pegar ingrediente e medida selecionados e adicionar no objeto (composicao_ref)
-    composicao_ref.value.ingrediente_id.id_ingred = ingredientes_ref.value;
-    composicao_ref.value.ingrediente_id.nome_ingred = ingredienteEncontrado.value.data.nome;
-    composicao_ref.value.medida_id.id_med = medida_ref.value;
-    composicao_ref.value.medida_id.nome_med = medidaEncontrada.value.data.nome_med;
-    composicao_ref.value.porcoes = porcao_ref;
+    if (medida_ref.value == 0) {
+        alert("Informe a medida antes");
+        erro++;
+    }
+
+    const lista = receitaModel.value.ingredientes_id;
+    let ingredExistente = lista.find(ingrediente => ingrediente.ingrediente_id.id_ingred == ingredientes_ref.value);
+
+    if (ingredExistente) {
+        alert("Esse ingrediente já foi adicionado");
+        erro++;
+    }
+
+    if (erro == 0) {
 
 
-    //Adicionando ingredientes em (receitaModel)
-    receitaModel.value.ingredientes_id.push(composicao_ref.value);
+        //Buscando medida pelo ID
+        const medidaEncontrada = await byIdMedidas(medida_ref.value);
+
+        //Buscando ingrediente pelo ID
+        const ingredienteEncontrado = await byIdIngredientes(ingredientes_ref.value);
+
+
+        let composicao_ref = {
+            ingrediente_id: { id_ingred: 0, nome_ingred: "" },
+            porcoes: 1,
+            medida_id: { id_med: 0, nome_med: "" }
+        };
+
+        //Encontrar ID na lista de receitas a serem excluidas
+        //Se o ID for encontrado na lista, deverá ser removido
+        //Após removido, a receita selecionada será adicionada na lista de cadastro do livro
+        let index = listaComposicaoIngredExcluir.indexOf(ingredienteEncontrado.value.data.id_ingred);
+
+
+        //Valor for menor que 0 é porque não foi encontrado na (listaReceitasExcluir)
+        if (index > -1) {
+            listaComposicaoIngredExcluir.splice(index, 1);
+        }
+
+
+        //Pegar ingrediente e medida selecionados e adicionar no objeto (composicao_ref)
+        composicao_ref.ingrediente_id.id_ingred = ingredientes_ref.value;
+        composicao_ref.ingrediente_id.nome_ingred = ingredienteEncontrado.value.data.nome;
+        composicao_ref.medida_id.id_med = medida_ref.value;
+        composicao_ref.medida_id.nome_med = medidaEncontrada.value.data.nome_med;
+        composicao_ref.porcoes = porcao_ref;
+
+
+        //Adicionando ingredientes em (receitaModel)
+        receitaModel.value.ingredientes_id.push(composicao_ref);
+    }
+    erro = 0;
 }
 
 //Função que recebe os dados após o envio dos dados do formulario e adiciona no objeto receitaModel
@@ -205,6 +229,8 @@ async function addIngredienteNaLista() {
 async function pegarDadosForm(id_receita) {
     receitaModel.value.ingredientes_removidos = listaComposicaoIngredExcluir;
     receitaModel.value.data_criacao = "2025-05-03";
+
+    receitaModel.value.cozinheiro_id.id_func = Cookies.get("id_user");
     //Enviando dados para API
     let responseAPI = await alterarReceitas(id_receita, receitaModel.value);
 

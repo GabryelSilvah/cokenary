@@ -26,7 +26,12 @@ async function listarIngredientes() {
 //Buscar pelo ID
 async function byIdIngredientes(id_ingred) {
 
-  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byId/" + id_ingred);
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/byId/" + id_ingred, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Bearer ' + authorization
+    }
+  });
 
   return responseAPI;
 }

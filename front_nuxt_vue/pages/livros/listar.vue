@@ -1,6 +1,6 @@
 <template>
   <Menu />
-  <main v-if="role_usuario == 'cozinheiro'">
+  <main v-if="role_usuario == 'editor'">
 
     <div class="container_btn_opcoes">
       <button id="btn_add_food" @click="abrirForm">

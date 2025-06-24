@@ -11,7 +11,8 @@
 
 
                 <label for="">Nome da Receita:</label>
-                <input type="text" v-model="receitaModel.nomeReceita" name="nome_ref" placeholder="Ex: Risoto de camarão" required>
+                <input type="text" v-model="receitaModel.nomeReceita" name="nome_ref"
+                    placeholder="Ex: Risoto de camarão" required>
 
 
                 <label for="">Categoria:</label>
@@ -24,14 +25,14 @@
                 </select>
 
 
-                <label for="">Cozinheiro:</label>
+                <!-- <label for="">Cozinheiro:</label>
                 <select name="cozinheiro" id="" v-model="receitaModel.cozinheiro_id.id_func" required>
                     <option value="0">Selecione</option>
                     <option v-if="funcionarios" v-for="cozinheiro in funcionarios.data" :key="cozinheiro.id_func"
                         :value="cozinheiro.id">
                         {{ cozinheiro.nome }}
                     </option>
-                </select>
+                </select> -->
 
 
                 <label for="">Ingredientes:</label>
@@ -78,7 +79,7 @@
 
 
                 <label for="">Modo de Preparo:</label>
-                <textarea required  v-model="receitaModel.modo_preparo" placeholder="Descreva o modo de preparo" >
+                <textarea required v-model="receitaModel.modo_preparo" placeholder="Descreva o modo de preparo">
                 </textarea>
 
 
@@ -125,8 +126,10 @@
 
 
 <script setup scoped lang="js">
-import { listarReceitas } from '~/common/api/receitas_request';
-
+import { cadastrarReceitas, listarReceitas } from '~/common/api/receitas_request';
+import Cookies from 'js-cookie';
+import { byIdMedidas } from '~/common/api/medida_request';
+import { byIdIngredientes } from '~/common/api/ingredientes_request';
 
 const URL_BASE_API = "http://localhost:8081";
 
@@ -158,10 +161,10 @@ const receitaModel = defineModel("receitaModel", {
 
 
 //Inicializando variáveis que vão receber dados do formulário
-const ingredientes_ref = defineModel("ingredientes_ref");
-const medida_ref = defineModel("medida_ref",{default:0});
-const porcao_ref = defineModel("porcao_ref",{default:1});
-const composicao_ref = defineModel("composicao_ref");
+const ingredientes_ref = defineModel("ingredientes_ref", { default: 0 });
+const medida_ref = defineModel("medida_ref", { default: 0 });
+const porcao_ref = defineModel("porcao_ref", { default: 1 });
+const composicao_ref = defineModel("composicao_ref", { default: {} });
 
 
 
@@ -169,63 +172,84 @@ const composicao_ref = defineModel("composicao_ref");
 //Ela pega o ingrediente e medida e adiciona no obejeto ingredientesModel
 //Posteriomente, pegar esse objeto (ingredientesModel) e adiciona no objeto receitaModel, dentro do array de ingredientes_id
 async function addIngredienteNaLista() {
-    //Request de ingredientes (recebendo ingrediente procurado pelo ID)
-    let {
-        data: medidaEncontrada, //armazenando lista de medida vindo da API (back-end)
-        error: errosMedida //Capturando erros da requisição
-    } = await useFetch(URL_BASE_API + "/receitas/medida/byId/" + medida_ref.value);
+
+    let erro = 0;
+
+    if (ingredientes_ref.value == 0) {
+        alert("Informe o ingrediente antes");
+        erro++;
+    }
 
 
-    //Request de ingredientes (recebendo ingrediente procurado pelo ID)
-    let {
-        data: ingredienteEncontrado, //armazenando lista de ingredientes vindo da API (back-end)
-        error: errosIngredientes //Capturando erros da requisição
-    } = await useFetch(URL_BASE_API + "/ingredientes/byId/" + ingredientes_ref.value);
+    if (medida_ref.value == 0) {
+        alert("Informe a medida antes");
+        erro++;
+    }
+
+    if (erro == 0) {
 
 
-    composicao_ref.value = {
-        ingrediente_id: { id_ingred: 0, nome_ingred: "" },
-        porcoes: 1,
-        medida_id: { id_med: 0, nome_med: "" }
-    };
+        //Request de ingredientes (recebendo ingrediente procurado pelo ID)
+        let ingredienteEncontrado = await byIdIngredientes(ingredientes_ref.value);
 
 
-    //Pegar ingrediente e medida selecionados e adicionar no objeto (composicao_ref)
-    composicao_ref.value.ingrediente_id.id_ingred = ingredientes_ref.value;
-    composicao_ref.value.ingrediente_id.nome_ingred = ingredienteEncontrado.value.data.nome;
-    composicao_ref.value.medida_id.id_med = medida_ref.value;
-    composicao_ref.value.medida_id.nome_med = medidaEncontrada.value.data.nome_med;
-    composicao_ref.value.porcoes = porcao_ref;
+        //Request de ingredientes (recebendo ingrediente procurado pelo ID)
+        let medidaEncontrada = await byIdMedidas(medida_ref.value);
 
 
-    //Adicionando ingredientes em (receitaModel)
-    receitaModel.value.ingredientes_id.push(composicao_ref.value);
+        let compor = {
+            ingrediente_id: { id_ingred: 0, nome_ingred: "" },
+            porcoes: 1,
+            medida_id: { id_med: 0, nome_med: "" }
+        };
+
+
+        //Pegar ingrediente e medida selecionados e adicionar no objeto (composicao_ref)
+        compor.ingrediente_id.id_ingred = ingredienteEncontrado.value.data.id_ingred;
+        compor.ingrediente_id.nome_ingred = ingredienteEncontrado.value.data.nome;
+
+        compor.medida_id.id_med = medidaEncontrada.value.data.id_med;
+        compor.medida_id.nome_med = medidaEncontrada.value.data.nome_med;
+        compor.porcoes = porcao_ref;
+
+
+        //Adicionando ingredientes em (receitaModel)
+        receitaModel.value.ingredientes_id.push(compor);
+    }
+
+    erro = 0;
 }
 
 
 //Função que recebe os dados após o envio dos dados do formulario e adiciona no objeto receitaModel
 //com exerção do do campo ingrediente porque já foi pego pela função addIngredienteNaLista()
 async function pegarDadosForm() {
+    let erros = 0;
 
-    receitaModel.value.data_criacao = "2025-05-03";
-
-    //Enviando dados para API
-    const {
-        data: ResponseAPI,
-        error: errosCadastro
-    } = await useFetch(URL_BASE_API + "/receitas/cadastrar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(receitaModel.value)
-    });
+    if (receitaModel.value.categoria_id.id_cat == 0) {
+        alert("Adicione uma categoria");
+        erros++;
+    }
 
 
+    if (receitaModel.value.ingredientes_id.length == 0) {
+        alert("Adicione ao menos um ingrediente");
+        erros++;
+    }
 
-    fecharForm();
 
-    listasReceitas.value = await listarReceitas();
+    if (erros == 0) {
+        receitaModel.value.cozinheiro_id.id_func = Cookies.get("id_user");
+        console.log("Model: " + JSON.stringify(receitaModel.value));
+
+        await cadastrarReceitas(receitaModel.value);
+
+        fecharForm();
+
+        listasReceitas.value = await listarReceitas();
+    }
+
+    erros = 0;
 }
 
 
@@ -277,4 +301,3 @@ function fecharForm() {
 // }
 
 </script>
-

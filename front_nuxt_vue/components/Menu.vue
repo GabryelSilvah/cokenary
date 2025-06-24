@@ -9,17 +9,6 @@
         </NuxtLink>
       </div>
       <ul>
-
-        <select name="" id="">
-          <option value="">Opções</option>
-          <option value="">Receitas</option>
-          <option value="">Livros</option>
-          <option value="">Funcionários</option>
-          <option value="">Avaliações</option>
-          <option value="">Painel Adm</option>
-          <option value="">Painel Adm</option>
-          <option value="">Painel Adm</option>
-        </select>
         <NuxtLink to="/food">
           <li>Receitas</li>
         </NuxtLink>
