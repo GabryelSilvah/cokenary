@@ -6,26 +6,27 @@ use receitas_db;
 insert into cargos (nome)
 values ("cozinheiro"), ("editor"), ("degustador"),("administrador");
 
+
 #Funcionarios
-insert into funcionarios (dt_adm, nome, rg, salario, cargo_id)
+insert into funcionarios (dt_adm, nome, rg, salario, cargo_id, status_func)
 values 
-("2025-05-21","Gabriel",456534525,34343,1),
-("2025-05-21","Pedro",36339205,34343,2),
-("2025-05-21","Williams",459274952,34343,3),
-("2025-05-21","Vitória",769774952,34343,3),
-("2025-05-21","Vinicius",876344525,34343,1),
-("2025-05-21","Marcos",14977493,34343,2);
+("2025-05-21","Gabriel",456534525,34343,1,true),
+("2025-05-21","Pedro",36339205,34343, 2,true),
+("2025-05-21","Williams",459274952,34343,3,true),
+("2025-05-21","Vitória",769774952,34343,4,true),
+("2025-05-21","Vinicius",876344525,34343,1,true),
+("2025-05-21","Marcos",14977493,34343,2,true);
 
 
 #Usuarios
 insert into usuarios (email, senha, fk_funcionario, role)
 values 
-("Gabryel08","",1,1),
-("Pedro04","",2,2),
-("Williams03","",3,3),
-("Vitória02","",4,3),
-("Vinicius05","",5,1),
-("Marcos01","",6,2);
+("Gabryel08","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",1,1),
+("Pedro04","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",2,2),
+("Williams03","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",3,3),
+("Vitoria02","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",4,4),
+("Vinicius05","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",5,1),
+("Marcos01","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",6,2);
 
 
 
@@ -58,7 +59,13 @@ values
 
 #Métricas
 insert into metricas (media_avaliacoes, quantidade_livros, quantidade_receitas, fk_funcionario)
-values (0,0,1,1),(0,0,2,2);
+values 
+(0,0,1,1),
+(0,0,2,2),
+(0,0,0,3),
+(0,0,0,4),
+(0,0,0,5),
+(0,0,0,6);
 
 
 
@@ -86,5 +93,21 @@ values
 (2,1),(2,2),
 (3,1),(3,2),(3,3),
 (4,1),(4,2),(4,3);
+
+#Restaurantes
+insert into restaurantes(contato, nome, telefone) 
+values 
+("Araya","Carnes BSB",61986374879);
+
+
+#Referência
+insert into referencias(data_fim, data_inicio, funcionario_id, restaurante_id)
+values
+(null,"2025-05-21T00:00:00.000+00:00",1,1),
+(null,"2025-05-21T00:00:00.000+00:00",2,1),
+(null,"2025-05-21T00:00:00.000+00:00",3,1),
+(null,"2025-05-21T00:00:00.000+00:00",4,1),
+(null,"2025-05-21T00:00:00.000+00:00",5,1),
+(null,"2025-05-21T00:00:00.000+00:00",6,1);
 
 

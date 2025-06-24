@@ -29,13 +29,6 @@
   box-sizing: border-box;
 }
 
-main {
-  font-family: 'Inter', sans-serif;
-  background-color: #ffffff;
-  color: var(--dark-color);
-  line-height: 1.6;
-}
-
 .stat-value {
   font-size: 1.5rem;
   font-weight: bold;
@@ -52,15 +45,14 @@ main {
 
 /* Sidebar */
 .sidebar {
-  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  min-height: 100vh;
   background: linear-gradient(120deg, rgb(0, 130, 196), rgb(0, 35, 175));
   /* background-color: #018b7f; */
   border-right: 3px solid black;
   color: #ffffff;
   padding: 1.5rem 1rem;
-  position: sticky;
-  top: 0;
-  height: 100vh;
   overflow-y: auto;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }

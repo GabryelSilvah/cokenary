@@ -1,77 +1,80 @@
 <template>
-  <Menu />
 
   <main>
-    <section v-if="role_usuario == 'administrador'">
-      <div class="container-crud">
-        <div class="header-section">
-          <h1>Lista de Medidas</h1>
-          <input type="text" v-model="searchQuery" placeholder="Pesquisar medidas..." @input="filterMedidas"
-            class="search-bar" />
+    <section v-if="role_usuario == 'administrador'" class="section_administrador">
+      <MenuLateral class="menuLateral" />
 
-          <button class="add-button" @click="openAddModal">
-            <i class="fas fa-plus"></i> Adicionar Medida
-          </button>
-        </div>
+      <div class="container_right">
+        <div class="container-crud">
+          <div class="header-section">
+            <h1>Medidas</h1>
+            <input type="text" v-model="searchQuery" placeholder="Pesquisar medidas..." @input="filterMedidas"
+              class="search-bar" />
 
-        <div class="table-responsive">
-          <div v-if="loading" class="loading">Carregando medidas...</div>
-
-          <table v-if="!loading && filteredMedidas.length > 0" class="medidas-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome da Medida</th>
-                <th>Editar</th>
-                <th>Excluir</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="medida in filteredMedidas" :key="medida.id_med">
-                <td>{{ medida.id_med }}</td>
-                <td>{{ medida.nome_med }}</td>
-                <td class="actions-cell">
-                  <button class="edit-btn" @click="editMedida(medida)">
-                    <i class="fas fa-edit"></i> Editar
-                  </button>
-                </td>
-                <td>
-                  <button class="delete-btn" @click="confirmDelete(medida)">
-                    <i class="fas fa-trash"></i> Excluir
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div v-if="!loading && filteredMedidas.length === 0" class="no-results">
-            Nenhuma medida encontrada
+            <button class="add-button" @click="openAddModal">
+              <i class="fas fa-plus"></i> Adicionar Medida
+            </button>
           </div>
-        </div>
 
-        <!-- Modal para adicionar/editar medida -->
-        <div v-if="showAddModal" class="modal-overlay">
-          <div class="modal-content">
-            <h2>{{ editingMedida ? "Editar Medida" : "Adicionar Medida" }}</h2>
-            <input type="text" v-model="currentMedida.nome_med" placeholder="Nome da Medida"
-              @keyup.enter="saveMedida" />
-            <div class="modal-actions">
-              <button @click="saveMedida" :disabled="!currentMedida.nome_med.trim()">
-                Salvar
-              </button>
-              <button @click="closeModal">Cancelar</button>
+          <div class="table-responsive">
+            <div v-if="loading" class="loading">Carregando medidas...</div>
+
+            <table v-if="!loading && filteredMedidas.length > 0" class="medidas-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome da Medida</th>
+                  <th>Editar</th>
+                  <th>Excluir</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="medida in filteredMedidas" :key="medida.id_med">
+                  <td>{{ medida.id_med }}</td>
+                  <td>{{ medida.nome_med }}</td>
+                  <td class="actions-cell">
+                    <button class="edit-btn" @click="editMedida(medida)">
+                      <i class="fas fa-edit"></i> Editar
+                    </button>
+                  </td>
+                  <td>
+                    <button class="delete-btn" @click="confirmDelete(medida)">
+                      <i class="fas fa-trash"></i> Excluir
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div v-if="!loading && filteredMedidas.length === 0" class="no-results">
+              Nenhuma medida encontrada
             </div>
           </div>
-        </div>
 
-        <!-- Modal para confirmar exclusão -->
-        <div v-if="showConfirmModal" class="modal-overlay">
-          <div class="modal-content">
-            <h3>Confirmar Exclusão</h3>
-            <p>Deseja realmente excluir a medida "{{ medidaToDelete.nome_med }}"?</p>
-            <div class="modal-actions">
-              <button @click="deleteMedida">Excluir</button>
-              <button @click="closeModal">Cancelar</button>
+          <!-- Modal para adicionar/editar medida -->
+          <div v-if="showAddModal" class="modal-overlay">
+            <div class="modal-content">
+              <h2>{{ editingMedida ? "Editar Medida" : "Adicionar Medida" }}</h2>
+              <input type="text" v-model="currentMedida.nome_med" placeholder="Nome da Medida"
+                @keyup.enter="saveMedida" />
+              <div class="modal-actions">
+                <button @click="saveMedida" :disabled="!currentMedida.nome_med.trim()">
+                  Salvar
+                </button>
+                <button @click="closeModal">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal para confirmar exclusão -->
+          <div v-if="showConfirmModal" class="modal-overlay">
+            <div class="modal-content">
+              <h3>Confirmar Exclusão</h3>
+              <p>Deseja realmente excluir a medida "{{ medidaToDelete.nome_med }}"?</p>
+              <div class="modal-actions">
+                <button @click="deleteMedida">Excluir</button>
+                <button @click="closeModal">Cancelar</button>
+              </div>
             </div>
           </div>
         </div>

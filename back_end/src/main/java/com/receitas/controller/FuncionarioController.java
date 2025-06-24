@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -22,13 +23,13 @@ public class FuncionarioController {
 
     @GetMapping("/listar")
     public ResponseEntity<ResponseJson> listar() {
-        List<FuncionarioDTO> listaFuncionariosDTO = funcionarioService.listAll();
+        List<Funcionario_usuarioDTO> listaFuncionariosDTO = funcionarioService.listAll();
         return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Funcionarios listadas com sucesso!", listaFuncionariosDTO));
     }
 
     @GetMapping("/byId/{id}")
     public ResponseEntity<ResponseJson> buscar_pelo_id(@PathVariable("id") Long id) {
-        FuncionarioSaidaDTO funcionarioDTO = funcionarioService.listById(id);
+        Funcionario_usuarioDTO funcionarioDTO = funcionarioService.listById(id);
         return ResponseEntity.ok().body(new ResponseJson(HttpStatus.OK, "Funcionario encontrado com sucesso!", funcionarioDTO));
     }
 
@@ -40,7 +41,7 @@ public class FuncionarioController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<ResponseJson> cadastrar(@RequestBody Funcionario_usuarioDTO funcionario) {
-        FuncionarioDTO funcionarioDTO = funcionarioService.save(funcionario);
+        Funcionario_usuarioDTO funcionarioDTO = funcionarioService.save(funcionario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseJson(HttpStatus.CREATED, "Funcionario cadastrado com sucesso!", funcionarioDTO));
     }
 

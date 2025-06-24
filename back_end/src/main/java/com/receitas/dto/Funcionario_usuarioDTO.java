@@ -1,5 +1,6 @@
 package com.receitas.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.receitas.model.Cargo;
 import com.receitas.model.Restaurante;
 
@@ -9,41 +10,62 @@ import java.util.List;
 public class Funcionario_usuarioDTO {
     private Long id;
     private String nome;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long rg;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Date dt_adm;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private float salario;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Cargo cargo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nome_cargo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String imagem_perfil;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Restaurante> listaRestaurante;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nome_usuario;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String senha_usuarios;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String senha_confir;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private boolean status;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Date data_update;
 
 
     //Construtor
+    public Funcionario_usuarioDTO(){
 
+    }
 
+    public Funcionario_usuarioDTO(String nome, Long rg, float salario, Cargo cargo, String imagem_perfil, List<Restaurante> listaRestaurante, String nome_usuario, String senha_usuarios, boolean status) {
+        this.nome = nome;
+        this.rg = rg;
+        this.salario = salario;
+        this.cargo = cargo;
+        this.imagem_perfil = imagem_perfil;
+        this.listaRestaurante = listaRestaurante;
+        this.nome_usuario = nome_usuario;
+        this.senha_usuarios = senha_usuarios;
+        this.status = status;
+    }
 
-
-
-    public Funcionario_usuarioDTO(Long id, String nome, Long rg, Date dt_adm, float salario, Cargo cargo, String nome_cargo, String imagem_perfil, List<Restaurante> listaRestaurante, String nome_usuario, String senha_usuarios, String senha_confir) {
+    public Funcionario_usuarioDTO(Long id, String nome, Long rg, Date dt_adm, float salario, Cargo cargo, String imagem_perfil, List<Restaurante> listaRestaurante, String nome_usuario, boolean status, Date data_update) {
         this.id = id;
         this.nome = nome;
         this.rg = rg;
         this.dt_adm = dt_adm;
         this.salario = salario;
         this.cargo = cargo;
-        this.nome_cargo = nome_cargo;
         this.imagem_perfil = imagem_perfil;
         this.listaRestaurante = listaRestaurante;
         this.nome_usuario = nome_usuario;
-        this.senha_usuarios = senha_usuarios;
-        this.senha_confir = senha_confir;
+        this.status = status;
+        this.data_update = data_update;
     }
-
-
-
 
 
     //Gets e sets
@@ -143,5 +165,21 @@ public class Funcionario_usuarioDTO {
 
     public void setSenha_confir(String senha_confir) {
         this.senha_confir = senha_confir;
+    }
+
+    public boolean getStatusFunc() {
+        return status;
+    }
+
+    public void setStatusFunc(boolean status) {
+        this.status = status;
+    }
+
+    public Date getData_update() {
+        return data_update;
+    }
+
+    public void setData_update(Date data_update) {
+        this.data_update = data_update;
     }
 }

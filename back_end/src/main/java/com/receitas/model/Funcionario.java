@@ -64,6 +64,10 @@ public class Funcionario {
     @OneToOne(mappedBy = "fk_funcionario", fetch = FetchType.LAZY)
     private Metricas fk_metricas_forte;
 
+    @Column(name = "status_func")
+    private boolean status_func;
+    @Column(name = "data_update")
+    private Date data_update;
 
     public Funcionario() {
     }
@@ -114,12 +118,36 @@ public class Funcionario {
     public Funcionario(Funcionario_usuarioDTO funcionarioUsuarioDTO) {
         this.rg = funcionarioUsuarioDTO.getRg();
         this.nome = funcionarioUsuarioDTO.getNome();
-        this.dt_adm = funcionarioUsuarioDTO.getDt_adm();
+        this.dt_adm = new Date();
         this.salario = funcionarioUsuarioDTO.getSalario();
         this.imagem_perfil = funcionarioUsuarioDTO.getImagem_perfil();
         this.cargo_id = funcionarioUsuarioDTO.getCargo();
+        this.status_func = funcionarioUsuarioDTO.getStatusFunc();
+        this.data_update = funcionarioUsuarioDTO.getData_update();
     }
 
+    public Funcionario(Long id_func, Long rg, String nome, Date dt_adm, float salario, String imagem_perfil, Cargo cargo_id, boolean status) {
+        this.id_func = id_func;
+        this.rg = rg;
+        this.nome = nome;
+        this.dt_adm = dt_adm;
+        this.salario = salario;
+        this.imagem_perfil = imagem_perfil;
+        this.cargo_id = cargo_id;
+        this.status_func = status;
+    }
+
+    public Funcionario(Long id_func, Long rg, String nome, Date dt_adm, float salario, String imagem_perfil, Cargo cargo_id, boolean status, Date data_update) {
+        this.id_func = id_func;
+        this.rg = rg;
+        this.nome = nome;
+        this.dt_adm = dt_adm;
+        this.salario = salario;
+        this.imagem_perfil = imagem_perfil;
+        this.cargo_id = cargo_id;
+        this.status_func = status;
+        this.data_update = data_update;
+    }
 
     // Getters e setters
     public Long getId_func() {
@@ -194,5 +222,19 @@ public class Funcionario {
         this.listaLivros = listaLivros;
     }
 
+    public boolean getStatusFunc() {
+        return status_func;
+    }
 
+    public void setStatusFunc(boolean status) {
+        this.status_func = status;
+    }
+
+    public Date getData_update() {
+        return data_update;
+    }
+
+    public void setData_update(Date data_update) {
+        this.data_update = data_update;
+    }
 }

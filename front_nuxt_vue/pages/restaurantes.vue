@@ -1,93 +1,99 @@
 <template>
-  <Menu />
+
 
   <main>
-    <section v-if="role_usuario == 'administrador'">
-      <div class="container-crud">
-        <div class="header-section">
-          <h1>Lista de Restaurantes</h1>
-          <button class="add-button" @click="showAddModal = true">
-            <i class="fas fa-plus"></i> Adicionar Restaurante
-          </button>
-        </div>
+    <section v-if="role_usuario == 'administrador'" class="section_administrador">
+      <MenuLateral class="menuLateral" />
 
-        <div v-if="loading" class="loading-message">
-          <i class="fas fa-spinner fa-spin"></i> Carregando restaurantes...
-        </div>
+      <div class="container_right">
 
-        <div v-else-if="error" class="error-message">
-          <i class="fas fa-exclamation-triangle"></i> {{ error }}
-        </div>
+        <div class="container-crud">
+          <div class="header-section">
+            <h1>Restaurantes</h1>
+            <button class="add-button" @click="showAddModal = true">
+              <i class="fas fa-plus"></i> Adicionar Restaurante
+            </button>
+          </div>
 
-        <div v-else class="table-responsive">
-          <table class="restaurantes-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Contato</th>
-                <th>Telefone</th>
-                <th>Editar</th>
-                <th>Excluir</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="restaurante in restaurantes" :key="restaurante.idRestaurante">
-                <td>{{ restaurante.idRestaurante }}</td>
-                <td>{{ restaurante.nome }}</td>
-                <td>{{ restaurante.contato || '-' }}</td>
-                <td>{{ formatTelefone(restaurante.telefone) }}</td>
-                <td class="actions-cell">
-                  <button class="edit-btn" @click="editRestaurante(restaurante)">
-                    <i class="fas fa-edit"></i> Editar
-                  </button>
-                </td>
-                <td>
-                  <button class="delete-btn" @click="confirmDelete(restaurante)">
-                    <i class="fas fa-trash"></i> Excluir
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          <div v-if="loading" class="loading-message">
+            <i class="fas fa-spinner fa-spin"></i> Carregando restaurantes...
+          </div>
 
-        <!-- Modal de Adicionar/Editar -->
-        <div v-if="showAddModal" class="modal-overlay">
-          <div class="modal">
-            <h2>{{ editingRestaurante ? 'Editar Restaurante' : 'Adicionar Novo Restaurante' }}</h2>
-            <div class="form-group">
-              <label>Nome do Restaurante:</label>
-              <input type="text" v-model="currentRestaurante.nome" placeholder="Digite o nome do restaurante"
-                class="modal-input" required />
-            </div>
-            <div class="form-group">
-              <label>Nome do Contato:</label>
-              <input type="text" v-model="currentRestaurante.contato" placeholder="Digite o nome do contato"
-                class="modal-input" />
-            </div>
-            <div class="form-group">
-              <label>Telefone:</label>
-              <input type="tel" v-model="currentRestaurante.telefone" placeholder="Digite o telefone (ex: 11955550000)"
-                class="modal-input" @input="formatTelefoneInput" maxlength="15" ref="telefoneInput" />
-            </div>
-            <div class="modal-buttons">
-              <button class="cancel-btn" @click="closeModal">Cancelar</button>
-              <button class="save-btn" @click="saveRestaurante">
-                {{ editingRestaurante ? 'Salvar' : 'Adicionar' }}
-              </button>
+          <div v-else-if="error" class="error-message">
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+          </div>
+
+          <div v-else class="table-responsive">
+            <table class="restaurantes-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Contato</th>
+                  <th>Telefone</th>
+                  <th>Editar</th>
+                  <th>Excluir</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="restaurante in restaurantes" :key="restaurante.idRestaurante">
+                  <td>{{ restaurante.idRestaurante }}</td>
+                  <td>{{ restaurante.nome }}</td>
+                  <td>{{ restaurante.contato || '-' }}</td>
+                  <td>{{ formatTelefone(restaurante.telefone) }}</td>
+                  <td class="actions-cell">
+                    <button class="edit-btn" @click="editRestaurante(restaurante)">
+                      <i class="fas fa-edit"></i> Editar
+                    </button>
+                  </td>
+                  <td>
+                    <button class="delete-btn" @click="confirmDelete(restaurante)">
+                      <i class="fas fa-trash"></i> Excluir
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Modal de Adicionar/Editar -->
+          <div v-if="showAddModal" class="modal-overlay">
+            <div class="modal">
+              <h2>{{ editingRestaurante ? 'Editar Restaurante' : 'Adicionar Novo Restaurante' }}</h2>
+              <div class="form-group">
+                <label>Nome do Restaurante:</label>
+                <input type="text" v-model="currentRestaurante.nome" placeholder="Digite o nome do restaurante"
+                  class="modal-input" required />
+              </div>
+              <div class="form-group">
+                <label>Nome do Contato:</label>
+                <input type="text" v-model="currentRestaurante.contato" placeholder="Digite o nome do contato"
+                  class="modal-input" />
+              </div>
+              <div class="form-group">
+                <label>Telefone:</label>
+                <input type="tel" v-model="currentRestaurante.telefone"
+                  placeholder="Digite o telefone (ex: 11955550000)" class="modal-input" @input="formatTelefoneInput"
+                  maxlength="15" ref="telefoneInput" />
+              </div>
+              <div class="modal-buttons">
+                <button class="cancel-btn" @click="closeModal">Cancelar</button>
+                <button class="save-btn" @click="saveRestaurante">
+                  {{ editingRestaurante ? 'Salvar' : 'Adicionar' }}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Modal de Confirmação -->
-        <div v-if="showConfirmModal" class="modal-overlay">
-          <div class="modal confirm-modal">
-            <h2>Confirmar Exclusão</h2>
-            <p>Tem certeza que deseja excluir o restaurante "{{ restauranteToDelete.nome }}"?</p>
-            <div class="modal-buttons">
-              <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
-              <button class="delete-confirm-btn" @click="deleteRestaurante">Confirmar</button>
+          <!-- Modal de Confirmação -->
+          <div v-if="showConfirmModal" class="modal-overlay">
+            <div class="modal confirm-modal">
+              <h2>Confirmar Exclusão</h2>
+              <p>Tem certeza que deseja excluir o restaurante "{{ restauranteToDelete.nome }}"?</p>
+              <div class="modal-buttons">
+                <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
+                <button class="delete-confirm-btn" @click="deleteRestaurante">Confirmar</button>
+              </div>
             </div>
           </div>
         </div>

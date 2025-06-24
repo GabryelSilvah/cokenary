@@ -4,12 +4,13 @@ import com.receitas.dto.*;
 import com.receitas.exception.BadRequestException;
 import com.receitas.exception.RegistroExistsException;
 import com.receitas.exception.RegistroNotFoundException;
+import com.receitas.exception.UserExitsException;
 import com.receitas.model.*;
 import com.receitas.repository.*;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -43,24 +44,42 @@ public class FuncionarioService {
     @Autowired
     private MetricasRepository metricasRepository;
 
-    public List<FuncionarioDTO> listAll() {
+
+    public List<Funcionario_usuarioDTO> listAll() {
 
         //Buscando dados do funcionário
-        List<Funcionario> funcionariosEncontrados = funcioRepository.findAllJoin();
+        List<Funcionario> funcionariosEncontrados = funcioRepository.findAll();
+
 
         //Inicializando lista de funcionárioDTO
-        List<FuncionarioDTO> listaFuncionariosDTO = new ArrayList<>();
+        List<Funcionario_usuarioDTO> listaFuncionariosDTO = new ArrayList<>();
+
 
         //Pecorrendo lista de funcionário, transformando em DTOs e adicionando na lista funcionariosDTO
         for (int i = 0; i < funcionariosEncontrados.size(); i++) {
-            FuncionarioDTO funcionario = new FuncionarioDTO(
+
+            //Buscar usuário vinculado ao funcuinário
+            Optional<Usuario> usuarioEncontrado = usuarioRepository.findByFuncionario(funcionariosEncontrados.get(i).getId_func());
+            if (usuarioEncontrado.isEmpty()) {
+                throw new RegistroNotFoundException("Nenhum usuário vinculado a esse funcionário de ID (" + funcionariosEncontrados.get(i).getId_func() + ")");
+            }
+
+            //Buscando lista de restaurantes
+            List<Restaurante> listaRestaurantes = referenciaRepository.findByFuncionario(funcionariosEncontrados.get(i).getId_func());
+
+
+            Funcionario_usuarioDTO funcionario = new Funcionario_usuarioDTO(
                     funcionariosEncontrados.get(i).getId_func(),
                     funcionariosEncontrados.get(i).getNome(),
                     funcionariosEncontrados.get(i).getRg(),
                     funcionariosEncontrados.get(i).getDt_adm(),
                     funcionariosEncontrados.get(i).getSalario(),
-                    funcionariosEncontrados.get(i).getCargo().getNome(),
-                    funcionariosEncontrados.get(i).getImagem_perfil()
+                    funcionariosEncontrados.get(i).getCargo(),
+                    funcionariosEncontrados.get(i).getImagem_perfil(),
+                    listaRestaurantes,
+                    usuarioEncontrado.get().getEmail(),
+                    funcionariosEncontrados.get(i).getStatusFunc(),
+                    funcionariosEncontrados.get(i).getData_update()
             );
 
             //Adiciona na lista DTO
@@ -70,7 +89,7 @@ public class FuncionarioService {
         return listaFuncionariosDTO;
     }
 
-    public FuncionarioSaidaDTO listById(Long id) {
+    public Funcionario_usuarioDTO listById(Long id) {
 
         //Buscando funcionário pelo ID
         Optional<Funcionario> funcionarioEncontrado = funcioRepository.findById(id);
@@ -80,18 +99,26 @@ public class FuncionarioService {
             throw new RegistroNotFoundException("Funcionário de ID (" + id + ") não foi encontrado");
         }
 
-        List<Restaurante> referenciaEncontrada = referenciaRepository.findByFuncionario(id);
+        List<Restaurante> listaRestaurantes = referenciaRepository.findByFuncionario(id);
 
+        //Buscar usuário vinculado ao funcuinário
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByFuncionario(funcionarioEncontrado.get().getId_func());
+        if (usuarioEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Nenhum usuário vinculado a esse funcionário de ID (" + funcionarioEncontrado.get().getId_func() + ")");
+        }
 
-        return new FuncionarioSaidaDTO(
+        return new Funcionario_usuarioDTO(
                 funcionarioEncontrado.get().getId_func(),
                 funcionarioEncontrado.get().getNome(),
                 funcionarioEncontrado.get().getRg(),
                 funcionarioEncontrado.get().getDt_adm(),
                 funcionarioEncontrado.get().getSalario(),
-                funcionarioEncontrado.get().getCargo().getNome(),
+                funcionarioEncontrado.get().getCargo(),
                 funcionarioEncontrado.get().getImagem_perfil(),
-                referenciaEncontrada
+                listaRestaurantes,
+                usuarioEncontrado.get().getEmail(),
+                funcionarioEncontrado.get().getStatusFunc(),
+                funcionarioEncontrado.get().getData_update()
         );
     }
 
@@ -123,7 +150,7 @@ public class FuncionarioService {
     }
 
     @Transactional
-    public FuncionarioDTO save(Funcionario_usuarioDTO funcionario) {
+    public Funcionario_usuarioDTO save(Funcionario_usuarioDTO funcionario) {
 
         //Validando se já existe um funcionário com esse nome
         Funcionario funcionarioEncontrado = funcioRepository.findByNome(funcionario.getNome());
@@ -154,6 +181,12 @@ public class FuncionarioService {
         Funcionario funcionarioSalvo = funcioRepository.save(novoFuncionario);
 
 
+        //Validando se já existe esse nome de usuário cadastrado
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(funcionario.getNome_usuario());
+        if (usuario.isPresent()) {
+            throw new UserExitsException("Nome de usuário já está em uso por outra conta");
+        }
+
         //Cadastrando usuário
         String senhaSegura = criptografia.encode(funcionario.getSenha_usuarios());
         funcionario.setSenha_usuarios(senhaSegura);
@@ -166,15 +199,36 @@ public class FuncionarioService {
         MetricasDTO metricaSalva = metricasService.save(novaMetricaDTO);
 
 
+        //Cadastrando referência de restaurante associado ao funcionário
+        for (int i = 0; i < funcionario.getListaRestaurante().size(); i++) {
+            Referencia novaReferencia = new Referencia(funcionarioSalvo, funcionario.getListaRestaurante().get(i), new Date(), null);
+            referenciaRepository.save(novaReferencia);
+        }
+
+
+        //Buscando lista de restaurantes
+        List<Restaurante> listaRestaurantes = referenciaRepository.findByFuncionario(funcionarioSalvo.getId_func());
+
+
+        //Buscando usuário vinculado ao funcuinário
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByFuncionario(funcionarioSalvo.getId_func());
+        if (usuarioEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("Nenhum usuário vinculado a esse funcionário de ID (" + funcionarioSalvo.getId_func() + ")");
+        }
+
         //Transformando em DTO
-        return new FuncionarioDTO(
+        return new Funcionario_usuarioDTO(
                 funcionarioSalvo.getId_func(),
                 funcionarioSalvo.getNome(),
                 funcionarioSalvo.getRg(),
                 funcionarioSalvo.getDt_adm(),
                 funcionarioSalvo.getSalario(),
-                cargoEncontrado.get().getNome(),
-                funcionarioSalvo.getImagem_perfil()
+                cargoEncontrado.get(),
+                funcionarioSalvo.getImagem_perfil(),
+                listaRestaurantes,
+                usuarioEncontrado.get().getEmail(),
+                funcionarioSalvo.getStatusFunc(),
+                funcionarioSalvo.getData_update()
         );
     }
 
@@ -206,12 +260,6 @@ public class FuncionarioService {
 
         //Cadastrando funcionário no sistema
         Funcionario funcionarioSalvo = funcioRepository.save(new Funcionario(funcionario));
-
-        //Cadastrando referência de restaurante associado ao funcionário
-        for (int i = 0; i < funcionario.getListaRestaurante().size(); i++) {
-            Referencia novaReferencia = new Referencia(funcionarioSalvo, funcionario.getListaRestaurante().get(i), new Date(), null);
-            referenciaRepository.save(novaReferencia);
-        }
 
 
         //Transformando em DTO
@@ -279,15 +327,19 @@ public class FuncionarioService {
             throw new RegistroNotFoundException("Falha, funcionário com ID (" + id + ") não foi encontrado");
         }
 
-        //Excluindo metricas de funcionário
-        metricasService.deleteByFuncionario(id);
-
         //Excluindo acesso de usuário do funcionário
-        usuarioService.deleteByFuncionario(id);
+        //boolean respU = usuarioService.deleteByFuncionario(id);
+        usuarioRepository.deleteByFk_funcionario(id);
+
+
+        //Excluindo metricas de funcionário
+        //boolean respM = metricasService.deleteByFuncionario(id);
+        metricasRepository.deleteByFkFuncionario(id);
 
 
         //Excluindo fuuncionário
-        funcioRepository.delete(funcionarioEncontrado.get());
+        funcioRepository.deleteByIdOn(id);
+
         return true;
     }
 

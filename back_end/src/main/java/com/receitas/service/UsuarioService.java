@@ -56,7 +56,7 @@ public class UsuarioService {
 
 
     //Salvando usuário na base de dados
-    public UsuarioDTO save(AuthDTO authDTO) {
+    public UsuarioDTO save(Usuario authDTO) {
 
         //Validando se já existe esse usuário cadastrado
         Optional<Usuario> usuario = usuarioRepository.findByEmail(authDTO.getEmail());

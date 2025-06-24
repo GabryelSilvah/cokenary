@@ -31,7 +31,7 @@
             <li>
               <NuxtLink :to="{ path: '/perfil_adm' }"><i class="fas fa-user"></i>Meu Perfil</NuxtLink>
             </li>
-            <li class="logout-link"><a href="#"><i class="fas fa-sign-out-alt" @click="logout"></i> Sair</a></li>
+            <li class="logout-link"><a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
           </ul>
         </nav>
       </div>
@@ -208,13 +208,6 @@ export default {
     }
 
   },
-  // methods: {
-  //   logout() {
-  //     Cookies.remove("token_auth");
-  //     Cookies.remove("id_user");
-  //     Cookies.remove("cargo_user");
-  //     window.location = "/login";
-  //   }
-  // }
+  
 }
 </script>

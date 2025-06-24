@@ -1,103 +1,114 @@
 <template>
-  <Menu />
+
   <main>
-    <section v-if="role_usuario == 'administrador'">
-      <div class="container container-crud">
-        <div class="header-section">
-          <h1>Funcionários</h1>
-          <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-bar" />
-          <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
-        </div>
+    <section v-if="role_usuario == 'administrador'" class="section_administrador">
+      <MenuLateral class="menuLateral" />
 
-        <table class="employee-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Salário</th>
-              <th>RG</th>
-              <th>Admissão</th>
-              <th>Cargo</th>
-              <th>Restaurante</th>
-              <th>Editar</th>
-              <th>Excluir</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="f in filteredFuncionarios" :key="f.id">
-              <td>{{ f.nome }}</td>
-              <td>R$ {{ f.salario.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</td>
-              <td>{{ f.rg }}</td>
-              <td>{{ formatDate(f.dt_adm) }}</td>
-              <td>{{ f.cargo?.nome || f.cargo || 'N/A' }}</td>
-              <td>{{ f.restaurante?.nome || 'N/A' }}</td>
-              <td>
-                <button @click="edit(f)" class="edit-button edit-btn">Editar</button>
-              </td>
-              <td>
-                <button @click="confirmDelete(f)" class="delete-button delete-btn">Excluir</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="container_right">
 
-        <!-- Modais -->
-        <div v-if="renderModals">
-          <!-- Modal Adicionar/Editar -->
-          <div v-if="showAddModal" class="modal-overlay">
-            <div class="modal">
-              <h2>{{ editing ? 'Editar Funcionário' : 'Adicionar Funcionário' }}</h2>
-
-              <label>Nome:</label>
-              <input v-model="current.nome" type="text" required placeholder="Digite o nome completo..."/>
-
-              <label>Salário:</label>
-              <input v-model="current.salario" type="number" step="0.01" required />
-
-              <label>RG:</label>
-              <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
-                required placeholder="Digite sem traços e pontos..."/>
-
-              <label>Data de Admissão:</label>
-              <input v-model="current.dt_adm" type="date" required />
-
-              <label>Cargo:</label>
-              <select v-model="current.cargo_id" required>
-                <option disabled value="">Selecione um cargo</option>
-                <option v-for="cargo in cargos" :key="cargo.id_cargo" :value="cargo.id_cargo">
-                  {{ cargo.nome }}
-                </option>
-              </select>
-
-              <label>Restaurante:</label>
-              <select v-model="current.idRestaurante" required>
-                <option disabled value="">Selecione um restaurante</option>
-                <option v-for="restaurante in restaurantes" :key="restaurante.idRestaurante"
-                  :value="restaurante.idRestaurante">
-                  {{ restaurante.nome }}
-                </option>
-              </select>
-
-              <label>Usuário:</label>
-              <input v-model="current.nome_usuario" type="text" :required="!editing" placeholder="Digite o nome para login..." />
-
-              <label>Senha:</label>
-              <input v-model="current.senha_usuarios" type="password" :required="!editing" placeholder="Crie a senha do usuário para login..."/>
-
-              <div class="modal-actions">
-                <button @click="save" class="save-button">Salvar</button>
-                <button @click="closeModal" class="cancel-button">Cancelar</button>
-              </div>
-            </div>
+        <div class="container container-crud">
+          <div class="header-section">
+            <h1>Funcionários</h1>
+            <input type="text" v-model="search" placeholder="Buscar funcionário..." class="search-bar" />
+            <button @click="openAdd" class="add-button">Adicionar Funcionário</button>
           </div>
 
-          <!-- Modal de Confirmação -->
-          <div v-if="showConfirmModal" class="modal-overlay">
-            <div class="modal">
-              <h2>Confirmar Exclusão</h2>
-              <p>Deseja realmente excluir o funcionário <strong>{{ current.nome }}</strong>?</p>
-              <div class="modal-actions">
-                <button @click="deleteNow" class="delete-button">Excluir</button>
-                <button @click="closeModal" class="cancel-button">Cancelar</button>
+          <table class="employee-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Salário</th>
+                <th>RG</th>
+                <th>Admissão</th>
+                <th>Cargo</th>
+                <th>Restaurante</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="f in filteredFuncionarios" :key="f.id">
+                <td>{{ f.nome }}</td>
+                <td>R$ {{ f.salario.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</td>
+                <td>{{ f.rg }}</td>
+                <td>{{ formatDate(f.dt_adm) }}</td>
+                <td>{{ f.cargo.nome || f.cargo || 'N/A' }}</td>
+                <td>{{ f.listaRestaurante[0]?.nome || 'N/A' }}</td>
+                <td>
+                  <button @click="edit(f)" class="edit-button edit-btn">Editar</button>
+                </td>
+                <td>
+                  <button @click="confirmDelete(f)" class="delete-button delete-btn">Excluir</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Modais -->
+          <div v-if="renderModals">
+            <!-- Modal Adicionar/Editar -->
+            <div v-if="showAddModal" class="modal-overlay">
+              <div class="modal">
+                <h2>{{ editing ? 'Editar Funcionário' : 'Adicionar Funcionário' }}</h2>
+
+                <label>Nome:</label>
+                <input v-model="current.nome" type="text" required placeholder="Digite o nome completo..." />
+
+                <label>Salário:</label>
+                <input v-model="current.salario" type="number" step="0.01" required />
+
+                <label>RG:</label>
+                <input v-model="current.rg" type="number" :readonly="editing" :class="{ 'readonly-field': editing }"
+                  required placeholder="Digite sem traços e pontos..." />
+
+                <label>Cargo:</label>
+                <select v-model="current.cargo_id" required>
+                  <option disabled value="">Selecione um cargo</option>
+                  <option v-for="cargo in cargos" :key="cargo.id_cargo" :value="cargo.id_cargo">
+                    {{ cargo.nome }}
+                  </option>
+                </select>
+
+                <label>Restaurante:</label>
+                <select v-model="current.idRestaurante" required>
+                  <option disabled value="">Selecione um restaurante</option>
+                  <option v-for="restaurante in restaurantes" :key="restaurante.idRestaurante"
+                    :value="restaurante.idRestaurante">
+                    {{ restaurante.nome }}
+                  </option>
+                </select>
+
+                <label>Status:</label>
+                <select v-model="current.statusFunc" required>
+                  <option disabled value="">Selecione o status</option>
+                  <option value="1">Ativo</option>
+                  <option value="0">Inativo</option>
+                </select>
+
+                <label>Usuário:</label>
+                <input v-model="current.nome_usuario" type="text" :required="!editing"
+                  placeholder="Digite o nome para login..." />
+
+                <label>Senha:</label>
+                <input v-model="current.senha_usuarios" type="password" :required="!editing"
+                  placeholder="Crie a senha do usuário para login..." />
+
+                <div class="modal-actions">
+                  <button @click="save" class="save-button">Salvar</button>
+                  <button @click="closeModal" class="cancel-button">Cancelar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal de Confirmação -->
+            <div v-if="showConfirmModal" class="modal-overlay">
+              <div class="modal">
+                <h2>Confirmar Exclusão</h2>
+                <p>Deseja realmente excluir o funcionário <strong>{{ current.nome }}</strong>?</p>
+                <div class="modal-actions">
+                  <button @click="deleteNow" class="delete-button">Excluir</button>
+                  <button @click="closeModal" class="cancel-button">Cancelar</button>
+                </div>
               </div>
             </div>
           </div>
@@ -134,11 +145,11 @@ export default {
         nome: '',
         salario: 0,
         rg: null,
-        dt_adm: '',
         cargo_id: '',
-        idRestaurante: '',
+        idRestaurante: 0,
         nome_usuario: '',
-        senha_usuarios: ''
+        senha_usuarios: '',
+        statusFunc: null
       },
       editing: false,
       showAddModal: false,
@@ -215,18 +226,18 @@ export default {
     },
     edit(funcionario) {
       const cargoId = funcionario.cargo?.id || funcionario.cargo?.id_cargo || '';
-      const restauranteId = funcionario.restaurante?.id || funcionario.restaurante?.idRestaurante || '';
+      const restauranteId = funcionario.restaurante?.id || funcionario.restaurante?.listaRestaurante || '';
 
       this.current = {
         id_func: funcionario.id_func || funcionario.id,
         nome: funcionario.nome,
         salario: funcionario.salario,
         rg: funcionario.rg,
-        dt_adm: funcionario.dt_adm ? new Date(funcionario.dt_adm).toISOString().split('T')[0] : '',
-        cargo_id: cargoId,
-        idRestaurante: restauranteId,
+        cargo_id: funcionario.cargo.id,
+        idRestaurante: funcionario.listaRestaurante[0].idRestaurante,
         nome_usuario: '', // não trazemos na edição por segurança
-        senha_usuarios: ''
+        senha_usuarios: '',
+        statusFunc: Number(funcionario.statusFunc)
       };
 
       this.editing = true;
@@ -237,9 +248,8 @@ export default {
 
       if (!this.current.nome) erros.push('Nome é obrigatório!');
       if (!this.current.rg) erros.push('RG é obrigatório!');
-      if (!this.current.dt_adm) erros.push('Data de admissão é obrigatória!');
       if (!this.current.cargo_id) erros.push('Selecione um cargo!');
-      if (!this.current.idRestaurante) erros.push('Selecione um restaurante!');
+      // if (!this.current.listaRestaurante) erros.push('Selecione um restaurante!');
       if (!this.editing && !this.current.nome_usuario) erros.push('Usuário é obrigatório!');
       if (!this.editing && !this.current.senha_usuarios) erros.push('Senha é obrigatória!');
 
@@ -257,14 +267,16 @@ export default {
         const funcionarioData = {
           nome: this.current.nome.trim(),
           rg: this.current.rg.toString(),
-          dt_adm: this.formatDateForAPI(this.current.dt_adm),
           salario: parseFloat(this.current.salario),
           cargo: {  // Agora enviamos um objeto Cargo completo
             id: this.current.cargo_id
           },
-          idRestaurante: parseInt(this.current.idRestaurante),
+          listaRestaurante: {
+            idRestaurante: this.current.idRestaurante
+          },
           nome_usuario: this.current.nome_usuario,
-          senha_usuarios: this.current.senha_usuarios
+          senha_usuarios: this.current.senha_usuarios,
+          statusFunc: this.current.statusFunc
         };
 
         if (this.editing) {
@@ -312,7 +324,7 @@ export default {
         rg: null,
         dt_adm: '',
         cargo_id: '',
-        idRestaurante: '',
+        idRestaurante: 0,
         nome_usuario: '',
         senha_usuarios: ''
       };

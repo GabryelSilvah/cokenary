@@ -1,92 +1,97 @@
 <template>
-  <Menu />
+
   <main>
-    <section v-if="role_usuario == 'administrador'">
-      <div class="container-crud">
-        <div class="header-section">
-          <h1>Lista de Ingredientes</h1>
-          <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..."
-            @input="filterIngredientes"  class="search-bar"/>
-          <button class="add-button" @click="showAddModal = true">
-            <i class="fas fa-plus"></i> Adicionar Ingrediente
-          </button>
-        </div>
+    <section v-if="role_usuario == 'administrador'" class="section_administrador">
+      <MenuLateral class="menuLateral" />
 
+      <div class="container_right">
 
-        <div v-if="loading" class="loading-message">
-          <i class="fas fa-spinner fa-spin"></i> Carregando ingredientes...
-        </div>
-        <div v-else-if="error" class="error-message">
-          <i class="fas fa-exclamation-triangle"></i> {{ error }}
-        </div>
-        <div v-else class="table-responsive">
-          <table class="ingredientes-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome do Ingrediente</th>
-                <th>Editar</th>
-                <th>Excluir</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="ingrediente in filteredIngredientes" :key="ingrediente.id_ingred">
-                <td>{{ ingrediente.id_ingred }}</td>
-                <td>{{ ingrediente.nome }}</td>
-                <td class="actions-cell">
-                  <button class="edit-btn" @click="editIngrediente(ingrediente)">
-                    <i class="fas fa-edit"></i> Editar
-                  </button>
-                </td>
-                <td>
-                  <button class="delete-btn" @click="confirmDelete(ingrediente)">
-                    <i class="fas fa-trash"></i> Excluir
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div v-if="filteredIngredientes.length === 0 && !loading" class="no-results">
-            Nenhum ingrediente encontrado
+        <div class="container-crud">
+          <div class="header-section">
+            <h1>Ingredientes</h1>
+            <input type="text" v-model="searchQuery" placeholder="Pesquisar ingredientes..." @input="filterIngredientes"
+              class="search-bar" />
+            <button class="add-button" @click="showAddModal = true">
+              <i class="fas fa-plus"></i> Adicionar Ingrediente
+            </button>
           </div>
-        </div>
 
 
-        <!-- Modal de Adição/Edição -->
-        <div v-if="showAddModal" class="modal-overlay">
-          <div class="modal">
-            <h2>{{ editingIngrediente ? 'Editar Ingrediente' : 'Adicionar Ingrediente' }}</h2>
-            <div class="form-group">
-              <label>Nome do Ingrediente:</label>
-              <input type="text" v-model="currentIngrediente.nome" placeholder="Digite o nome do ingrediente"
-                class="modal-input" />
-            </div>
-            <div v-if="error" class="error-message">{{ error }}</div>
-            <div class="modal-buttons">
-              <button class="cancel-btn" @click="closeModal">Cancelar</button>
-              <button class="save-btn" @click="saveIngrediente" :disabled="saving">
-                {{ saving ? 'Salvando...' : (editingIngrediente ? 'Salvar' : 'Adicionar') }}
-              </button>
+          <div v-if="loading" class="loading-message">
+            <i class="fas fa-spinner fa-spin"></i> Carregando ingredientes...
+          </div>
+          <div v-else-if="error" class="error-message">
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+          </div>
+          <div v-else class="table-responsive">
+            <table class="ingredientes-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome do Ingrediente</th>
+                  <th>Editar</th>
+                  <th>Excluir</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="ingrediente in filteredIngredientes" :key="ingrediente.id_ingred">
+                  <td>{{ ingrediente.id_ingred }}</td>
+                  <td>{{ ingrediente.nome }}</td>
+                  <td class="actions-cell">
+                    <button class="edit-btn" @click="editIngrediente(ingrediente)">
+                      <i class="fas fa-edit"></i> Editar
+                    </button>
+                  </td>
+                  <td>
+                    <button class="delete-btn" @click="confirmDelete(ingrediente)">
+                      <i class="fas fa-trash"></i> Excluir
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="filteredIngredientes.length === 0 && !loading" class="no-results">
+              Nenhum ingrediente encontrado
             </div>
           </div>
-        </div>
 
-        <!-- Modal de Confirmação de Exclusão -->
-        <div v-if="showConfirmModal" class="modal-overlay">
-          <div class="modal confirm-modal">
-            <h2>Confirmar Exclusão</h2>
-            <p>Tem certeza que deseja excluir o ingrediente "{{ ingredienteToDelete.nome }}"?</p>
-            <div v-if="error" class="error-message">{{ error }}</div>
-            <div class="modal-buttons">
-              <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
-              <button class="delete-confirm-btn" @click="deleteIngrediente" :disabled="deleting">
-                {{ deleting ? 'Excluindo...' : 'Confirmar' }}
-              </button>
+
+          <!-- Modal de Adição/Edição -->
+          <div v-if="showAddModal" class="modal-overlay">
+            <div class="modal">
+              <h2>{{ editingIngrediente ? 'Editar Ingrediente' : 'Adicionar Ingrediente' }}</h2>
+              <div class="form-group">
+                <label>Nome do Ingrediente:</label>
+                <input type="text" v-model="currentIngrediente.nome" placeholder="Digite o nome do ingrediente"
+                  class="modal-input" />
+              </div>
+              <div v-if="error" class="error-message">{{ error }}</div>
+              <div class="modal-buttons">
+                <button class="cancel-btn" @click="closeModal">Cancelar</button>
+                <button class="save-btn" @click="saveIngrediente" :disabled="saving">
+                  {{ saving ? 'Salvando...' : (editingIngrediente ? 'Salvar' : 'Adicionar') }}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Fim dos modais -->
 
+          <!-- Modal de Confirmação de Exclusão -->
+          <div v-if="showConfirmModal" class="modal-overlay">
+            <div class="modal confirm-modal">
+              <h2>Confirmar Exclusão</h2>
+              <p>Tem certeza que deseja excluir o ingrediente "{{ ingredienteToDelete.nome }}"?</p>
+              <div v-if="error" class="error-message">{{ error }}</div>
+              <div class="modal-buttons">
+                <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
+                <button class="delete-confirm-btn" @click="deleteIngrediente" :disabled="deleting">
+                  {{ deleting ? 'Excluindo...' : 'Confirmar' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Fim dos modais -->
+
+        </div>
       </div>
     </section>
 
@@ -224,4 +229,3 @@ export default {
   }
 }
 </script>
-

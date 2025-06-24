@@ -1,7 +1,7 @@
 <template>
 
     <Menu />
-
+    
     <main v-if="role_usuario == 'cozinheiro'">
         <section class="container_topico">
             <h2 class="titulo_topico">Receitas</h2>

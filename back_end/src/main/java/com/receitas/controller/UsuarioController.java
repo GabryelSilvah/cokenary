@@ -3,6 +3,8 @@ package com.receitas.controller;
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.AuthDTO;
 import com.receitas.dto.UsuarioDTO;
+import com.receitas.model.Funcionario;
+import com.receitas.model.Usuario;
 import com.receitas.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -31,7 +33,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<?> register_user(@Valid @RequestBody AuthDTO authDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> register_user(@Valid @RequestBody Usuario authDTO, BindingResult bindingResult) {
         UsuarioDTO usuario = usuarioService.save(authDTO);
         return ResponseJson.build(HttpStatus.CREATED, "Usuário cadastrado com sucesso!", usuario);
     }

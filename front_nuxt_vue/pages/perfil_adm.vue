@@ -1,86 +1,98 @@
 <template>
-  <div class="profile-container">
-    <div class="profile-header">
-      <h1>Meu Perfil</h1>
-      <p>Gerencie suas informações pessoais</p>
-    </div>
+  <section v-if="role_usuario == 'administrador'" class="section_administrador">
+    <MenuLateral class="menuLateral" />
 
-    <div v-if="loading" class="loading">Carregando perfil...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div class="container_right">
 
-    <div v-else class="profile-content">
-      <div class="profile-sidebar">
-        <div class="profile-summary">
-          <div class="profile-avatar">
-            <img src="../assets/icones/perfil.png" :src="perfil.foto_usuario || '../assets/icones/perfil.png'"
-              alt="Foto de perfil">
-          </div>
-          <h2>{{ perfil.usuario.nome_usuario }}</h2>
-          <p class="profile-role">{{ perfil.cargo_usuario }}</p>
-          <p>membro desde {{ formatDate(perfil.data_admisao) }}</p>
-          <button class="change-photo-btn" @click="openPhotoUpload">Alterar Foto</button>
-          <input type="file" ref="photoInput" style="display: none" accept="image/*" @change="handlePhotoUpload">
+      <div class="profile-container">
+        <div class="profile-header">
+          <h1>Meu Perfil</h1>
+          <p>Gerencie suas informações pessoais</p>
         </div>
 
-        <nav class="profile-menu">
-          <a href="#" class="active">Informações Pessoais</a>
-          <a href="#">Configurações</a>
-          <a href="#">Segurança</a>
-          <a href="#">Notificações</a>
-        </nav>
-      </div>
+        <div v-if="loading" class="loading">Carregando perfil...</div>
+        <div v-else-if="error" class="error">{{ error }}</div>
 
-      <div class="profile-details">
-        <section class="personal-info">
-          <h2>Dados do Funcionário</h2>
-          <p>Veja as informações relacionadas ao seu trabalho</p>
-
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Quantidade de Receitas</label>
-              <div class="info-value">{{ perfil.numero_receitas_feitas }}</div>
+        <div v-else class="profile-content">
+          <div class="profile-sidebar">
+            <div class="profile-summary">
+              <div class="profile-avatar">
+                <img src="../assets/icones/perfil.png" :src="perfil.foto_usuario || '../assets/icones/perfil.png'"
+                  alt="Foto de perfil">
+              </div>
+              <h2>{{ perfil.usuario.nome_usuario }}</h2>
+              <p class="profile-role">{{ perfil.cargo_usuario }}</p>
+              <p>membro desde {{ formatDate(perfil.data_admisao) }}</p>
+              <button class="change-photo-btn" @click="openPhotoUpload">Alterar Foto</button>
+              <input type="file" ref="photoInput" style="display: none" accept="image/*" @change="handlePhotoUpload">
             </div>
 
-            <div class="info-item">
-              <label>Restaurante</label>
-              <div class="info-value">Restaurante Sabor do Chef</div>
-            </div>
-
-            <div class="info-item">
-              <label>Cargo</label>
-              <div class="info-value">{{ perfil.cargo_usuario }}</div>
-            </div>
-
-            <div class="info-item">
-              <label>Membro desde</label>
-              <div class="info-value">{{ formatDate(perfil.data_admisao) }}</div>
-            </div>
+            <nav class="profile-menu">
+              <a href="#" class="active">Informações Pessoais</a>
+              <a href="#">Configurações</a>
+              <a href="#">Segurança</a>
+              <a href="#">Notificações</a>
+            </nav>
           </div>
-        </section>
 
-        <section class="edit-section" v-if="editing">
-          <h2>Editar Informações</h2>
-          <form @submit.prevent="saveChanges">
-            <div class="form-group">
-              <label for="username">Nome de Usuário</label>
-              <input type="text" id="username" v-model="editForm.nome_usuario" required>
-            </div>
+          <div class="profile-details">
+            <section class="personal-info">
+              <h2>Dados do Funcionário</h2>
+              <p>Veja as informações relacionadas ao seu trabalho</p>
 
-            <div class="form-group">
-              <label for="role">Cargo</label>
-              <input type="text" id="role" v-model="editForm.cargo_usuario" required>
-            </div>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Quantidade de Receitas</label>
+                  <div class="info-value">{{ perfil.numero_receitas_feitas }}</div>
+                </div>
 
-            <div class="form-actions">
-              <button type="button" @click="cancelEdit">Cancelar</button>
-              <button type="submit">Salvar Alterações</button>
-            </div>
-          </form>
-        </section>
+                <div class="info-item">
+                  <label>Restaurante</label>
+                  <div class="info-value">Restaurante Sabor do Chef</div>
+                </div>
 
-        <button v-else class="edit-btn" @click="startEditing">Editar Perfil</button>
+                <div class="info-item">
+                  <label>Cargo</label>
+                  <div class="info-value">{{ perfil.cargo_usuario }}</div>
+                </div>
+
+                <div class="info-item">
+                  <label>Membro desde</label>
+                  <div class="info-value">{{ formatDate(perfil.data_admisao) }}</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="edit-section" v-if="editing">
+              <h2>Editar Informações</h2>
+              <form @submit.prevent="saveChanges">
+                <div class="form-group">
+                  <label for="username">Nome de Usuário</label>
+                  <input type="text" id="username" v-model="editForm.nome_usuario" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="role">Cargo</label>
+                  <input type="text" id="role" v-model="editForm.cargo_usuario" required>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" @click="cancelEdit">Cancelar</button>
+                  <button type="submit">Salvar Alterações</button>
+                </div>
+              </form>
+            </section>
+
+            <button v-else class="edit-btn" @click="startEditing">Editar Perfil</button>
+          </div>
+        </div>
       </div>
     </div>
+  </section>
+
+  <!-- Mensagem de bloqueio do usuário -->
+  <div v-else class="mensagem_acesso">
+    Seu nível de acesso não é compatível com essa funcionalidade...
   </div>
 </template>
 
@@ -107,7 +119,8 @@ export default {
         nome_usuario: '',
         cargo_usuario: '',
         foto_usuario: null
-      }
+      },
+      role_usuario: Cookies.get("cargo_user")
     }
   },
   async mounted() {
@@ -202,7 +215,11 @@ export default {
 </script>
 
 <style scoped>
-@import url("~/assets/css/perfil.css");
+@import url("~/assets/css/perfil_adm.css");
+.section_administrador {
+  width: 100vw;
+  display: flex;
+}
 
 .loading,
 .error {
