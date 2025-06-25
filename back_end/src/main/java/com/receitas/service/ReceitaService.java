@@ -37,6 +37,9 @@ public class ReceitaService {
     @Autowired
     private MedidaRepository medidaRepository;
 
+    @Autowired
+    private MetricasRepository metricasRepository;
+
     public List<ReceitaDTO> listAll() {
 
         List<Receita> receitas = receitaRepository.findAll();
@@ -137,6 +140,14 @@ public class ReceitaService {
             receitaRecebida.getIngredientes_id().get(i).setReceita_id(new Receita(receitaSalva.getId_receita()));
             receitasAndIngredintesRepository.save(receitaRecebida.getIngredientes_id().get(i));
         }
+
+        //Salvado métricas
+        Optional<Metricas> metricaEncontrada = metricasRepository.findByFk_funcionario(receitaRecebida.getCozinheiro_id().getId_func());
+        if (metricaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("Métrica de fk_funcionario (" + receitaRecebida.getCozinheiro_id().getId_func() + ") não foi encontrada");
+        }
+
+        metricaEncontrada.get().setQuantidade_receitas(metricaEncontrada.get().getQuantidade_receitas() + 1);
 
         //Declaranco lista para armazenar lista de ingredientes da receita
         List<Ingrediente> listaIngredientes = new ArrayList<>();
@@ -278,6 +289,14 @@ public class ReceitaService {
 
         //Excluindo fuuncionário
         receitaRepository.delete(receitaEncontrada.get());
+
+        //Excluindo métricas
+        Optional<Metricas> metricaEncontrada = metricasRepository.findByFk_funcionario(receitaEncontrada.get().getCozinheiro_id().getId_func());
+        if (metricaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("Métrica de fk_funcionario (" + receitaEncontrada.get().getCozinheiro_id().getId_func() + ") não foi encontrada");
+        }
+
+        metricaEncontrada.get().setQuantidade_receitas(metricaEncontrada.get().getQuantidade_receitas() - 1);
         return true;
     }
 

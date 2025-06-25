@@ -5,10 +5,7 @@ import com.receitas.exception.FuncionarioNotFoundException;
 import com.receitas.exception.RegistroExistsException;
 import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.*;
-import com.receitas.repository.FuncionarioRepository;
-import com.receitas.repository.LivroRepository;
-import com.receitas.repository.Publicacao_livroRepository;
-import com.receitas.repository.ReceitaRepository;
+import com.receitas.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +34,12 @@ public class LivroService {
 
     @Autowired
     private Publicacao_livroService publicacaoLivroService;
+
+    @Autowired
+    private MetricasService metricasService;
+
+    @Autowired
+    private MetricasRepository metricasRepository;
 
 
     public List<LivroDTO> listAll() {
@@ -87,7 +90,7 @@ public class LivroService {
             listaReceitasLivro.add(receitaEncontrada);
         }
 
-        System.out.println("Testando nome cargo: " + livroEncontrado.get().getFk_editor().getNome());
+
 
         //Retornando cargo no formato DTO
         return new LivroDTO(
@@ -168,6 +171,15 @@ public class LivroService {
             publicacaoLivroService.save(novaPublicacao);
 
         }
+
+        //Salvado métricas
+       Optional<Metricas> metricaEncontrada = metricasRepository.findByFk_funcionario(livroDTO.getEditor().getId_func());
+        if(metricaEncontrada.isEmpty()){
+            throw new RegistroNotFoundException("Métrica de fk_funcionario ("+livroDTO.getEditor().getId_func()+") não foi encontrada");
+        }
+
+        metricaEncontrada.get().setQuantidade_livros(metricaEncontrada.get().getQuantidade_livros()+1);
+
 
         //Retornando cargo no formato DTO
         return listById(livroSalvo.getId_livro());
@@ -292,6 +304,14 @@ public class LivroService {
         }
 
         livroRepository.deleteById(id);
+
+        //deletando métricas
+        Optional<Metricas> metricaEncontrada = metricasRepository.findByFk_funcionario(livroEncontrado.get().getFk_editor().getId_func());
+        if (metricaEncontrada.isEmpty()) {
+            throw new RegistroNotFoundException("Métrica de fk_funcionario (" + livroEncontrado.get().getFk_editor().getId_func() + ") não foi encontrada");
+        }
+
+        metricaEncontrada.get().setQuantidade_livros(metricaEncontrada.get().getQuantidade_livros() - 1);
 
         return true;
     }

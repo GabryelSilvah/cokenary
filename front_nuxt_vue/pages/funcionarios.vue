@@ -36,7 +36,7 @@
                 <td>{{ f.cargo.nome || f.cargo || 'N/A' }}</td>
                 <td>{{ f.listaRestaurante[0]?.nome || 'N/A' }}</td>
                 <td>
-                  {{ f.statusFunc ? 'Ativo': 'Inativo'}}
+                  {{ f.statusFunc ? 'Ativo' : 'Inativo' }}
                 </td>
                 <td>
                   <button @click="edit(f)" class="edit-button edit-btn">Editar</button>
@@ -88,13 +88,15 @@
                   <option value="0">Inativo</option>
                 </select>
 
-                <label>Usuário:</label>
-                <input v-model="current.nome_usuario" type="text" :required="!editing"
-                  placeholder="Digite o nome para login..." />
+                <div v-if="!editing">
+                  <label>Usuário:</label>
+                  <input v-model="current.nome_usuario" type="text" required
+                    placeholder="Digite o nome para login..." />
 
-                <label>Senha:</label>
-                <input v-model="current.senha_usuarios" type="password" :required="!editing"
-                  placeholder="Crie a senha do usuário para login..." />
+                  <label>Senha:</label>
+                  <input v-model="current.senha_usuarios" type="password" required
+                    placeholder="Crie a senha do usuário para login..." />
+                </div>
 
                 <div class="modal-actions">
                   <button @click="save" class="save-button">Salvar</button>

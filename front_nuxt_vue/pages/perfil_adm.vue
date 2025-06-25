@@ -1,9 +1,7 @@
 <template>
-  <section v-if="role_usuario == 'administrador'" class="section_administrador">
+  <section v-if="role_usuario === 'administrador'" class="section_administrador">
     <MenuLateral class="menuLateral" />
-
     <div class="container_right">
-
       <div class="profile-container">
         <div class="profile-header">
           <h1>Meu Perfil</h1>
@@ -17,22 +15,19 @@
           <div class="profile-sidebar">
             <div class="profile-summary">
               <div class="profile-avatar">
-                <img src="../assets/icones/perfil.png" :src="perfil.foto_usuario || '../assets/icones/perfil.png'"
-                  alt="Foto de perfil">
+                <img src="../assets/icones/perfil.png" :src="perfil.imagem_perfil || '../assets/icones/perfil.png'"
+                  alt="Foto de perfil" />
               </div>
-              <h2>{{ perfil.usuario.nome_usuario }}</h2>
-              <p class="profile-role">{{ perfil.cargo_usuario }}</p>
-              <p>membro desde {{ formatDate(perfil.data_admisao) }}</p>
-              <button class="change-photo-btn" @click="openPhotoUpload">Alterar Foto</button>
-              <input type="file" ref="photoInput" style="display: none" accept="image/*" @change="handlePhotoUpload">
+              <h2>{{ perfil.nome_usuario }}</h2>
+              <p class="profile-role">{{ perfil.cargo?.nome }}</p>
+              <p>Membro desde {{ formatDate(perfil.dt_adm) }}</p>
+              <button v-if="!editing" class="edit-btn" @click="startEditing">
+                Editar Perfil
+              </button>
+              <input type="file" ref="photoInput" style="display: none" accept="image/*" @change="handlePhotoUpload" />
             </div>
 
-            <nav class="profile-menu">
-              <a href="#" class="active">Informações Pessoais</a>
-              <a href="#">Configurações</a>
-              <a href="#">Segurança</a>
-              <a href="#">Notificações</a>
-            </nav>
+
           </div>
 
           <div class="profile-details">
@@ -40,26 +35,19 @@
               <h2>Dados do Funcionário</h2>
               <p>Veja as informações relacionadas ao seu trabalho</p>
 
-              <div class="info-grid">
-                <div class="info-item">
-                  <label>Quantidade de Receitas</label>
-                  <div class="info-value">{{ perfil.numero_receitas_feitas }}</div>
-                </div>
+              <div class="info-item">
+                <label>Restaurante</label>
+                <div class="info-value">{{ nomeRestaurante || 'Carregando...' }}</div>
+              </div>
 
-                <div class="info-item">
-                  <label>Restaurante</label>
-                  <div class="info-value">Restaurante Sabor do Chef</div>
-                </div>
+              <div class="info-item">
+                <label>Cargo</label>
+                <div class="info-value">{{ perfil.cargo?.nome }}</div>
+              </div>
 
-                <div class="info-item">
-                  <label>Cargo</label>
-                  <div class="info-value">{{ perfil.cargo_usuario }}</div>
-                </div>
-
-                <div class="info-item">
-                  <label>Membro desde</label>
-                  <div class="info-value">{{ formatDate(perfil.data_admisao) }}</div>
-                </div>
+              <div class="info-item">
+                <label>Membro desde</label>
+                <div class="info-value">{{ formatDate(perfil.dt_adm) }}</div>
               </div>
             </section>
 
@@ -68,60 +56,50 @@
               <form @submit.prevent="saveChanges">
                 <div class="form-group">
                   <label for="username">Nome de Usuário</label>
-                  <input type="text" id="username" v-model="editForm.nome_usuario" required>
-                </div>
-
-                <div class="form-group">
-                  <label for="role">Cargo</label>
-                  <input type="text" id="role" v-model="editForm.cargo_usuario" required>
+                  <input type="text" id="username" v-model.trim="editForm.nome_usuario" required maxlength="50" />
                 </div>
 
                 <div class="form-actions">
-                  <button type="button" @click="cancelEdit">Cancelar</button>
-                  <button type="submit">Salvar Alterações</button>
+                  <button type="button" class="btn-cancel" @click="cancelEdit" :disabled="loading">
+                    Cancelar
+                  </button>
+                  <button type="submit" class="btn-save" :disabled="loading">
+                    <span v-if="!loading">Salvar Alterações</span>
+                    <span v-else>Salvando...</span>
+                  </button>
                 </div>
               </form>
             </section>
-
-            <button v-else class="edit-btn" @click="startEditing">Editar Perfil</button>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Mensagem de bloqueio do usuário -->
   <div v-else class="mensagem_acesso">
     Seu nível de acesso não é compatível com essa funcionalidade...
   </div>
 </template>
 
 <script>
-import { getPerfilById, updatePerfil } from '~/assets/js/request_api_perfil';
 import Cookies from 'js-cookie';
+import { funcionarioPorId } from '~/assets/api_funcionario/funcionario';
+import { updatePerfil } from '~/assets/js/request_api_perfil.js';
+import { buscarRestaurantePorId } from '~/assets/js/request_api_restaurante';
 
 export default {
   data() {
     return {
-      perfil: {
-        nome_usuario: '',
-        cargo_usuario: '',
-        data_admisao: '',
-        foto_usuario: '',
-        numero_receitas_feitas: 0,
-        numero_livros_publicados: 0,
-        media_avaliacoes: 0
-      },
+      perfil: {},
+      nomeRestaurante: '',
       loading: true,
       error: null,
       editing: false,
       editForm: {
-        nome_usuario: '',
-        cargo_usuario: '',
-        foto_usuario: null
+        nome_usuario: ''
       },
       role_usuario: Cookies.get("cargo_user")
-    }
+    };
   },
   async mounted() {
     await this.fetchPerfil();
@@ -130,57 +108,112 @@ export default {
     async fetchPerfil() {
       this.loading = true;
       this.error = null;
+
       try {
-        const perfilData = await getPerfilById(Cookies.get("id_user")); // trocar pelo ID real
-        this.perfil = perfilData;
-      } catch (error) {
-        this.error = 'Erro ao carregar perfil: ' + error.message;
-        console.error(error);
+        const id = Cookies.get("id_user");
+        const data = await funcionarioPorId(id);
+
+        if (!data) {
+          throw new Error('Dados do perfil não encontrados');
+        }
+
+        this.perfil = data;
+
+        if (data.listaRestaurante?.length) {
+          const idRestaurante = data.listaRestaurante[0].idRestaurante;
+          const restauranteData = await buscarRestaurantePorId(idRestaurante);
+
+          if (!restauranteData) {
+            throw new Error('Dados do restaurante não encontrados');
+          }
+
+          this.nomeRestaurante = restauranteData.nome_restaurante ||
+            restauranteData.nomeRestaurante ||
+            restauranteData.nome ||
+            'Nome não encontrado';
+        } else {
+          this.nomeRestaurante = 'Nenhum restaurante associado';
+        }
+      } catch (err) {
+        console.error('Erro ao carregar perfil:', err);
+        this.error = 'Erro ao carregar perfil. Tente recarregar a página.';
+        this.$toast?.error(this.error);
       } finally {
         this.loading = false;
       }
     },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString);
+
+    formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
       return date.toLocaleDateString('pt-BR', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
     },
+
     startEditing() {
-      this.editForm = {
-        nome_usuario: this.perfil.nome_usuario,
-        cargo_usuario: this.perfil.cargo_usuario,
-        foto_usuario: null
-      };
+      this.editForm.nome_usuario = this.perfil.nome_usuario;
       this.editing = true;
     },
+
     cancelEdit() {
       this.editing = false;
     },
+
     async saveChanges() {
       try {
         this.loading = true;
 
-        const updatedPerfil = await updatePerfil(this.perfil.id_funcionario, this.editForm);
+        const updateData = {
+          nome_usuario: this.editForm.nome_usuario
+        };
 
-        this.perfil.usuario.nome_usuario = updatedPerfil.usuario.nome_usuario;
-        this.perfil.cargo_usuario = updatedPerfil.cargo_usuario;
-        this.perfil.foto_usuario = updatedPerfil.foto_usuario;
+        console.log('[saveChanges] Iniciando atualização...');
+
+        const response = await updatePerfil(this.perfil.id, updateData);
+        console.log('[saveChanges] Resposta da API:', response);
+
+        if (response && response.status === "OK") {
+          const novoNome = response.data?.nome_usuario || updateData.nome_usuario;
+
+          this.perfil.nome_usuario = novoNome;
+
+          // Atualizar cookie com escopo global
+          Cookies.set("nome_user", novoNome, { path: '/' });
+
+          this.$toast.success('Nome atualizado com sucesso!');
+
+          // Recarregar completamente para refletir no layout
+          window.location.href = '/perfil'; // ou a rota que carrega o nome novamente
+
+        } else {
+          throw new Error(response?.message || 'Resposta inválida da API');
+        }
 
         this.editing = false;
+
       } catch (error) {
-        this.error = 'Erro ao atualizar perfil: ' + error.message;
-        console.error(error);
+        console.error('[saveChanges] Erro na atualização:', error);
+
+        const errorMessage = error.message.includes('Network Error')
+          ? 'Erro de conexão. Verifique sua internet.'
+          : error.message || 'Erro ao atualizar nome';
+
+        this.$toast.error(errorMessage + ' Tente novamente.');
+
       } finally {
         this.loading = false;
       }
-    },
+    }
+
+    ,
+
     openPhotoUpload() {
       this.$refs.photoInput.click();
     },
+
     async handlePhotoUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -189,33 +222,36 @@ export default {
       reader.onload = async () => {
         try {
           this.loading = true;
-          const updatedPerfil = await updatePerfil(this.perfil.id_funcionario, {
-            ...this.editForm,
-            foto_usuario: reader.result
+          const response = await fetch(`/perfil/${this.perfil.id}/foto`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ foto_usuario: reader.result })
           });
 
-          this.perfil.foto_usuario = updatedPerfil.foto_usuario;
-        } catch (error) {
-          this.error = 'Erro ao atualizar foto: ' + error.message;
+          if (!response.ok) throw new Error('Erro ao atualizar foto');
+
+          const result = await response.json();
+          this.perfil.imagem_perfil = result.foto_usuario;
+        } catch (err) {
+          this.error = 'Erro ao atualizar foto: ' + err.message;
         } finally {
           this.loading = false;
-          event.target.value = '';
         }
       };
       reader.readAsDataURL(file);
     }
-
   },
   head() {
-    return {
-      title: 'Meu Perfil'
-    }
+    return { title: 'Meu Perfil' };
   }
-}
+};
 </script>
 
 <style scoped>
 @import url("~/assets/css/perfil_adm.css");
+
 .section_administrador {
   width: 100vw;
   display: flex;
@@ -274,14 +310,14 @@ export default {
 }
 
 .form-actions button:last-child {
-  background: #4CAF50;
+  background: #0037ad;
   color: white;
 }
 
 .edit-btn {
   margin-top: 20px;
   padding: 10px 20px;
-  background: #4CAF50;
+  background: #0020af;
   color: white;
   border: none;
   border-radius: 4px;

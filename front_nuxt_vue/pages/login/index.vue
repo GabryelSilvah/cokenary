@@ -13,10 +13,10 @@
         <input type="password" placeholder="Digite sua senha..." v-model="loginModel.senha">
       </div>
 
-      <button class="btn_form" type="submit">Entrar</button>
-      <div class="container_opcoes_login">
+      <button class="btn_form" type="submit">Logar</button>
+      <!-- <div class="container_opcoes_login">
         <NuxtLink class="btn_opcoes_login" :to="{ path: `/esqueceu_senha` }">Esqueceu a senha?</NuxtLink>
-      </div>
+      </div> -->
     </form>
 
   </div>

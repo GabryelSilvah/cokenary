@@ -6,7 +6,7 @@
 }
 
 .banner_login {
-    background: -webkit-linear-gradient(120deg, rgba(32, 32, 32, 0.419), black), url("../../assets/image/banner_login.jpg");
+    background: -webkit-linear-gradient(120deg, rgba(32, 32, 32, 0.419), black), url("../../assets/image/login_banner.png");
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -57,7 +57,7 @@
     width: 100%;
     border: none;
     border-radius: 7px;
-    background-color: rgb(37, 39, 41);
+    background-color: rgb(29, 109, 237);
     color: #fff;
     padding: 5px;
     font-size: 1.4rem;
