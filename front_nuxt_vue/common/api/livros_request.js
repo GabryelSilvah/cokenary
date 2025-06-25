@@ -62,6 +62,10 @@ async function cadastrarLivros(corpo_request) {
       body: JSON.stringify(corpo_request)
     });
 
+  if (errorAPI.value) {
+    return errorAPI;
+  }
+
   return responseAPI;
 }
 
@@ -71,10 +75,14 @@ async function alterarLivros(id_livro, corpo_request) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": 'Bearer ' + authorization  
+      "Authorization": 'Bearer ' + authorization
     },
     body: JSON.stringify(corpo_request)
   });
+
+  if (errorAPI.value) {
+    return errorAPI;
+  }
 
   return responseAPI;
 }
@@ -85,7 +93,7 @@ async function deletarLivros(id_livro) {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": 'Bearer ' + authorization  
+      "Authorization": 'Bearer ' + authorization
     },
   });
 

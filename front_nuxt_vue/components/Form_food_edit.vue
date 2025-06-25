@@ -92,10 +92,8 @@
 <script setup lang="js">
 import { byIdIngredientes } from '~/common/api/ingredientes_request';
 import { byIdMedidas } from '~/common/api/medida_request';
-import { alterarReceitas, cadastrarReceitas } from '~/common/api/receitas_request';
+import { alterarReceitas, cadastrarReceitas, listarReceitas } from '~/common/api/receitas_request';
 import Cookies from 'js-cookie';
-
-const URL_BASE_API = "http://localhost:8081";
 
 
 
@@ -107,7 +105,7 @@ defineProps({
     medidas: Object
 });
 
-
+let listasReceitas = ref();
 
 const receitaModel = defineModel("receitaModel", {
     default: {
@@ -121,6 +119,8 @@ const receitaModel = defineModel("receitaModel", {
         ingredientes_removidos: []
     }
 });
+
+
 
 //Inicializando variáveis que vão receber dados do formulário
 const ingredientes_ref = defineModel("ingredientes_ref");
@@ -233,8 +233,15 @@ async function pegarDadosForm(id_receita) {
     receitaModel.value.cozinheiro_id.id_func = Cookies.get("id_user");
     //Enviando dados para API
     let responseAPI = await alterarReceitas(id_receita, receitaModel.value);
+    console.log(JSON.stringify(responseAPI.value))
 
-    fecharForm();
+    if (responseAPI.value.status == "CREATED") {
+        fecharForm();
+        alert("Receita alterada com sucesso!");
+        listasReceitas.value = await listarReceitas();
+    } else {
+        alert(responseAPI.value.data.message);
+    }
 }
 
 

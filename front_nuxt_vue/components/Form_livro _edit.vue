@@ -10,16 +10,6 @@
         <label for="">Titulo do livro</label>
         <input v-model="livroModel.titulo_livro" type="text" placeholder="Ex: Receitas Premium">
 
-        <label for="">Criado por</label>
-        <select name="criador_receita" id="" v-model="livroModel.editor.id_func">
-          <option value="0" selected>Selecione</option>
-
-          <option :value="editor.id" v-for="editor in listaFuncionarios" :key="editor.id_func">
-            {{ editor.nome }}
-          </option>
-
-        </select>
-
 
         <label for="">Adicione as receitas</label>
         <div class="container_itens_add" id="caixa_de_itens_salvas">
@@ -34,7 +24,7 @@
 
 
         <select name="receita_livro" id="" v-model="receita_ref">
-          <option value="0" selected>Selecione</option>
+          <option value="0" disabled>Selecione</option>
           <option :value="receita.id_receita" v-for="receita in listaReceitas" :key="receita.id_receita">
             {{ receita.nome_receita }}
           </option>
@@ -66,6 +56,7 @@
 <script lang="js" setup>
 import { alterarLivros, listarLivros } from '~/common/api/livros_request';
 import { byIdAllInfor } from '~/common/api/receitas_request';
+import Cookies from 'js-cookie';
 
 //Definindo dados que devem ser pré-carregados
 defineProps(
@@ -143,10 +134,29 @@ async function addReceitasNaLista() {
 
 //Atualizar informações do livro
 async function alterarLivro(id_livro) {
-  livroModel.value.receitas_remover = listaReceitasExcluir;
-  const livroAlterado = await alterarLivros(id_livro, livroModel.value);
-    listaLivros.value = await listarLivros();
-  fecharForm();
+
+  let erros = 0;
+  if (livroModel.value.publicacao_receitas_livro.length == 0) {
+    alert("Adicione ao menos uma receita");
+    erros++;
+  }
+
+  if (erros == 0) {
+    livroModel.value.receitas_remover = listaReceitasExcluir;
+    livroModel.value.editor.id_func = Cookies.get("id_user")
+
+    const responseAPI = await alterarLivros(id_livro, livroModel.value);
+
+    if (responseAPI.value.status == "CREATED") {
+      fecharForm();
+      alert("Livro alterado com sucesso!");
+      listaLivros.value = await listarLivros();
+    } else {
+      alert(responseAPI.value.data.message);
+    }
+  }
+  erros = 0;
+
 }
 
 
@@ -161,6 +171,7 @@ function fecharForm() {
     publicacao_receitas_livro: []
   };
 
+  receita_ref.value = 0;
 
   let container_form_cadastro = document.querySelector(".container_form_edit");
   container_form_cadastro.setAttribute("style", "display:none");

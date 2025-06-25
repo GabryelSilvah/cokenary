@@ -66,7 +66,7 @@ public class LivroService {
     public LivroDTO listById(Long id) {
 
         //Validando se ID foi passado
-        if(id == null){
+        if (id == null) {
             throw new RegistroNotFoundException("O ID do livro esperado é null");
         }
 
@@ -176,21 +176,27 @@ public class LivroService {
 
     public LivroDTO update(Long id, Livro livro) {
 
-        //Buscando livro
-        Optional<Livro> livroEncontrado = livroRepository.findById(id);
 
-        //Buscando funcinário/editor inserido
-        Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(livro.getFk_editor().getId_func());
+        //Validando se livro existe
+        Optional<Livro> livroEncontrado = livroRepository.findById(id);
+        if (livroEncontrado.isEmpty()) {
+            throw new RegistroNotFoundException("O cargo de ID (" + id + ") não foi encontrado");
+        }
+
+
+        //Validando se titulo do livro já existe
+        Optional<Livro> tituloExistente = livroRepository.findByTituloLivro(livro.getTituloLivro());
+        if (tituloExistente.isPresent() && !(tituloExistente.get().getId_livro().equals(id))) {
+            throw new RegistroExistsException("Título do livro (" + livro.getTituloLivro() + ") já existe");
+        }
+
 
         //Validando se o funcionário/editor existe
+        Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(livro.getFk_editor().getId_func());
         if (funcionarioEncontrado.isEmpty()) {
             throw new FuncionarioNotFoundException("Funcionário/editor de ID(" + livro.getFk_editor().getId_func() + ") não encontrado");
         }
 
-        //Validando se livro existe
-        if (livroEncontrado.isEmpty()) {
-            throw new RegistroNotFoundException("O cargo de ID (" + id + ") não foi encontrado");
-        }
 
         //Alterando livro encontrada
         livroEncontrado.get().setTituloLivro(livro.getTituloLivro());
@@ -219,7 +225,12 @@ public class LivroService {
             throw new RegistroNotFoundException("O livro de ID (" + id + ") não foi encontrado");
         }
 
-        System.out.println("Teste de ID update: " + livroDTO.getEditor().getId_func());
+        //Validando se titulo do livro já existe
+        Optional<Livro> tituloExistente = livroRepository.findByTituloLivro(livroDTO.getTitulo_livro());
+        if (tituloExistente.isPresent() && !(tituloExistente.get().getId_livro().equals(id))) {
+            throw new RegistroExistsException("Título do livro (" + livroDTO.getTitulo_livro() + ") já existe");
+        }
+
 
         //Buscando funcinário/editor inserido
         Optional<Funcionario> funcionarioEncontrado = funcionarioRepository.findById(livroDTO.getEditor().getId_func());

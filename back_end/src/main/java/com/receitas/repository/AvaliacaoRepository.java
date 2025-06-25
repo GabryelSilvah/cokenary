@@ -21,4 +21,7 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
 
     @NativeQuery("SELECT count(id) FROM avaliacoes;")
     int countRegistro();
+
+    @NativeQuery("SELECT fk_receita FROM avaliacoes WHERE fk_degustador = :id_avaliador")
+    List<Long> findReceitasNaoAvaliadas(Long id_avaliador);
 }

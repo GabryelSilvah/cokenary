@@ -1,5 +1,5 @@
 <template>
-  <main v-if="role_usuario == 'cozinheiro'">
+  <main v-if="role_usuario == 'editor'">
     <Menu />
     <section class="container_exibir_livro">
 

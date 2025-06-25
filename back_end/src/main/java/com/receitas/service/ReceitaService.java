@@ -164,10 +164,11 @@ public class ReceitaService {
             throw new ReceitaNotFoundException("Falha, nunhuma receita encontrada com esse ID (" + id + ")");
         }
 
+
         //Validando se o nome da receita já existe na tabela
         Optional<Receita> receitaNomeEncontrada = receitaRepository.findByNomeReceita(receitaRecebida.getNomeReceita());
-        if (receitaNomeEncontrada.isPresent() && !Objects.equals(receitaNomeEncontrada.get().getNomeReceita(), receitaRecebida.getNomeReceita())) {
-            throw new ReceitaNameExistsException("Falha, o nome da receita inserido já existe (" + receitaRecebida.getNomeReceita() + ")");
+        if (receitaNomeEncontrada.isPresent() && !(receitaNomeEncontrada.get().getId_receita().equals(id))) {
+            throw new ReceitaNameExistsException("Falha, o nome da receita (" + receitaRecebida.getNomeReceita() + ") inserida já existe ");
         }
 
         //Buscando categoria inserida

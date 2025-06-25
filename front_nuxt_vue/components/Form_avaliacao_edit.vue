@@ -34,7 +34,7 @@
 //
 <script setup scoped lang="js">
 import { alterarAvaliacao, byIdDegustador, cadastrarAvaliacao } from '~/common/api/avaliacao_request';
-
+import Cookies from 'js-cookie';
 
 
 //Campos (select) que devem ser passado por quem usar o componente Form_food
@@ -59,17 +59,23 @@ const avaliacaoModel = defineModel("avaliacaoModel", {
 
 
 async function salvar() {
-    console.log("Id avaliação: "+ avaliacaoModel.value.id_avaliacao);
-    console.log("Corpo avaliação: "+ avaliacaoModel.value);
-    const avaliacaoCadastrada = await alterarAvaliacao(avaliacaoModel.value.id_avaliacao, avaliacaoModel.value);
-    fecharForm();
+    avaliacaoModel.value.degustador.id_func = Cookies.get("id_user");
+    const responseAPI = await alterarAvaliacao(avaliacaoModel.value.id_avaliacao, avaliacaoModel.value);
 
-    listarAvaliacoes = await byIdDegustador(avaliacaoModel.value.degustador.id_func);
+
+    if (responseAPI.value.status == "CREATED") {
+        fecharForm();
+        alert("Avaliação alterada com sucesso!");
+        listarAvaliacoes = await byIdDegustador(avaliacaoModel.value.degustador.id_func);
+    } else {
+        alert(responseAPI.value.data.message);
+    }
 }
 
 
 //Fechar formulário
 function fecharForm() {
+    avaliacaoModel.value.receita.id_receita = 0;
     let container_form_cadastro = document.querySelector(".container_form_edit");
     container_form_cadastro.setAttribute("style", "display:none");
 }

@@ -83,6 +83,14 @@ const livroModel = ref({
 
 //Abrir formulário de cadastrar livro
 function abrirForm() {
+   livroModel.value = ({
+    titulo_livro: "",
+    isbn: 344343,
+    editor: { id_func: 0 },
+    receitas_remover: [],
+    publicacao_receitas_livro: []
+  });
+
   //Exibindo formulário
   let form = document.querySelector("#form");
   form.setAttribute("style", "display:flex");

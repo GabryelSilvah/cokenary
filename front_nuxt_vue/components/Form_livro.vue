@@ -10,16 +10,6 @@
         <label for="">Titulo do livro</label>
         <input v-model="livroModel.titulo_livro" type="text" placeholder="Ex: Receitas Premium" required>
 
-        <label for="">Criado por</label>
-        <select name="criador_receita" id="" v-model="livroModel.editor.id_func">
-          <option value="0" selected>Selecione</option>
-
-          <option :value="editor.id" v-for="editor in listaFuncionarios" :key="editor.id_func">
-            {{ editor.nome }}
-          </option>
-
-        </select>
-
         <label for="">Adicione as receitas</label>
         <div class="container_itens_add" id="caixa_de_itens_salvas">
           <h2>Coleção de receitas do livro</h2>
@@ -62,6 +52,7 @@
 <script lang="js" setup>
 import { cadastrarLivros, listarLivros } from '~/common/api/livros_request';
 import { byIdAllInfor } from '~/common/api/receitas_request';
+import Cookies from 'js-cookie';
 
 //Definindo dados que devem ser pré-carregados
 defineProps(
@@ -89,9 +80,28 @@ const livroModel = defineModel("livroModel", {
 
 //Receber e enviar dados inseridos para a API (POST)
 async function cadastrarLivro() {
-  const livroCadastrado = await cadastrarLivros(livroModel.value);
-  fecharForm();
-  listaLivros.value = await listarLivros();
+
+  let erros = 0;
+  if (livroModel.value.publicacao_receitas_livro.length == 0) {
+    alert("Adicione ao menos uma receita");
+    erros++;
+  }
+
+
+  if (erros == 0) {
+    livroModel.value.editor.id_func = Cookies.get("id_user");
+    const responseAPI = await cadastrarLivros(livroModel.value);
+
+
+    if (responseAPI.value.status == "CREATED") {
+      fecharForm();
+      alert("Livro cadastrado com sucesso!");
+      listaLivros.value = await listarLivros();
+    } else {
+      alert(responseAPI.value.data.message);
+    }
+  }
+  erros = 0;
 }
 
 
@@ -100,7 +110,7 @@ async function addReceitasNaLista() {
 
   //Buscando receita escolhida
   const receitaEncontrada = await byIdAllInfor(receita_ref.value);
-  console.log("Teste livro: " + JSON.stringify(receitaEncontrada));
+
 
   let composicao_receitas =
   {
@@ -128,6 +138,7 @@ function excluir_receita_livro(id_receita) {
 
 //Fechar formulário
 function fecharForm() {
+  receita_ref.value = 0;
   let container_form_cadastro = document.querySelector(".container_form_cadastro");
   container_form_cadastro.setAttribute("style", "display:none");
 }

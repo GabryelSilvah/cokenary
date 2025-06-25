@@ -4,19 +4,13 @@
     <nav>
 
       <div class="Marca">
-        <NuxtLink to="#" class="titulo_page">
-          <h2>Cooknary <span class="role_menu">{{ role_usuario }}</span></h2>
+        <NuxtLink to="/livros/listar" class="titulo_page">
+          <h2>Cooknary <span class="role_menu">Editor</span></h2>
         </NuxtLink>
       </div>
       <ul>
-        <NuxtLink to="/food" v-if="role_usuario == 'cozinheiro'">
-          <li>Receitas</li>
-        </NuxtLink>
-        <NuxtLink to="/livros/listar" v-if="role_usuario == 'editor'">
+        <NuxtLink to="/livros/listar">
           <li>Livros</li>
-        </NuxtLink>
-        <NuxtLink to="/livros/listar" v-if="role_usuario == 'degustador'">
-          <li>Avaliações</li>
         </NuxtLink>
         <NuxtLink to="/perfil">
           <li>Perfil</li>
@@ -49,7 +43,7 @@ main {
 <script lang="js" setup>
 import Cookies from 'js-cookie';
 
-const role_usuario = Cookies.get("cargo_user");
+
 
 function logout() {
   Cookies.remove("token_auth");

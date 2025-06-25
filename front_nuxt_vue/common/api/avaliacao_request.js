@@ -1,4 +1,4 @@
-export { listarAvaliacao, byIdAvaliacao, byIdDegustador, cadastrarAvaliacao, alterarAvaliacao, deletarAvaliacao };
+export { listarAvaliacao, byIdAvaliacao, byIdDegustador, listReceitasNaoAvaliadas, cadastrarAvaliacao, alterarAvaliacao, deletarAvaliacao };
 import Cookies from 'js-cookie';
 const authorization = Cookies.get("token_auth");
 
@@ -28,6 +28,20 @@ async function listarAvaliacao() {
 
   return responseAPI;
 }
+
+async function listReceitasNaoAvaliadas(id_avaliador) {
+
+  const { data: responseAPI, error: errorAPI } = await useFetch(URL_BASE_API + "/listar-nao-avaliadas/" + id_avaliador, {
+    headers: headers()
+  });
+
+  if (errorAPI.value) {
+    return errorAPI;
+  }
+
+  return responseAPI;
+}
+
 
 
 //Buscar pelo ID
@@ -61,6 +75,10 @@ async function cadastrarAvaliacao(corpo_request) {
       body: JSON.stringify(corpo_request)
     });
 
+  if (errorAPI.value) {
+    return errorAPI;
+  }
+
   return responseAPI;
 }
 
@@ -71,6 +89,10 @@ async function alterarAvaliacao(id_avaliacao, corpo_request) {
     headers: headers(),
     body: JSON.stringify(corpo_request)
   });
+
+  if (errorAPI.value) {
+    return errorAPI;
+  }
 
   return responseAPI;
 }

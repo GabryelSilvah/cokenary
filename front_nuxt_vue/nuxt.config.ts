@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     '/food': { ssr: false },
     '/livros/listar': { ssr: false },
     '/livros/descricao': { ssr: false },
-    '/descricao_food': { ssr: false }
+    '/descricao_food': { ssr: false },
+    '/avaliacao/listar': { ssr: false }
   },
   modules: ['@nuxtjs/tailwindcss']
 

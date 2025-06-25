@@ -9,7 +9,9 @@ body {
   box-sizing: border-box;
   font-family: sans-serif;
 }
-
+.role_menu{
+  font-size: 0.9rem;
+}
 .menu {
   width: 100vw;
   display: flex;

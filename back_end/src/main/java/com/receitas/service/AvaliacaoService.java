@@ -2,6 +2,7 @@ package com.receitas.service;
 
 import com.receitas.dto.AvaliacaoDTO;
 import com.receitas.dto.FuncionarioSaidaDTO;
+import com.receitas.dto.ReceitaDTO;
 import com.receitas.dto.ReceitaFullDTO;
 import com.receitas.exception.RegistroNotFoundException;
 import com.receitas.model.Avaliacao;
@@ -83,6 +84,14 @@ public class AvaliacaoService {
         );
     }
 
+    public List<ReceitaFullDTO> listReceitasNaoAvaliadas(Long id_avaliador) {
+
+
+
+        return null;
+    }
+
+
     public List<AvaliacaoDTO> listByAvaliador(Long id_avaliador) {
 
         //Buscando avaliação com o nome passado
@@ -106,12 +115,13 @@ public class AvaliacaoService {
                             avaliacaoEncontrada.get(i).getNota_avaliacao(),
                             avaliacaoEncontrada.get(i).getData_alteracao()
                     )
-           );
+            );
         }
 
         //Retornando avaliação no formato DTO
         return listaAvaliacaoDTO;
     }
+
 
     public AvaliacaoDTO save(AvaliacaoDTO avaliacaoDTO) {
 
@@ -139,7 +149,7 @@ public class AvaliacaoService {
         //Validando se degustador já fez avaliação dessa receita
         Optional<Avaliacao> avaliacaoEncontrada = avaliacaoRepository.findByDegustadorAndReceita(avaliacaoDTO.getDegustador().getId_func(), avaliacaoDTO.getReceita().getId_receita());
         if (avaliacaoEncontrada.isPresent()) {
-            throw new RegistroNotFoundException("O degustador de ID (" + avaliacaoDTO.getDegustador().getId_func() + ") já avaliou a receita de ID(" + avaliacaoDTO.getReceita().getId_receita() + ")");
+            throw new RegistroNotFoundException("O degustador de ID (" + avaliacaoDTO.getDegustador().getId_func() + ") já avaliou a receita de ID (" + avaliacaoDTO.getReceita().getId_receita() + ")");
         }
 
         //Salvando na base de dados
@@ -157,6 +167,7 @@ public class AvaliacaoService {
                 avaliacaoSalva.getNota_avaliacao()
         );
     }
+
 
     public AvaliacaoDTO update(Long id, AvaliacaoDTO avaliacaoDTO) {
 
@@ -186,6 +197,7 @@ public class AvaliacaoService {
                 avaliacaoAlterada.getData_alteracao()
         );
     }
+
 
     public Boolean delete(Long id) {
 

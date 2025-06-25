@@ -25,15 +25,6 @@
                 </select>
 
 
-                <!-- <label for="">Cozinheiro:</label>
-                <select name="cozinheiro" id="" v-model="receitaModel.cozinheiro_id.id_func" required>
-                    <option value="0">Selecione</option>
-                    <option v-if="funcionarios" v-for="cozinheiro in funcionarios.data" :key="cozinheiro.id_func"
-                        :value="cozinheiro.id">
-                        {{ cozinheiro.nome }}
-                    </option>
-                </select> -->
-
 
                 <label for="">Ingredientes:</label>
                 <div class="container_itens_add" id="caixa_de_itens_salvas">
@@ -242,11 +233,16 @@ async function pegarDadosForm() {
         receitaModel.value.cozinheiro_id.id_func = Cookies.get("id_user");
         console.log("Model: " + JSON.stringify(receitaModel.value));
 
-        await cadastrarReceitas(receitaModel.value);
+        let responseAPI = await cadastrarReceitas(receitaModel.value);
 
-        fecharForm();
 
-        listasReceitas.value = await listarReceitas();
+        if (responseAPI.value.status == "CREATED") {
+            fecharForm();
+            alert("Receita cadastrada com sucesso!");
+            listasReceitas.value = await listarReceitas();
+        } else {
+            alert(responseAPI.value.data.message);
+        }
     }
 
     erros = 0;
@@ -258,46 +254,5 @@ function fecharForm() {
     let container_form_cadastro = document.querySelector(".container_form_cadastro");
     container_form_cadastro.setAttribute("style", "display:none");
 }
-
-
-//Função para exibir uma lista de cada ingrediente que está sendo adicionado 
-// async function exibir_ingrediente_add() {
-
-//     //Request de ingredientes (recebendo ingrediente procurado pelo ID)
-//     let {
-//         data: medidaEncontrada, //armazenando lista de medida vindo da API (back-end)
-//         error: errosMedida //Capturando erros da requisição
-//     } = await useFetch(URL_BASE_API + "/receitas/medida/byId/" + medida_ref.value);
-
-
-//     //Request de ingredientes (recebendo ingrediente procurado pelo ID)
-//     let {
-//         data: ingredienteEncontrado, //armazenando lista de ingredientes vindo da API (back-end)
-//         error: errosIngredientes //Capturando erros da requisição
-//     } = await useFetch(URL_BASE_API + "/ingredientes/byId/" + ingredientes_ref.value);
-
-
-//     //Exibir no formulário caixa com lista de ingredientes adicionados para cadastro
-//     let caixa_de_itens_salvas = document.getElementById("caixa_de_itens_salvas");
-//     let ingredAdd = document.createElement("p");
-
-//     if (ingredienteEncontrado.value) {
-//         ingredAdd.textContent = ingredienteEncontrado.value.data.nome;
-//     }
-
-//     let medidaAdd = document.createElement("p");
-//     if (medidaEncontrada.value) {
-//         medidaAdd.textContent = medidaEncontrada.value.data.nome_med;
-//     }
-
-
-//     let div = document.createElement("div");
-//     div.classList.add("container_composicao");
-
-//     div.appendChild(ingredAdd);
-//     div.appendChild(medidaAdd);
-
-//     caixa_de_itens_salvas.insertAdjacentElement("beforeend", div);
-// }
 
 </script>

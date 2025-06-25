@@ -41,7 +41,7 @@
 //
 <script setup scoped lang="js">
 import { byIdDegustador, cadastrarAvaliacao } from '~/common/api/avaliacao_request';
-
+import Cookies from 'js-cookie';
 
 
 //Campos (select) que devem ser passado por quem usar o componente Form_food
@@ -54,8 +54,8 @@ let listarAvaliacoes = ref();
 
 const avaliacaoModel = defineModel("receitaModel", {
     default: {
-        degustador: { id_func: 4 },
-        receita: { id_receita: 0, nomeReceita:"" },
+        degustador: { id_func: 0 },
+        receita: { id_receita: 0, nomeReceita: "" },
         data_avaliada: "2025-05-31",
         nota_avaliacao: 0
     }
@@ -64,15 +64,23 @@ const avaliacaoModel = defineModel("receitaModel", {
 
 
 async function salvar() {
-  const avaliacaoCadastrada = await cadastrarAvaliacao(avaliacaoModel.value);
-  fecharForm();
+    avaliacaoModel.value.degustador.id_func = Cookies.get("id_user");
 
-    listarAvaliacoes = await byIdDegustador(avaliacaoModel.value.degustador.id_func);
+    const responseAPI = await cadastrarAvaliacao(avaliacaoModel.value);
+
+    if (responseAPI.value.status == "CREATED") {
+        fecharForm();
+        alert("Avaliação cadastrada com sucesso!");
+        listarAvaliacoes = await byIdDegustador(avaliacaoModel.value.degustador.id_func);
+    } else {
+        alert(responseAPI.value.data.message);
+    }
 }
 
 
 //Fechar formulário
 function fecharForm() {
+    avaliacaoModel.value.receita.id_receita = 0;
     let container_form_cadastro = document.querySelector(".container_form_cadastro");
     container_form_cadastro.setAttribute("style", "display:none");
 }

@@ -59,6 +59,10 @@ async function cadastrarReceitas(corpo_request) {
       body: JSON.stringify(corpo_request)
     });
 
+  if (errorAPI.value) {
+    return errorAPI;
+  }
+
   return responseAPI;
 }
 
@@ -73,6 +77,10 @@ async function alterarReceitas(id_receita, corpo_request) {
     body: JSON.stringify(corpo_request)
   });
 
+
+  if (errorAPI.value) {
+    return errorAPI;
+  }
 
   return responseAPI;
 }

@@ -1,56 +1,70 @@
 <template>
 
-  <Menu />
-  <div>
+  <main>
 
-    <FormAvaliacao id="formCadastro" :listaReceitas="listaReceitas.data" />
-    <FormAvaliacaoEdit id="formEdit" :listaReceitas="listaReceitas.data" v-model:avaliacaoModel="avaliacaoModel" />
+    <Menu />
+    <section v-if="role_usuario == 'degustador'">
+      <div>
 
-    <section class="container_opcoes">
-      <button type="button" class="btn_nova_avaliacao" @click="abrirForm">Nova Avaliação</button>
-    </section>
+        <FormAvaliacao id="formCadastro" :listaReceitas="listaReceitas.data" />
+        <FormAvaliacaoEdit id="formEdit" :listaReceitas="listaReceitas.data" v-model:avaliacaoModel="avaliacaoModel" />
 
-    <section class="container_avaliacao">
+        <section class="container_opcoes">
+          <button type="button" class="btn_nova_avaliacao" @click="abrirForm">Nova Avaliação</button>
+        </section>
 
-      <div class="avaliacao" v-for="avaliacao in listarAvaliacoes.data">
-        <h2 class="nome_receita">{{ avaliacao.receita.nomeReceita }}</h2>
+        <section class="container_avaliacao">
 
-        <div class="container_detalhes">
-          <p><span class="titulo_detalhe">Degustador:</span> {{ avaliacao.degustador.nome }}</p>
-          <p><span class="titulo_detalhe">Cozinheiro:</span> {{ avaliacao.cozinheiro.nome }}</p>
-          <p><span class="titulo_detalhe">Data:</span> 19/06/2025</p>
-        </div>
+          <div class="avaliacao" v-for="avaliacao in listarAvaliacoes.data">
+            <h2 class="nome_receita">{{ avaliacao.receita.nomeReceita }}</h2>
 
-        <div class="nota_avalicao">
-          <p><span class="span_nota">Nota:</span>{{ avaliacao.nota_avaliacao }}/10</p>
-        </div>
+            <div class="container_detalhes">
+              <p><span class="titulo_detalhe">Degustador:</span> {{ avaliacao.degustador.nome }}</p>
+              <p><span class="titulo_detalhe">Cozinheiro:</span> {{ avaliacao.cozinheiro.nome }}</p>
+              <p><span class="titulo_detalhe">Data:</span> 19/06/2025</p>
+            </div>
+
+            <div class="nota_avalicao">
+              <p><span class="span_nota">Nota:</span>{{ avaliacao.nota_avaliacao }}/10</p>
+            </div>
 
 
-        <div class="container_btn">
-          <button type="button" class="btn" id="editar"
-            @click="abrirFormEdit(avaliacao.id_avaliacao)">Reavaliar</button>
-          <button type="button" class="btn" id="excluir"
-            @click="excluirAvaliacao(avaliacao.id_avaliacao)">Excluir</button>
-        </div>
+            <div class="container_btn">
+              <button type="button" class="btn" id="editar"
+                @click="abrirFormEdit(avaliacao.id_avaliacao)">Reavaliar</button>
+              <button type="button" class="btn" id="excluir"
+                @click="excluirAvaliacao(avaliacao.id_avaliacao)">Excluir</button>
+            </div>
+          </div>
+        </section>
+
+
       </div>
+
     </section>
 
-
-  </div>
+    <div v-else class="mensagem_acesso">
+      Seu nível de acesso não é compatível com essa funcionalidade...
+    </div>
+  </main>
 </template>
 
 //
 <style scoped>
 @import url("~/assets/css/avaliacao/listar.css");
+@import url("~/assets/css/acesso_role.css");
 </style>
 
 //
 <script lang="ts" setup>
 import { byIdAvaliacao, byIdDegustador, deletarAvaliacao } from '~/common/api/avaliacao_request';
 import { listarReceitas } from '~/common/api/receitas_request';
+import Cookies from 'js-cookie';
+
+const role_usuario = Cookies.get("cargo_user");
 
 
-const id_degustador = ref(4);
+const id_degustador = ref(Cookies.get("id_user"));
 
 
 
@@ -75,7 +89,7 @@ const avaliacaoModel = ref({
 
 //
 async function abrirFormEdit(id_avaliacao) {
-
+  avaliacaoModel.value.receita.id_receita = 0;
 
   const avaliacaoEncontrada = await byIdAvaliacao(id_avaliacao);
 
@@ -101,6 +115,7 @@ async function excluirAvaliacao(id_avaliacao) {
 
 //Abrir formulário de cadastrar avaliação
 async function abrirForm() {
+  avaliacaoModel.value.receita.id_receita = 0;
   //Exibindo formulário
   let form = document.querySelector("#formCadastro");
   form.setAttribute("style", "display:flex");

@@ -2,6 +2,7 @@ package com.receitas.controller;
 
 import com.receitas.config.ResponseJson;
 import com.receitas.dto.AvaliacaoDTO;
+import com.receitas.dto.ReceitaFullDTO;
 import com.receitas.model.Avaliacao;
 import com.receitas.service.AvaliacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,12 @@ public class AvaliacaoController {
     public ResponseEntity<ResponseJson> listar() {
         List<AvaliacaoDTO> listaAvaliacaosDTO = avaliacaoService.listAll();
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Avaliações listadas com sucesso!", listaAvaliacaosDTO));
+    }
+
+    @GetMapping("/listar-nao-avaliadas/{id}")
+    public ResponseEntity<ResponseJson> receitas_nao_avaliadas(@PathVariable("id") Long id_avaliador) {
+        List<ReceitaFullDTO> listaAvaliacaosDTO = avaliacaoService.listReceitasNaoAvaliadas(id_avaliador);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseJson(HttpStatus.OK, "Receitas não avaliadas listadas com sucesso!", listaAvaliacaosDTO));
     }
 
     @GetMapping("/byId/{id}")
