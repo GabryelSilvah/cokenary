@@ -3,8 +3,8 @@ use receitas_db;
 
 
 #Cargos
-insert into cargos (nome)
-values ("cozinheiro"), ("editor"), ("degustador"),("administrador");
+insert into cargos (id, nome)
+values (1, "cozinheiro"), (2, "editor"), (3, "degustador"),(4, "administrador");
 
 
 #Funcionarios
@@ -19,6 +19,7 @@ values
 
 
 #Usuarios
+select * from cargos;
 insert into usuarios (email, senha, fk_funcionario, role)
 values 
 ("Gabryel08","$2a$10$Z5x.JMp1E1KefeNUcJhf3.ttRNwvrX.7cVuCMq5cVC/doe4k/xrbG",1,1),
@@ -34,18 +35,36 @@ values
 insert into categorias(nome_categoria)
 values ("carnes"),("sobremesas/doces"),("salgados"),("massas"),("caldos");
 
+
 #Ingredientes
 insert into ingredientes (nome) values ("Açúcar"),("Sal"),("Pimenta"),("Pimentão"),("Orégano"),("Chocolate"),("Limão"),("Creme de Leite");
+
 
 #Medidas
 insert into medidas (nome_med) values ("ml"),("colher"), ("xícara de chá"), ("copo"),("tijela"),("garrafa");
 
+
 #Receitas
 insert into receitas(data_criacao, modo_preparo, nome_receita, categoria_id, cozinheiro_id)
 values 
-("2025-01-28","Adicione a farinha...","Bolo de Limão",2,1),
-("2025-02-07","Comece preparando a carne...","Strogonoff de Carne",1,5),
-("2025-05-04","Corte em fatias levemente finas...","Filé à Parmegiana",1,5);
+("2025-01-28","Preaqueça o forno a 180 ºC (temperatura média). Com um pedaço de papel toalha, unte com manteiga uma fôrma de bolo, com furo no meio, de 24 cm de diâmetro – tente fazer uma camada bem fina. Polvilhe com farinha e chacoalhe bem para espalhar. Bata sobre a pia para retirar o excesso.
+Numa tigela, passe pela peneira a farinha, o fermento e o sal. Misture e reserve.
+Na batedeira, bata a manteiga até formar um creme claro e fofo. Adicione o açúcar e bata apenas para misturar. Numa tigela pequena, quebre um ovo de cada vez e junte ao creme da batedeira, batendo bem entre cada adição para incorporar.
+Diminua a velocidade da batedeira e adicione os ingredientes peneirados aos poucos, alternando com o leite. A cada adição, bata apenas para misturar.","Bolo de Limão",2,1),
+
+
+("2025-02-07","Corte os bifes em tiras (de 5 cm x 2 cm), transfira para uma tigela e mantenha em temperatura ambiente – a carne não pode estar gelada na hora de dourar. Enquanto isso, prepare os outros ingredientes.
+Numa tábua, corte os cogumelos-de-paris em 3 fatias e reserve (se preferir, você pode usar champignon em conserva, mas o resultado não será o mesmo). Descasque e pique fino a cebola e o alho.
+Leve ao fogo médio uma panela média. Quando aquecer, regue com 1 colher (sopa) de azeite e doure as tiras de carne aos poucos – se colocar todas ao mesmo tempo, elas vão soltar o próprio líquido e cozinhar no vapor, em vez de dourar. Vire com a pinça para dourar por igual.
+Transfira as tiras douradas para uma tigela. Doure o restante, sempre regando a panela com um pouco de azeite antes de cada leva.
+Diminua o fogo da panela para baixo e regue com mais 1 colher (sopa) de azeite. Adicione a cebola e refogue até murchar por cerca de 3 minutos, raspando bem o fundo da panela – os queimadinhos da carne vão dar sabor ao preparo. Junte o alho e mexa por apenas 1 minuto para perfumar.","Strogonoff de Carne",1,5),
+
+
+("2025-05-04","Preaqueça o forno a 220 ºC (temperatura alta). Coloque o molho numa tigela e leve para rodar no micro-ondas por 1 minuto apenas para aquecer.
+Num prato fundo, quebre o ovo e bata com um garfo. Separe dois pratos rasos; coloque a farinha de trigo em um e a farinha de rosca no outro. Forre uma travessa com papel toalha.
+Numa frigideira com borda alta, coloque o óleo e leve ao fogo médio para aquecer. Para saber a temperatura do óleo, mergulhe um palito de fósforo no óleo ainda frio - quando acender é sinal que está na temperatura certa para fritura.
+Enquanto o óleo aquece, empane os bifes: tempere com sal e pimenta a gosto; passe os bifes primeiro pela farinha de trigo e bata com as mãos para retirar o excesso; em seguida passe pelo ovo batido e deixe escorrer bem; por último, passe pela farinha de rosca e pressione com a mão para cobrir bem toda a superfície.
+Com cuidado, coloque um bife de cada vez no óleo quente e deixe cerca de 40 segundos até dourar um dos lados. Com a escumadeira, vire o bife para dourar o outro lado. Transfira para a travessa forrada com papel-toalha e frite o outro bife.","Filé à Parmegiana",1,5);
 
 
 #Avaliações
